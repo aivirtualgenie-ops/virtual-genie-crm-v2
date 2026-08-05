@@ -5,11 +5,15 @@ const page = location.hash.replace("#","");
 switch(page){
 
 case "companies":
-loadCompanies();
-break;
+    loadCompanies();
+    break;
+
+case "add-company":
+    loadAddCompany();
+    break;
 
 default:
-loadDashboard();
+    loadDashboard();
 
 }
 
