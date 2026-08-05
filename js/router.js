@@ -1,19 +1,34 @@
 function router() {
 
-const page = location.hash.replace("#","");
+const hash = location.hash.replace("#","");
 
-switch(page){
+if(hash.startsWith("company-")){
+
+const id = hash.replace("company-","");
+
+loadCompany(id);
+
+return;
+
+}
+
+switch(hash){
 
 case "companies":
-    loadCompanies();
-    break;
+
+loadCompanies();
+
+break;
 
 case "add-company":
-    loadAddCompany();
-    break;
+
+loadAddCompany();
+
+break;
 
 default:
-    loadDashboard();
+
+loadDashboard();
 
 }
 
