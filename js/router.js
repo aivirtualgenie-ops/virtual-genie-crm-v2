@@ -4,9 +4,7 @@ const hash = location.hash.replace("#","");
 
 if(hash.startsWith("edit-company-")){
 
-const id = hash.replace("edit-company-","");
-
-loadEditCompany(id);
+loadEditCompany(hash.replace("edit-company-",""));
 
 return;
 
@@ -14,9 +12,7 @@ return;
 
 if(hash.startsWith("company-")){
 
-const id = hash.replace("company-","");
-
-loadCompany(id);
+loadCompany(hash.replace("company-",""));
 
 return;
 
@@ -39,6 +35,8 @@ break;
 default:
 
 loadDashboard();
+
+break;
 
 }
 
