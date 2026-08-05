@@ -6,156 +6,168 @@ font-family:Inter,system-ui,sans-serif;
 }
 
 body{
-
 background:#070B14;
 color:#fff;
-
 }
 
 .dashboard{
-
 padding:24px;
-
 max-width:700px;
-
 margin:auto;
-
+padding-bottom:120px;
 }
 
 .header{
-
 margin-bottom:28px;
-
 }
 
 .greeting{
-
 color:#7C8AA5;
-
 font-size:14px;
-
 margin-bottom:6px;
-
 }
 
 .header h1{
-
 font-size:36px;
-
 font-weight:800;
-
 letter-spacing:-1px;
-
 margin-bottom:8px;
-
+line-height:1.1;
 }
 
 .subtitle{
-
 color:#94A3B8;
-
 margin-bottom:22px;
-
 }
 
 .search{
-
 width:100%;
-
 padding:18px;
-
 background:#111827;
-
 border:1px solid rgba(255,255,255,.08);
-
 border-radius:18px;
-
 color:white;
-
 font-size:16px;
-
 outline:none;
-
+margin-bottom:24px;
 }
 
 .search::placeholder{
-
 color:#64748B;
-
 }
 
 .stats{
+display:flex;
+flex-direction:column;
+gap:22px;
+}
 
+.stats-grid{
 display:grid;
-
 grid-template-columns:repeat(2,1fr);
-
-gap:18px;
-
-margin-top:24px;
-
+gap:16px;
 }
 
 .card{
-
 background:#111827;
-
 border:1px solid rgba(255,255,255,.08);
-
 border-radius:22px;
-
 padding:22px;
-
-box-shadow:
-
-0 15px 40px rgba(0,0,0,.35);
-
+box-shadow:0 15px 40px rgba(0,0,0,.35);
 transition:.25s;
-
 }
 
 .card:hover{
-
 transform:translateY(-3px);
-
 border-color:#2563EB;
-
 }
 
-.card p{
-
-color:#94A3B8;
-
-font-size:14px;
-
-margin-bottom:10px;
-
+.stats-grid .card{
+min-height:140px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
 }
 
 .card h2{
-
-font-size:42px;
-
+font-size:48px;
 font-weight:800;
+}
 
+.card h3{
+font-size:24px;
+margin-bottom:18px;
+}
+
+.card p{
+color:#94A3B8;
+font-size:15px;
+line-height:1.6;
+}
+
+.activity-card p strong{
+color:#fff;
+display:block;
+margin-bottom:2px;
+}
+
+.task-card p{
+padding:12px 0;
+border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.task-card p:last-child{
+border-bottom:none;
+}
+
+.fab{
+position:fixed;
+right:24px;
+bottom:24px;
+width:64px;
+height:64px;
+border:none;
+border-radius:50%;
+background:#2563EB;
+color:white;
+font-size:34px;
+font-weight:700;
+cursor:pointer;
+box-shadow:0 20px 40px rgba(37,99,235,.45);
+transition:.25s;
+z-index:1000;
+}
+
+.fab:hover{
+transform:scale(1.08);
+background:#3B82F6;
 }
 
 @media(max-width:700px){
 
-.stats{
-
-grid-template-columns:1fr 1fr;
-
+.stats-grid{
+grid-template-columns:repeat(2,1fr);
 }
 
 }
 
 @media(max-width:420px){
 
-.stats{
+.stats-grid{
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+}
 
-grid-template-columns:1fr;
+.card{
+padding:18px;
+}
 
+.card h2{
+font-size:38px;
+}
+
+.header h1{
+font-size:32px;
 }
 
 }
