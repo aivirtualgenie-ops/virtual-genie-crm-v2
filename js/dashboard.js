@@ -108,9 +108,12 @@ app.innerHTML = `
         </div>
 
     </div>
+
 <button class="fab" onclick="location.hash='companies'">
-    +
++
 </button>
+
+${bottomNav("dashboard")}
 
 </div>
 
