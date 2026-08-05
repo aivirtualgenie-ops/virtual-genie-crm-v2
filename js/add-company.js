@@ -1,6 +1,24 @@
-function loadAddCompany() {
+function loadAddCompany(id = null) {
 
 const app = document.getElementById("app");
+
+const isEditing = id !== null;
+
+let company = null;
+
+if(isEditing){
+
+company = getCompany(id);
+
+if(!company){
+
+location.hash="companies";
+
+return;
+
+}
+
+}
 
 app.innerHTML = `
 
@@ -8,10 +26,12 @@ app.innerHTML = `
 
 <div class="header">
 
-<h1>Add Company</h1>
+<h1>${isEditing ? "Edit Company" : "Add Company"}</h1>
 
 <p class="subtitle">
-Create a new lead or client
+
+${isEditing ? "Update company information" : "Create a new lead or client"}
+
 </p>
 
 </div>
@@ -19,35 +39,39 @@ Create a new lead or client
 <input
 class="search"
 id="companyName"
-placeholder="Company Name">
+placeholder="Company Name"
+value="${company ? company.companyName : ""}">
 
 <input
 class="search"
 id="contactPerson"
-placeholder="Contact Person">
+placeholder="Contact Person"
+value="${company ? company.contactPerson : ""}">
 
 <input
 class="search"
 id="phone"
-placeholder="Phone Number">
+placeholder="Phone Number"
+value="${company ? company.phone : ""}">
 
 <input
 class="search"
 id="email"
-placeholder="Email">
+placeholder="Email"
+value="${company ? company.email : ""}">
 
 <textarea
 class="search"
 id="notes"
 placeholder="Notes"
-style="height:120px;resize:none;"></textarea>
+style="height:120px;resize:none;">${company ? company.notes : ""}</textarea>
 
 <button
 class="fab"
 style="position:static;width:100%;height:60px;border-radius:18px;font-size:20px;"
-onclick="saveCompany()">
+onclick="${isEditing ? `updateCompanyForm(${company.id})` : `saveCompany()`}">
 
-Save Company
+${isEditing ? "Update Company" : "Save Company"}
 
 </button>
 
@@ -73,35 +97,35 @@ email: document.getElementById("email").value.trim(),
 
 notes: document.getElementById("notes").value.trim(),
 
-website: "",
+website:"",
 
-address: "",
+address:"",
 
-industry: "",
+industry:"",
 
-status: "Lead",
+status:"Lead",
 
-source: "Cold Call",
+source:"Cold Call",
 
-priority: "Medium",
+priority:"Medium",
 
-products: [],
+products:[],
 
-calls: [],
+calls:[],
 
-tasks: [],
+tasks:[],
 
-pipelineValue: 0,
+pipelineValue:0,
 
-revenue: 0,
+revenue:0,
 
-lastContact: "",
+lastContact:"",
 
-nextFollowUp: "",
+nextFollowUp:"",
 
-createdAt: "",
+createdAt:"",
 
-updatedAt: ""
+updatedAt:""
 
 };
 
@@ -116,5 +140,21 @@ return;
 addCompany(company);
 
 location.hash="companies";
+
+}
+
+function updateCompanyForm(id){
+
+const company = getCompany(id);
+
+company.companyName=document.getElementById("companyName").value.trim();
+company.contactPerson=document.getElementById("contactPerson").value.trim();
+company.phone=document.getElementById("phone").value.trim();
+company.email=document.getElementById("email").value.trim();
+company.notes=document.getElementById("notes").value.trim();
+
+updateCompany(company);
+
+location.hash="company-"+id;
 
 }
