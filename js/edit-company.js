@@ -21,9 +21,7 @@ app.innerHTML=`
 <h1>Edit Company</h1>
 
 <p class="subtitle">
-
 Manage company information
-
 </p>
 
 </div>
@@ -96,7 +94,7 @@ Update Company
 <button
 class="search"
 style="margin-top:20px;"
-onclick="loadCompany(${company.id})">
+onclick="location.hash='company-${company.id}'">
 
 ← Back to Company
 
@@ -112,18 +110,18 @@ ${bottomNav("companies")}
 
 function saveEditedCompany(id){
 
-const company=getCompany(id);
+const company = getCompany(id);
 
-company.companyName=document.getElementById("companyName").value.trim();
-company.contactPerson=document.getElementById("contactPerson").value.trim();
-company.phone=document.getElementById("phone").value.trim();
-company.email=document.getElementById("email").value.trim();
-company.status=document.getElementById("status").value;
-company.priority=document.getElementById("priority").value;
-company.notes=document.getElementById("notes").value.trim();
+company.companyName = document.getElementById("companyName").value.trim();
+company.contactPerson = document.getElementById("contactPerson").value.trim();
+company.phone = document.getElementById("phone").value.trim();
+company.email = document.getElementById("email").value.trim();
+company.status = document.getElementById("status").value;
+company.priority = document.getElementById("priority").value;
+company.notes = document.getElementById("notes").value.trim();
 
 updateCompany(company);
 
-loadCompany(id);
+location.hash = "company-" + id;
 
 }
