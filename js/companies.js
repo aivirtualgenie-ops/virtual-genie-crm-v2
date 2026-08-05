@@ -16,9 +16,7 @@ companyCards=`
 
 <br>
 
-<p>
-Tap the + button to add your first company.
-</p>
+<p>Tap the + button to add your first company.</p>
 
 </div>
 
@@ -30,15 +28,18 @@ companies.forEach(company=>{
 
 companyCards+=`
 
-<div class="card">
+<div
+class="card"
+style="cursor:pointer;"
+onclick="location.hash='company-${company.id}'">
 
 <h3>${company.companyName}</h3>
 
-<p>${company.contactPerson}</p>
+<p>${company.contactPerson || "-"}</p>
 
-<p>${company.phone}</p>
+<p>${company.phone || "-"}</p>
 
-<p>${company.email}</p>
+<p>${company.email || "-"}</p>
 
 <p>Status: ${company.status}</p>
 
@@ -72,8 +73,8 @@ placeholder="Search companies...">
 
 ${companyCards}
 
-<button class="fab"
-
+<button
+class="fab"
 onclick="location.hash='add-company'">
 
 +
