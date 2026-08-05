@@ -31,6 +31,7 @@ callCards+=`
 <h3>${call.type}</h3>
 
 <p><strong>Date:</strong> ${call.date}</p>
+
 <p><strong>Outcome:</strong> ${call.outcome}</p>
 
 <br>
@@ -62,6 +63,15 @@ ${company.companyName}
 </div>
 
 ${callCards}
+
+<button
+class="search"
+style="margin-top:20px;"
+onclick="loadCompany(${company.id})">
+
+← Back to Company
+
+</button>
 
 <button
 class="fab"
@@ -121,6 +131,15 @@ style="position:static;width:100%;height:60px;border-radius:18px;"
 onclick="saveCall(${companyId})">
 
 Save Call
+
+</button>
+
+<button
+class="search"
+style="margin-top:20px;"
+onclick="loadCalls(${companyId})">
+
+← Back to Call History
 
 </button>
 
