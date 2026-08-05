@@ -6,81 +6,113 @@ app.innerHTML = `
 
 <div class="dashboard">
 
-<div class="header">
+    <div class="header">
 
-<p class="greeting">
-Good Evening 👋
-</p>
+        <p class="greeting">
+            Good Evening 👋
+        </p>
 
-<h1>
-Virtual Genie CRM
-</h1>
+        <h1>
+            Virtual Genie CRM
+        </h1>
 
-<p class="subtitle">
-Your Business Operating System
-</p>
+        <p class="subtitle">
+            Your Business Operating System
+        </p>
 
-<input
-class="search"
-placeholder="Search companies...">
+        <input
+            class="search"
+            placeholder="Search companies...">
 
-</div>
+    </div>
 
-<div class="stats">
-<div class="stats-grid">
-<div class="card">
+    <div class="stats">
 
-<p>Calls Today</p>
+        <div class="stats-grid">
 
-<h2>0</h2>
+            <div class="card">
 
-</div>
+                <p>Calls Today</p>
 
-<div class="card">
+                <h2>0</h2>
 
-<p>Follow-ups</p>
+            </div>
 
-<h2>0</h2>
+            <div class="card">
 
-</div>
+                <p>Follow-ups</p>
 
-<div class="card">
+                <h2>0</h2>
 
-<p>Pipeline</p>
+            </div>
 
-<h2>₹0</h2>
+            <div class="card">
 
-</div>
+                <p>Pipeline</p>
 
-<div class="card">
+                <h2>₹0</h2>
 
-<p>Clients</p>
+            </div>
 
-<h2>0</h2>
+            <div class="card">
 
-</div>
+                <p>Clients</p>
 
-</div>
-<div class="card">
+                <h2>0</h2>
 
-<h3>Recent Activity</h3>
+            </div>
 
-<br>
+        </div>
 
-<p><strong>ABC Dental Clinic</strong></p>
-<p>Website Proposal Sent</p>
+        <div class="card activity-card">
 
-<br>
+            <h3>Recent Activity</h3>
 
-<p><strong>Bliss Beach Villa</strong></p>
-<p>Meeting Scheduled</p>
+            <br>
 
-<br>
+            <p><strong>ABC Dental Clinic</strong></p>
+            <p>Website Proposal Sent</p>
 
-<p><strong>Elite Builders</strong></p>
-<p>AI Receptionist Demo</p>
+            <br>
 
-</div>
+            <p><strong>Bliss Beach Villa</strong></p>
+            <p>Meeting Scheduled</p>
+
+            <br>
+
+            <p><strong>Elite Builders</strong></p>
+            <p>AI Receptionist Demo</p>
+
+        </div>
+
+        <div class="card task-card">
+
+            <h3>Today's Tasks</h3>
+
+            <br>
+
+            <p>☐ Call ABC Dental</p>
+
+            <br>
+
+            <p>☐ Send Website Proposal</p>
+
+            <br>
+
+            <p>☐ Follow-up Bliss Beach Villa</p>
+
+            <br>
+
+            <p>☐ Cold Call 25 Leads</p>
+
+        </div>
+
+    </div>
+
+    <button class="fab">
+        +
+    </button>
+
 </div>
 
 `;
