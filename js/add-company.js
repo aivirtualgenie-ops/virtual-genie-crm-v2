@@ -147,14 +147,14 @@ function updateCompanyForm(id){
 
 const company = getCompany(id);
 
-company.companyName=document.getElementById("companyName").value.trim();
-company.contactPerson=document.getElementById("contactPerson").value.trim();
-company.phone=document.getElementById("phone").value.trim();
-company.email=document.getElementById("email").value.trim();
-company.notes=document.getElementById("notes").value.trim();
+company.companyName = document.getElementById("companyName").value.trim();
+company.contactPerson = document.getElementById("contactPerson").value.trim();
+company.phone = document.getElementById("phone").value.trim();
+company.email = document.getElementById("email").value.trim();
+company.notes = document.getElementById("notes").value.trim();
 
 updateCompany(company);
 
-location.hash="company-"+id;
+loadCompany(id);
 
 }
