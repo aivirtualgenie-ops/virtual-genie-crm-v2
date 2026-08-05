@@ -116,7 +116,7 @@ onclick="loadAddCompany(${company.id})">
 
 <button
 class="search"
-onclick="alert('Delete coming next')">
+onclick="deleteCompanyConfirm(${company.id})">
 
 🗑 Delete Company
 
@@ -138,5 +138,23 @@ ${bottomNav("companies")}
 </div>
 
 `;
+
+}
+
+function deleteCompanyConfirm(id){
+
+const confirmDelete = confirm(
+"Are you sure you want to delete this company?"
+);
+
+if(!confirmDelete){
+
+return;
+
+}
+
+deleteCompany(id);
+
+location.hash="companies";
 
 }
