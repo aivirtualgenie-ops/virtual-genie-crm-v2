@@ -108,7 +108,7 @@ onclick="alert('Tasks coming next')">
 
 <button
 class="search"
-onclick="loadAddCompany(${company.id})">
+onclick="location.hash='edit-company-${company.id}'">
 
 ✏️ Edit Company
 
