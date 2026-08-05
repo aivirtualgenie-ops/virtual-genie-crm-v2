@@ -4,9 +4,9 @@ const company = getCompany(id);
 
 const app = document.getElementById("app");
 
-if (!company) {
+if(!company){
 
-app.innerHTML = `
+app.innerHTML=`
 
 <div class="dashboard">
 
@@ -17,15 +17,16 @@ app.innerHTML = `
 <br>
 
 <button
-class="fab"
-style="position:static;width:100%;height:60px;border-radius:18px;"
+class="search"
 onclick="location.hash='companies'">
 
-Back
+← Back
 
 </button>
 
 </div>
+
+${bottomNav("companies")}
 
 </div>
 
@@ -35,7 +36,7 @@ return;
 
 }
 
-app.innerHTML = `
+app.innerHTML=`
 
 <div class="dashboard">
 
@@ -44,7 +45,9 @@ app.innerHTML = `
 <h1>${company.companyName}</h1>
 
 <p class="subtitle">
+
 ${company.status}
+
 </p>
 
 </div>
@@ -63,9 +66,7 @@ ${company.status}
 
 </div>
 
-<br>
-
-<div class="card">
+<div class="card" style="margin-top:20px;">
 
 <h3>Notes</h3>
 
@@ -75,9 +76,7 @@ ${company.status}
 
 </div>
 
-<br>
-
-<div class="card">
+<div class="card" style="margin-top:20px;">
 
 <h3>Quick Actions</h3>
 
@@ -90,16 +89,12 @@ onclick="alert('Call Log coming next')">
 
 </button>
 
-<br><br>
-
 <button class="search"
 onclick="alert('Products coming next')">
 
 📦 Products
 
 </button>
-
-<br><br>
 
 <button class="search"
 onclick="alert('Tasks coming next')">
@@ -108,36 +103,32 @@ onclick="alert('Tasks coming next')">
 
 </button>
 
-<br><br>
-
 <button class="search"
 onclick="alert('Edit coming next')">
 
-✏ Edit
+✏️ Edit Company
 
 </button>
-
-<br><br>
 
 <button class="search"
 onclick="alert('Delete coming next')">
 
-🗑 Delete
+🗑 Delete Company
 
 </button>
 
 </div>
 
-<br>
-
 <button
-class="fab"
-style="position:static;width:100%;height:60px;border-radius:18px;"
+class="search"
+style="margin-top:20px;"
 onclick="location.hash='companies'">
 
 ← Back to Companies
 
 </button>
+
+${bottomNav("companies")}
 
 </div>
 
