@@ -27,7 +27,7 @@ placeholder="Search companies...">
 </div>
 
 <div class="stats">
-
+<div class="stats-grid">
 <div class="card">
 
 <p>Calls Today</p>
