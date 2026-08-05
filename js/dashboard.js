@@ -61,7 +61,26 @@ placeholder="Search companies...">
 </div>
 
 </div>
+<div class="card">
 
+<h3>Recent Activity</h3>
+
+<br>
+
+<p><strong>ABC Dental Clinic</strong></p>
+<p>Website Proposal Sent</p>
+
+<br>
+
+<p><strong>Bliss Beach Villa</strong></p>
+<p>Meeting Scheduled</p>
+
+<br>
+
+<p><strong>Elite Builders</strong></p>
+<p>AI Receptionist Demo</p>
+
+</div>
 </div>
 
 `;
