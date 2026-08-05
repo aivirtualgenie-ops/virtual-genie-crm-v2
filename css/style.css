@@ -107,7 +107,6 @@ line-height:1.6;
 
 .activity-card p strong{
 color:#fff;
-display:block;
 margin-bottom:2px;
 }
 
@@ -123,7 +122,7 @@ border-bottom:none;
 .fab{
 position:fixed;
 right:24px;
-bottom:24px;
+bottom:95px;
 width:64px;
 height:64px;
 border:none;
@@ -143,10 +142,70 @@ transform:scale(1.08);
 background:#3B82F6;
 }
 
+/* ===========================
+   Bottom Navigation
+=========================== */
+
+.bottom-nav{
+
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+height:75px;
+background:#111827;
+border-top:1px solid rgba(255,255,255,.08);
+display:flex;
+justify-content:space-around;
+align-items:center;
+box-shadow:0 -10px 30px rgba(0,0,0,.45);
+z-index:999;
+
+}
+
+.bottom-nav button{
+
+flex:1;
+height:100%;
+background:none;
+border:none;
+color:#94A3B8;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:4px;
+font-size:22px;
+cursor:pointer;
+transition:.2s;
+
+}
+
+.bottom-nav button span{
+
+font-size:11px;
+
+}
+
+.bottom-nav button.active{
+
+color:#3B82F6;
+font-weight:700;
+
+}
+
+.bottom-nav button:hover{
+
+background:rgba(255,255,255,.04);
+
+}
+
 @media(max-width:700px){
 
 .stats-grid{
+
 grid-template-columns:repeat(2,1fr);
+
 }
 
 }
@@ -154,20 +213,28 @@ grid-template-columns:repeat(2,1fr);
 @media(max-width:420px){
 
 .stats-grid{
+
 grid-template-columns:repeat(2,1fr);
 gap:12px;
+
 }
 
 .card{
+
 padding:18px;
+
 }
 
 .card h2{
+
 font-size:38px;
+
 }
 
 .header h1{
+
 font-size:32px;
+
 }
 
 }
