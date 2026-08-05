@@ -108,10 +108,9 @@ app.innerHTML = `
         </div>
 
     </div>
-
-    <button class="fab">
-        +
-    </button>
+<button class="fab" onclick="location.hash='companies'">
+    +
+</button>
 
 </div>
 
