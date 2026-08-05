@@ -4,88 +4,63 @@ const app = document.getElementById("app");
 
 app.innerHTML = `
 
-<div class="min-h-screen bg-slate-950">
+<div class="dashboard">
 
-<header class="px-6 pt-8 pb-6">
+<div class="header">
 
-<p class="text-slate-400 text-sm">
+<p class="greeting">
 Good Evening 👋
 </p>
 
-<h1 class="text-3xl font-bold mt-1">
+<h1>
 Virtual Genie CRM
 </h1>
 
-<p class="text-slate-500 mt-2">
-Your business operating system
+<p class="subtitle">
+Your Business Operating System
 </p>
-
-<div class="mt-6">
 
 <input
-type="text"
-placeholder="Search companies..."
-class="input">
+class="search"
+placeholder="Search companies...">
 
 </div>
 
-</header>
+<div class="stats">
 
-<section class="px-6">
+<div class="card">
 
-<div class="grid grid-cols-2 gap-4">
+<p>Calls Today</p>
 
-<div class="glass p-5">
-
-<p class="label">
-Calls Today
-</p>
-
-<h2 class="kpi">
-0
-</h2>
+<h2>0</h2>
 
 </div>
 
-<div class="glass p-5">
+<div class="card">
 
-<p class="label">
-Follow-ups
-</p>
+<p>Follow-ups</p>
 
-<h2 class="kpi">
-0
-</h2>
+<h2>0</h2>
 
 </div>
 
-<div class="glass p-5">
+<div class="card">
 
-<p class="label">
-Pipeline
-</p>
+<p>Pipeline</p>
 
-<h2 class="kpi">
-₹0
-</h2>
+<h2>₹0</h2>
 
 </div>
 
-<div class="glass p-5">
+<div class="card">
 
-<p class="label">
-Clients
-</p>
+<p>Clients</p>
 
-<h2 class="kpi">
-0
-</h2>
+<h2>0</h2>
 
 </div>
 
 </div>
-
-</section>
 
 </div>
 
