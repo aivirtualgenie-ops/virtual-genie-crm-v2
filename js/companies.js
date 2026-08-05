@@ -32,9 +32,9 @@ app.innerHTML = `
 
     </div>
 
-    <button class="fab">
-        +
-    </button>
+    <button class="fab" onclick="alert('Add Company form coming next!')">
+    +
+</button>
 
 </div>
 
