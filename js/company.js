@@ -82,35 +82,40 @@ ${company.status}
 
 <br>
 
-<button class="search"
+<button
+class="search"
 onclick="alert('Call Log coming next')">
 
 📞 Log Call
 
 </button>
 
-<button class="search"
+<button
+class="search"
 onclick="alert('Products coming next')">
 
 📦 Products
 
 </button>
 
-<button class="search"
+<button
+class="search"
 onclick="alert('Tasks coming next')">
 
 ✅ Tasks
 
 </button>
 
-<button class="search"
-onclick="alert('Edit coming next')">
+<button
+class="search"
+onclick="loadAddCompany(${company.id})">
 
 ✏️ Edit Company
 
 </button>
 
-<button class="search"
+<button
+class="search"
 onclick="alert('Delete coming next')">
 
 🗑 Delete Company
