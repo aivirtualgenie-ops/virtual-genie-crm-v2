@@ -2,6 +2,16 @@ function router() {
 
 const hash = location.hash.replace("#","");
 
+if(hash.startsWith("edit-company-")){
+
+const id = hash.replace("edit-company-","");
+
+loadEditCompany(id);
+
+return;
+
+}
+
 if(hash.startsWith("company-")){
 
 const id = hash.replace("company-","");
