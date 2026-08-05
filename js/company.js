@@ -84,9 +84,9 @@ ${company.status}
 
 <button
 class="search"
-onclick="alert('Call Log coming next')">
+onclick="loadCalls(${company.id})">
 
-📞 Log Call
+📞 Call History
 
 </button>
 
