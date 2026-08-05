@@ -32,7 +32,7 @@ app.innerHTML = `
 
     </div>
 
-    <button class="fab" onclick="alert('Add Company form coming next!')">
+    <button class="fab" onclick="location.hash='add-company'">
     +
 </button>
 
