@@ -57,15 +57,6 @@ app.innerHTML=`
 
 <div class="header">
 
-<button
-class="search"
-style="margin-bottom:20px;"
-onclick="location.hash=''">
-
-← Dashboard
-
-</button>
-
 <h1>Companies</h1>
 
 <p class="subtitle">
@@ -87,6 +78,8 @@ onclick="location.hash='add-company'">
 +
 
 </button>
+
+${bottomNav("companies")}
 
 </div>
 
