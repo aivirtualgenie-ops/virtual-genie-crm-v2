@@ -11,15 +11,18 @@ app.innerHTML = `
 <div class="dashboard">
 
 <div class="header">
+
 <h1>Products</h1>
+
 <p class="subtitle">${company.companyName}</p>
+
 </div>
 
 <div class="card">
 
 <button
 class="search"
-onclick="loadAddProduct(${companyId})"
+onclick="loadAddProduct(${companyId})">
 
 ➕ Add Product
 
@@ -29,6 +32,7 @@ onclick="loadAddProduct(${companyId})"
 
 ${
 products.length === 0
+
 ?
 
 `
@@ -45,15 +49,15 @@ products.length === 0
 
 :
 
-products.map(product=>`
+products.map(product => `
 
 <div class="card" style="margin-top:20px;">
 
 <h3>${product.name}</h3>
 
-<p>Qty: ${product.quantity}</p>
+<p><strong>Quantity:</strong> ${product.quantity}</p>
 
-<p>Price: ₹${product.price}</p>
+<p><strong>Price:</strong> ₹${product.price}</p>
 
 </div>
 
