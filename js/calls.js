@@ -4,6 +4,14 @@ const company = getCompany(companyId);
 
 const app = document.getElementById("app");
 
+if(!company.calls){
+
+company.calls=[];
+
+updateCompany(company);
+
+}
+
 let callCards = "";
 
 if(company.calls.length===0){
@@ -39,6 +47,26 @@ callCards+=`
 <br>
 
 <p>${call.notes}</p>
+
+<br>
+
+<button
+class="search"
+onclick="loadEditCall(${companyId},${call.id})">
+
+✏️ Edit
+
+</button>
+
+<br><br>
+
+<button
+class="search"
+onclick="deleteCallConfirm(${companyId},${call.id})">
+
+🗑 Delete
+
+</button>
 
 </div>
 
@@ -187,6 +215,30 @@ followUp:document.getElementById("callFollowUp").value,
 notes:document.getElementById("callNotes").value
 
 });
+
+updateCompany(company);
+
+loadCalls(companyId);
+
+}
+
+function deleteCallConfirm(companyId, callId){
+
+const confirmDelete = confirm(
+"Delete this call?"
+);
+
+if(!confirmDelete){
+
+return;
+
+}
+
+const company = getCompany(companyId);
+
+company.calls = company.calls.filter(
+call => call.id != callId
+);
 
 updateCompany(company);
 
