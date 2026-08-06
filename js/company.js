@@ -134,7 +134,7 @@ onclick="alert('Products coming next')">
 
 <button
 class="search"
-onclick="alert('Tasks coming next')">
+onclick="loadTasks(${company.id})"
 
 ✅ Tasks
 
