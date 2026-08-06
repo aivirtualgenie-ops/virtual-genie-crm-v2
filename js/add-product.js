@@ -71,11 +71,19 @@ return;
 
 }
 
-addProduct(companyId,{
+const product = {
+
+id: Date.now(),
+
 name,
+
 quantity,
+
 price
-});
+
+};
+
+addProduct(companyId, product);
 
 loadProducts(companyId);
 
