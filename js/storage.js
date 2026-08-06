@@ -72,3 +72,51 @@ function deleteCompany(id) {
     saveCompanies(companies);
 
 }
+function getProducts(companyId){
+
+const company = getCompany(companyId);
+
+if(!company){
+return [];
+}
+
+if(!company.products){
+company.products = [];
+updateCompany(company);
+}
+
+return company.products;
+
+}
+
+function saveProducts(companyId, products){
+
+const company = getCompany(companyId);
+
+company.products = products;
+
+updateCompany(company);
+
+}
+
+function addProduct(companyId, product){
+
+const products = getProducts(companyId);
+
+product.id = Date.now();
+
+products.push(product);
+
+saveProducts(companyId, products);
+
+}
+
+function deleteProduct(companyId, productId){
+
+const products = getProducts(companyId).filter(
+product => product.id != productId
+);
+
+saveProducts(companyId, products);
+
+}
