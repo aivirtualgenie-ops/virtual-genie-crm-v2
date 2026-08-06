@@ -31,6 +31,10 @@ function addCompany(company) {
 
     company.updatedAt = new Date().toISOString();
 
+    company.tasks = company.tasks || [];
+    company.products = company.products || [];
+    company.calls = company.calls || [];
+
     companies.push(company);
 
     saveCompanies(companies);
@@ -79,7 +83,7 @@ function getProducts(companyId){
 
     if(!company.products){
 
-        company.products = [];
+        company.products=[];
 
     }
 
@@ -89,11 +93,11 @@ function getProducts(companyId){
 
 function addProduct(companyId, product){
 
-    const company = getCompany(companyId);
+    const company=getCompany(companyId);
 
     if(!company.products){
 
-        company.products = [];
+        company.products=[];
 
     }
 
@@ -105,10 +109,52 @@ function addProduct(companyId, product){
 
 function deleteProduct(companyId, productId){
 
-    const company = getCompany(companyId);
+    const company=getCompany(companyId);
 
-    company.products = company.products.filter(
-        product => product.id != productId
+    company.products=company.products.filter(
+        product=>product.id!=productId
+    );
+
+    updateCompany(company);
+
+}
+
+function getTasks(companyId){
+
+    const company=getCompany(companyId);
+
+    if(!company.tasks){
+
+        company.tasks=[];
+
+    }
+
+    return company.tasks;
+
+}
+
+function addTask(companyId, task){
+
+    const company=getCompany(companyId);
+
+    if(!company.tasks){
+
+        company.tasks=[];
+
+    }
+
+    company.tasks.push(task);
+
+    updateCompany(company);
+
+}
+
+function deleteTask(companyId, taskId){
+
+    const company=getCompany(companyId);
+
+    company.tasks=company.tasks.filter(
+        task=>task.id!=taskId
     );
 
     updateCompany(company);
