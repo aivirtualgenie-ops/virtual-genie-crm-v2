@@ -75,6 +75,16 @@ products.map(product=>`
 
 <p><strong>Total:</strong> ₹${product.quantity * product.price}</p>
 
+<br>
+
+<button
+class="search"
+onclick="deleteProductConfirm(${companyId}, ${product.id})">
+
+🗑 Delete
+
+</button>
+
 </div>
 
 `).join("")
@@ -95,5 +105,23 @@ ${bottomNav("companies")}
 </div>
 
 `;
+
+}
+
+function deleteProductConfirm(companyId, productId){
+
+const confirmDelete = confirm(
+"Delete this product?"
+);
+
+if(!confirmDelete){
+
+return;
+
+}
+
+deleteProduct(companyId, productId);
+
+loadProducts(companyId);
 
 }
