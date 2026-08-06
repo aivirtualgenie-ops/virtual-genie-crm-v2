@@ -1,116 +1,137 @@
 function loadDashboard() {
 
+const companies = getCompanies();
+
+let totalProducts = 0;
+let totalPipeline = 0;
+let totalRevenue = 0;
+
+companies.forEach(company=>{
+
+totalProducts += (company.products || []).length;
+
+totalPipeline += Number(company.pipelineValue || 0);
+
+totalRevenue += Number(company.revenue || 0);
+
+});
+
 const app = document.getElementById("app");
 
 app.innerHTML = `
 
 <div class="dashboard">
 
-    <div class="header">
+<div class="header">
 
-        <p class="greeting">
-            Good Evening 👋
-        </p>
+<p class="greeting">
 
-        <h1>
-            Virtual Genie CRM
-        </h1>
+Good Evening 👋
 
-        <p class="subtitle">
-            Your Business Operating System
-        </p>
+</p>
 
-        <input
-            class="search"
-            placeholder="Search companies...">
+<h1>
 
-    </div>
+Virtual Genie CRM
 
-    <div class="stats">
+</h1>
 
-        <div class="stats-grid">
+<p class="subtitle">
 
-            <div class="card">
+Your Business Operating System
 
-                <p>Calls Today</p>
+</p>
 
-                <h2>0</h2>
+<input
+class="search"
+placeholder="Search companies...">
 
-            </div>
+</div>
 
-            <div class="card">
+<div class="stats">
 
-                <p>Follow-ups</p>
+<div class="stats-grid">
 
-                <h2>0</h2>
+<div class="card">
 
-            </div>
+<p>Companies</p>
 
-            <div class="card">
+<h2>${companies.length}</h2>
 
-                <p>Pipeline</p>
+</div>
 
-                <h2>₹0</h2>
+<div class="card">
 
-            </div>
+<p>Products</p>
 
-            <div class="card">
+<h2>${totalProducts}</h2>
 
-                <p>Clients</p>
+</div>
 
-                <h2>0</h2>
+<div class="card">
 
-            </div>
+<p>Pipeline</p>
 
-        </div>
+<h2>₹${totalPipeline}</h2>
 
-        <div class="card activity-card">
+</div>
 
-            <h3>Recent Activity</h3>
+<div class="card">
 
-            <br>
+<p>Revenue</p>
 
-            <p><strong>ABC Dental Clinic</strong></p>
-            <p>Website Proposal Sent</p>
+<h2>₹${totalRevenue}</h2>
 
-            <br>
+</div>
 
-            <p><strong>Bliss Beach Villa</strong></p>
-            <p>Meeting Scheduled</p>
+</div>
 
-            <br>
+<div class="card activity-card">
 
-            <p><strong>Elite Builders</strong></p>
-            <p>AI Receptionist Demo</p>
+<h3>CRM Summary</h3>
 
-        </div>
+<br>
 
-        <div class="card task-card">
+<p><strong>Total Companies:</strong> ${companies.length}</p>
 
-            <h3>Today's Tasks</h3>
+<p><strong>Total Products:</strong> ${totalProducts}</p>
 
-            <br>
+<p><strong>Total Pipeline:</strong> ₹${totalPipeline}</p>
 
-            <p>☐ Call ABC Dental</p>
+<p><strong>Total Revenue:</strong> ₹${totalRevenue}</p>
 
-            <br>
+</div>
 
-            <p>☐ Send Website Proposal</p>
+<div class="card task-card">
 
-            <br>
+<h3>Coming Next</h3>
 
-            <p>☐ Follow-up Bliss Beach Villa</p>
+<br>
 
-            <br>
+<p>✅ Tasks Module</p>
 
-            <p>☐ Cold Call 25 Leads</p>
+<br>
 
-        </div>
+<p>✅ Call Analytics</p>
 
-    </div>
+<br>
 
-<button class="fab" onclick="location.hash='companies'">
+<p>✅ Calendar</p>
+
+<br>
+
+<p>✅ Notifications</p>
+
+</div>
+
+</div>
+
+<button
+class="fab"
+onclick="location.hash='companies'">
+
 +
+
 </button>
 
 ${bottomNav("dashboard")}
