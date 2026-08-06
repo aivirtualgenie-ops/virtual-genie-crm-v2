@@ -52,6 +52,24 @@ id="email"
 placeholder="Email"
 value="${company.email}">
 
+<input
+class="search"
+id="website"
+placeholder="Website"
+value="${company.website || ""}">
+
+<input
+class="search"
+id="industry"
+placeholder="Industry"
+value="${company.industry || ""}">
+
+<input
+class="search"
+id="address"
+placeholder="Address"
+value="${company.address || ""}">
+
 <h3 style="margin:20px 0 12px;">Sales</h3>
 
 <select
@@ -75,6 +93,26 @@ id="priority">
 <option ${company.priority=="Low"?"selected":""}>Low</option>
 
 </select>
+
+<input
+class="search"
+id="pipelineValue"
+type="number"
+placeholder="Pipeline Value"
+value="${company.pipelineValue || 0}">
+
+<input
+class="search"
+id="revenue"
+type="number"
+placeholder="Revenue"
+value="${company.revenue || 0}">
+
+<input
+class="search"
+id="nextFollowUp"
+type="date"
+value="${company.nextFollowUp || ""}">
 
 <textarea
 class="search"
@@ -116,8 +154,19 @@ company.companyName = document.getElementById("companyName").value.trim();
 company.contactPerson = document.getElementById("contactPerson").value.trim();
 company.phone = document.getElementById("phone").value.trim();
 company.email = document.getElementById("email").value.trim();
+
+company.website = document.getElementById("website").value.trim();
+company.industry = document.getElementById("industry").value.trim();
+company.address = document.getElementById("address").value.trim();
+
 company.status = document.getElementById("status").value;
 company.priority = document.getElementById("priority").value;
+
+company.pipelineValue = Number(document.getElementById("pipelineValue").value);
+company.revenue = Number(document.getElementById("revenue").value);
+
+company.nextFollowUp = document.getElementById("nextFollowUp").value;
+
 company.notes = document.getElementById("notes").value.trim();
 
 updateCompany(company);
