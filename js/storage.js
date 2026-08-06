@@ -72,51 +72,45 @@ function deleteCompany(id) {
     saveCompanies(companies);
 
 }
+
 function getProducts(companyId){
 
-const company = getCompany(companyId);
+    const company = getCompany(companyId);
 
-if(!company){
-return [];
-}
+    if(!company.products){
 
-if(!company.products){
-company.products = [];
-updateCompany(company);
-}
+        company.products = [];
 
-return company.products;
+    }
 
-}
-
-function saveProducts(companyId, products){
-
-const company = getCompany(companyId);
-
-company.products = products;
-
-updateCompany(company);
+    return company.products;
 
 }
 
 function addProduct(companyId, product){
 
-const products = getProducts(companyId);
+    const company = getCompany(companyId);
 
-product.id = Date.now();
+    if(!company.products){
 
-products.push(product);
+        company.products = [];
 
-saveProducts(companyId, products);
+    }
+
+    company.products.push(product);
+
+    updateCompany(company);
 
 }
 
 function deleteProduct(companyId, productId){
 
-const products = getProducts(companyId).filter(
-product => product.id != productId
-);
+    const company = getCompany(companyId);
 
-saveProducts(companyId, products);
+    company.products = company.products.filter(
+        product => product.id != productId
+    );
+
+    updateCompany(company);
 
 }
