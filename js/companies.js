@@ -1,22 +1,42 @@
-function loadCompanies() {
+function loadCompanies(searchText = "") {
 
 const app = document.getElementById("app");
 
 const companies = getCompanies();
 
+const filteredCompanies = companies.filter(company=>{
+
+const search = searchText.toLowerCase();
+
+return (
+
+(company.companyName || "").toLowerCase().includes(search) ||
+
+(company.contactPerson || "").toLowerCase().includes(search) ||
+
+(company.phone || "").toLowerCase().includes(search) ||
+
+(company.email || "").toLowerCase().includes(search) ||
+
+(company.industry || "").toLowerCase().includes(search)
+
+);
+
+});
+
 let companyCards = "";
 
-if(companies.length===0){
+if(filteredCompanies.length===0){
 
 companyCards=`
 
 <div class="card">
 
-<h3>No Companies Yet</h3>
+<h3>No Companies Found</h3>
 
 <br>
 
-<p>Tap the + button to add your first company.</p>
+<p>Try another search.</p>
 
 </div>
 
@@ -24,7 +44,7 @@ companyCards=`
 
 }else{
 
-companies.forEach(company=>{
+filteredCompanies.forEach(company=>{
 
 companyCards+=`
 
@@ -60,12 +80,17 @@ app.innerHTML=`
 <h1>Companies</h1>
 
 <p class="subtitle">
+
 Manage all your leads and clients
+
 </p>
 
 <input
 class="search"
-placeholder="Search companies...">
+id="companySearch"
+placeholder="Search companies..."
+value="${searchText}"
+oninput="loadCompanies(this.value)">
 
 </div>
 
