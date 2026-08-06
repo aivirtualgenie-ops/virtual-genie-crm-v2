@@ -6,6 +6,14 @@ const products = getProducts(companyId);
 
 const app = document.getElementById("app");
 
+let totalValue = 0;
+
+products.forEach(product=>{
+
+totalValue += product.quantity * product.price;
+
+});
+
 app.innerHTML = `
 
 <div class="dashboard">
@@ -20,6 +28,12 @@ app.innerHTML = `
 
 <div class="card">
 
+<p><strong>Total Products:</strong> ${products.length}</p>
+
+<p><strong>Total Inventory Value:</strong> ₹${totalValue}</p>
+
+<br>
+
 <button
 class="search"
 onclick="loadAddProduct(${companyId})">
@@ -31,7 +45,7 @@ onclick="loadAddProduct(${companyId})">
 </div>
 
 ${
-products.length === 0
+products.length===0
 
 ?
 
@@ -49,7 +63,7 @@ products.length === 0
 
 :
 
-products.map(product => `
+products.map(product=>`
 
 <div class="card" style="margin-top:20px;">
 
@@ -58,6 +72,8 @@ products.map(product => `
 <p><strong>Quantity:</strong> ${product.quantity}</p>
 
 <p><strong>Price:</strong> ₹${product.price}</p>
+
+<p><strong>Total:</strong> ₹${product.quantity * product.price}</p>
 
 </div>
 
