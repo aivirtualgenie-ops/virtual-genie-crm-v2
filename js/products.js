@@ -79,7 +79,17 @@ products.map(product=>`
 
 <button
 class="search"
-onclick="deleteProductConfirm(${companyId}, ${product.id})">
+onclick="loadEditProduct(${companyId},${product.id})">
+
+✏️ Edit
+
+</button>
+
+<br><br>
+
+<button
+class="search"
+onclick="deleteProductConfirm(${companyId},${product.id})">
 
 🗑 Delete
 
