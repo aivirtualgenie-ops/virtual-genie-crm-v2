@@ -31,8 +31,10 @@ callCards+=`
 <h3>${call.type}</h3>
 
 <p><strong>Date:</strong> ${call.date}</p>
-
+<p><strong>Time:</strong> ${call.time}</p>
+<p><strong>Duration:</strong> ${call.duration} min</p>
 <p><strong>Outcome:</strong> ${call.outcome}</p>
+<p><strong>Next Follow-up:</strong> ${call.followUp}</p>
 
 <br>
 
@@ -116,8 +118,19 @@ placeholder="Call Type">
 
 <input
 class="search"
+id="callDuration"
+type="number"
+placeholder="Duration (minutes)">
+
+<input
+class="search"
 id="callOutcome"
 placeholder="Outcome">
+
+<input
+class="search"
+id="callFollowUp"
+type="date">
 
 <textarea
 class="search"
@@ -157,11 +170,19 @@ const company=getCompany(companyId);
 
 company.calls.unshift({
 
+id:Date.now(),
+
 date:new Date().toLocaleDateString(),
+
+time:new Date().toLocaleTimeString(),
 
 type:document.getElementById("callType").value,
 
+duration:Number(document.getElementById("callDuration").value),
+
 outcome:document.getElementById("callOutcome").value,
+
+followUp:document.getElementById("callFollowUp").value,
 
 notes:document.getElementById("callNotes").value
 
