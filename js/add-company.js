@@ -153,6 +153,24 @@ company.phone = document.getElementById("phone").value.trim();
 company.email = document.getElementById("email").value.trim();
 company.notes = document.getElementById("notes").value.trim();
 
+company.website = company.website || "";
+company.address = company.address || "";
+company.industry = company.industry || "";
+
+company.status = company.status || "Lead";
+company.source = company.source || "Cold Call";
+company.priority = company.priority || "Medium";
+
+company.products = company.products || [];
+company.calls = company.calls || [];
+company.tasks = company.tasks || [];
+
+company.pipelineValue = company.pipelineValue || 0;
+company.revenue = company.revenue || 0;
+
+company.lastContact = company.lastContact || "";
+company.nextFollowUp = company.nextFollowUp || "";
+
 updateCompany(company);
 
 loadCompany(id);
