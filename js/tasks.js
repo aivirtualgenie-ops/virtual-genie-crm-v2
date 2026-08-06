@@ -4,7 +4,33 @@ const company = getCompany(companyId);
 
 const app = document.getElementById("app");
 
+if(!company.tasks){
+
+company.tasks=[];
+
+updateCompany(company);
+
+}
+
+let completed=0;
+
+let pending=0;
+
 let taskCards="";
+
+company.tasks.forEach(task=>{
+
+if(task.status==="Completed"){
+
+completed++;
+
+}else{
+
+pending++;
+
+}
+
+});
 
 if(company.tasks.length===0){
 
@@ -40,6 +66,26 @@ taskCards+=`
 
 <p>${task.notes}</p>
 
+<br>
+
+<button
+class="search"
+onclick="alert('Edit Task coming next')">
+
+✏️ Edit
+
+</button>
+
+<br><br>
+
+<button
+class="search"
+onclick="alert('Delete Task coming next')">
+
+🗑 Delete
+
+</button>
+
 </div>
 
 `;
@@ -61,6 +107,16 @@ app.innerHTML=`
 ${company.companyName}
 
 </p>
+
+</div>
+
+<div class="card">
+
+<p><strong>Total Tasks:</strong> ${company.tasks.length}</p>
+
+<p><strong>Pending:</strong> ${pending}</p>
+
+<p><strong>Completed:</strong> ${completed}</p>
 
 </div>
 
