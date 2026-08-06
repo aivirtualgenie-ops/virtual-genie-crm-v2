@@ -126,7 +126,7 @@ onclick="loadCalls(${company.id})">
 
 <button
 class="search"
-onclick="loadProducts(${company.id})"
+onclick="loadProducts(${company.id})">
 
 📦 Products
 
@@ -134,7 +134,7 @@ onclick="loadProducts(${company.id})"
 
 <button
 class="search"
-onclick="loadTasks(${company.id})"
+onclick="loadTasks(${company.id})">
 
 ✅ Tasks
 
@@ -182,9 +182,7 @@ const confirmDelete = confirm(
 );
 
 if(!confirmDelete){
-
 return;
-
 }
 
 deleteCompany(id);
