@@ -13,7 +13,6 @@ updateCompany(company);
 }
 
 let completed=0;
-
 let pending=0;
 
 let taskCards="";
@@ -80,7 +79,7 @@ onclick="alert('Edit Task coming next')">
 
 <button
 class="search"
-onclick="alert('Delete Task coming next')">
+onclick="deleteTaskConfirm(${company.id},${task.id})">
 
 🗑 Delete
 
@@ -144,5 +143,23 @@ ${bottomNav("companies")}
 </div>
 
 `;
+
+}
+
+function deleteTaskConfirm(companyId, taskId){
+
+const confirmDelete = confirm(
+"Delete this task?"
+);
+
+if(!confirmDelete){
+
+return;
+
+}
+
+deleteTask(companyId, taskId);
+
+loadTasks(companyId);
 
 }
