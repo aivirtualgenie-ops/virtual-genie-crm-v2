@@ -126,7 +126,7 @@ onclick="loadCalls(${company.id})">
 
 <button
 class="search"
-onclick="alert('Products coming next')">
+onclick="loadProducts(${company.id})"
 
 📦 Products
 
