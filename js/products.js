@@ -19,7 +19,7 @@ app.innerHTML = `
 
 <button
 class="search"
-onclick="alert('Add Product coming next')">
+onclick="loadAddProduct(${companyId})"
 
 ➕ Add Product
 
