@@ -69,8 +69,7 @@ taskCards+=`
 
 <button
 class="search"
-onclick="alert('Edit Task coming next')">
-
+onclick="loadEditTask(${company.id},${task.id})"
 ✏️ Edit
 
 </button>
