@@ -59,10 +59,33 @@ ${company.status}
 <br>
 
 <p><strong>Contact:</strong> ${company.contactPerson || "-"}</p>
-
 <p><strong>Phone:</strong> ${company.phone || "-"}</p>
-
 <p><strong>Email:</strong> ${company.email || "-"}</p>
+<p><strong>Website:</strong> ${company.website || "-"}</p>
+
+</div>
+
+<div class="card" style="margin-top:20px;">
+
+<h3>Business Information</h3>
+
+<br>
+
+<p><strong>Industry:</strong> ${company.industry || "-"}</p>
+<p><strong>Address:</strong> ${company.address || "-"}</p>
+<p><strong>Priority:</strong> ${company.priority || "-"}</p>
+
+</div>
+
+<div class="card" style="margin-top:20px;">
+
+<h3>Sales Information</h3>
+
+<br>
+
+<p><strong>Pipeline Value:</strong> ₹${company.pipelineValue || 0}</p>
+<p><strong>Revenue:</strong> ₹${company.revenue || 0}</p>
+<p><strong>Next Follow-up:</strong> ${company.nextFollowUp || "-"}</p>
 
 </div>
 
@@ -73,6 +96,17 @@ ${company.status}
 <br>
 
 <p>${company.notes || "No notes yet."}</p>
+
+</div>
+
+<div class="card" style="margin-top:20px;">
+
+<h3>System Information</h3>
+
+<br>
+
+<p><strong>Created:</strong> ${company.createdAt || "-"}</p>
+<p><strong>Last Updated:</strong> ${company.updatedAt || "-"}</p>
 
 </div>
 
