@@ -35,7 +35,7 @@ class="${active==="calls"?"active":""}">
 </button>
 
 <button
-onclick="alert('Global Products page coming next')"
+onclick="loadGlobalProducts()"
 class="${active==="products"?"active":""}">
 
 📦
@@ -45,7 +45,7 @@ class="${active==="products"?"active":""}">
 </button>
 
 <button
-onclick="alert('Settings page coming next')"
+onclick="alert('Settings page coming soon')"
 class="${active==="settings"?"active":""}">
 
 ⚙️
