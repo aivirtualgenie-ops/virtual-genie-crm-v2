@@ -22,7 +22,7 @@ class="${active==="companies"?"active":""}">
 
 </button>
 
-<button onclick="loadCallsList()"
+<button onclick="alert('Global Calls page coming soon')"
 class="${active==="calls"?"active":""}">
 
 📞
@@ -31,7 +31,7 @@ class="${active==="calls"?"active":""}">
 
 </button>
 
-<button onclick="loadProductsList()"
+<button onclick="alert('Global Products page coming soon')"
 class="${active==="products"?"active":""}">
 
 📦
@@ -40,7 +40,7 @@ class="${active==="products"?"active":""}">
 
 </button>
 
-<button onclick="loadSettings()"
+<button onclick="alert('Settings page coming soon')"
 class="${active==="settings"?"active":""}">
 
 ⚙️
