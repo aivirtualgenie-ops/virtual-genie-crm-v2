@@ -77,7 +77,7 @@ onclick="loadGlobalProducts()">
 <div
 class="card"
 style="cursor:pointer;"
-onclick="alert('Sales Pipeline coming soon')">
+onclick="loadPipeline()">
 
 <p>Pipeline</p>
 
