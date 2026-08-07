@@ -6,7 +6,7 @@ let totalProducts = 0;
 let totalPipeline = 0;
 let totalRevenue = 0;
 
-companies.forEach(company=>{
+companies.forEach(company => {
 
 totalProducts += (company.products || []).length;
 
@@ -52,7 +52,10 @@ placeholder="Search companies...">
 
 <div class="stats-grid">
 
-<div class="card">
+<div
+class="card"
+style="cursor:pointer;"
+onclick="location.hash='companies'">
 
 <p>Companies</p>
 
@@ -60,7 +63,10 @@ placeholder="Search companies...">
 
 </div>
 
-<div class="card">
+<div
+class="card"
+style="cursor:pointer;"
+onclick="loadGlobalProducts()">
 
 <p>Products</p>
 
@@ -68,7 +74,10 @@ placeholder="Search companies...">
 
 </div>
 
-<div class="card">
+<div
+class="card"
+style="cursor:pointer;"
+onclick="alert('Sales Pipeline coming soon')">
 
 <p>Pipeline</p>
 
@@ -76,7 +85,10 @@ placeholder="Search companies...">
 
 </div>
 
-<div class="card">
+<div
+class="card"
+style="cursor:pointer;"
+onclick="alert('Revenue Analytics coming soon')">
 
 <p>Revenue</p>
 
@@ -108,11 +120,7 @@ placeholder="Search companies...">
 
 <br>
 
-<p>✅ Tasks Module</p>
-
-<br>
-
-<p>✅ Call Analytics</p>
+<p>✅ Sales Pipeline</p>
 
 <br>
 
@@ -121,6 +129,10 @@ placeholder="Search companies...">
 <br>
 
 <p>✅ Notifications</p>
+
+<br>
+
+<p>✅ Analytics Dashboard</p>
 
 </div>
 
