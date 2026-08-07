@@ -10,7 +10,11 @@ app.innerHTML = `
 
 <h1>Add Product</h1>
 
-<p class="subtitle">Create a product for this company</p>
+<p class="subtitle">
+
+Create a product for this company
+
+</p>
 
 </div>
 
@@ -18,6 +22,16 @@ app.innerHTML = `
 class="search"
 id="productName"
 placeholder="Product Name">
+
+<input
+class="search"
+id="productSKU"
+placeholder="SKU">
+
+<input
+class="search"
+id="productCategory"
+placeholder="Category">
 
 <input
 class="search"
@@ -29,7 +43,13 @@ placeholder="Quantity">
 class="search"
 id="productPrice"
 type="number"
-placeholder="Price">
+placeholder="Unit Price">
+
+<textarea
+class="search"
+id="productDescription"
+placeholder="Description"
+style="height:120px;resize:none;"></textarea>
 
 <button
 class="fab"
@@ -60,8 +80,11 @@ ${bottomNav("companies")}
 function saveProduct(companyId){
 
 const name = document.getElementById("productName").value.trim();
+const sku = document.getElementById("productSKU").value.trim();
+const category = document.getElementById("productCategory").value.trim();
 const quantity = Number(document.getElementById("productQuantity").value);
 const price = Number(document.getElementById("productPrice").value);
+const description = document.getElementById("productDescription").value.trim();
 
 if(name===""){
 
@@ -77,9 +100,15 @@ id: Date.now(),
 
 name,
 
+sku,
+
+category,
+
 quantity,
 
-price
+price,
+
+description
 
 };
 
