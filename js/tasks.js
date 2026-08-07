@@ -6,16 +6,16 @@ const app = document.getElementById("app");
 
 if(!company.tasks){
 
-company.tasks=[];
+company.tasks = [];
 
 updateCompany(company);
 
 }
 
-let completed=0;
-let pending=0;
+let completed = 0;
+let pending = 0;
 
-let taskCards="";
+let taskCards = "";
 
 company.tasks.forEach(task=>{
 
@@ -33,7 +33,7 @@ pending++;
 
 if(company.tasks.length===0){
 
-taskCards=`
+taskCards = `
 
 <div class="card">
 
@@ -49,7 +49,7 @@ taskCards=`
 
 company.tasks.forEach(task=>{
 
-taskCards+=`
+taskCards += `
 
 <div class="card">
 
@@ -69,7 +69,8 @@ taskCards+=`
 
 <button
 class="search"
-onclick="loadEditTask(${company.id},${task.id})"
+onclick="loadEditTask(${company.id},${task.id})">
+
 ✏️ Edit
 
 </button>
@@ -92,7 +93,7 @@ onclick="deleteTaskConfirm(${company.id},${task.id})">
 
 }
 
-app.innerHTML=`
+app.innerHTML = `
 
 <div class="dashboard">
 
@@ -147,9 +148,7 @@ ${bottomNav("companies")}
 
 function deleteTaskConfirm(companyId, taskId){
 
-const confirmDelete = confirm(
-"Delete this task?"
-);
+const confirmDelete = confirm("Delete this task?");
 
 if(!confirmDelete){
 
