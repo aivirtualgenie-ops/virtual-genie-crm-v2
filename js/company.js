@@ -232,21 +232,39 @@ ${bottomNav("companies")}
 
 function savePipelineStage(companyId){
 
-const company = getCompany(companyId);
+    alert("STEP 1: savePipelineStage was called");
 
-if(!company){
+    const company = getCompany(companyId);
 
-return;
+    if(!company){
 
-}
+        alert("STEP 2: COMPANY NOT FOUND");
 
-const stage = document.getElementById("pipelineStage").value;
+        return;
+    }
 
-company.pipelineStage = stage;
+    alert("STEP 2: Company found: " + company.companyName);
 
-updateCompany(company);
+    const select = document.getElementById("pipelineStage");
 
-loadCompany(companyId);
+    if(!select){
+
+        alert("STEP 3: pipelineStage element NOT FOUND");
+
+        return;
+    }
+
+    alert("STEP 3: Selected value = " + select.value);
+
+    company.pipelineStage = select.value;
+
+    alert("STEP 4: Saving " + company.pipelineStage);
+
+    updateCompany(company);
+
+    alert("STEP 5: updateCompany completed");
+
+    loadCompany(companyId);
 
 }
 
