@@ -1,7 +1,6 @@
 function router() {
 
 const hash = location.hash.replace("#","");
-
 alert("ROUTER RECEIVED: " + hash);
 
 if(hash.startsWith("edit-company-")){
