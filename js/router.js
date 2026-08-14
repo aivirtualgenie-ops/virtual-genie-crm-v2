@@ -45,6 +45,12 @@ loadNotifications();
 
 break;
 
+case "analytics":
+
+loadAnalytics();
+
+break;
+
 case "add-company":
 
 loadAddCompany();
