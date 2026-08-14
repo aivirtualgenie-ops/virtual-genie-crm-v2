@@ -1,119 +1,207 @@
-function loadGlobalProducts(){
+/* =========================================
+   GLOBAL PRODUCTS
+========================================= */
 
-const companies = getCompanies();
+function loadGlobalProducts() {
 
-const app = document.getElementById("app");
+    const companies =
+        getCompanies();
 
-let products=[];
+    const app =
+        document.getElementById("app");
 
-companies.forEach(company=>{
+    let products = [];
 
-(company.products || []).forEach(product=>{
 
-products.push({
+    /* =====================================
+       COLLECT PRODUCTS
+    ===================================== */
 
-companyId:company.id,
+    companies.forEach(company => {
 
-companyName:company.companyName,
+        (company.products || []).forEach(
+            product => {
 
-...product
+                products.push({
 
-});
+                    companyId:
+                        company.id,
 
-});
+                    companyName:
+                        company.companyName,
 
-});
+                    ...product
 
-let totalValue=0;
+                });
 
-products.forEach(product=>{
+            }
+        );
 
-totalValue += product.quantity * product.price;
+    });
 
-});
 
-let productCards="";
+    /* =====================================
+       TOTAL VALUE
+    ===================================== */
 
-if(products.length===0){
+    let totalValue = 0;
 
-productCards=`
 
-<div class="card">
+    products.forEach(product => {
 
-<h3>No Products</h3>
+        totalValue +=
+            Number(product.quantity || 0) *
+            Number(product.price || 0);
 
-<p>Products from all companies will appear here.</p>
+    });
 
-</div>
 
-`;
+    /* =====================================
+       PRODUCT CARDS
+    ===================================== */
 
-}else{
+    let productCards = "";
 
-products.forEach(product=>{
 
-productCards+=`
+    if (products.length === 0) {
 
-<div class="card">
+        productCards = `
 
-<h3>${product.name}</h3>
+        <div class="card">
 
-<p><strong>Company:</strong> ${product.companyName}</p>
+            <h3>
+                No Products
+            </h3>
 
-<p><strong>Quantity:</strong> ${product.quantity}</p>
+            <p>
+                Products from all companies
+                will appear here.
+            </p>
 
-<p><strong>Price:</strong> ₹${product.price}</p>
+        </div>
 
-<p><strong>Total:</strong> ₹${product.quantity * product.price}</p>
+        `;
 
-<br>
+    } else {
 
-<button
-class="search"
-onclick="loadCompany(${product.companyId})">
+        products.forEach(product => {
 
-Open Company
+            const quantity =
+                Number(product.quantity || 0);
 
-</button>
+            const price =
+                Number(product.price || 0);
 
-</div>
+            const value =
+                quantity * price;
 
-`;
 
-});
+            productCards += `
 
-}
+            <div class="card">
 
-app.innerHTML=`
+                <h3>
+                    ${product.name || "Unnamed Product"}
+                </h3>
 
-<div class="dashboard">
+                <p>
+                    <strong>Company:</strong>
+                    ${product.companyName || "-"}
+                </p>
 
-<div class="header">
+                <p>
+                    <strong>SKU:</strong>
+                    ${product.sku || "-"}
+                </p>
 
-<h1>All Products</h1>
+                <p>
+                    <strong>Category:</strong>
+                    ${product.category || "-"}
+                </p>
 
-<p class="subtitle">
+                <p>
+                    <strong>Quantity:</strong>
+                    ${quantity}
+                </p>
 
-${products.length} Products
+                <p>
+                    <strong>Price:</strong>
+                    ₹${price}
+                </p>
 
-</p>
+                <p>
+                    <strong>Total:</strong>
+                    ₹${value}
+                </p>
 
-</div>
+                <br>
 
-<div class="card">
+                <button
+                    class="search"
+                    onclick="loadCompany(
+                        ${product.companyId}
+                    )">
 
-<p><strong>Total Products:</strong> ${products.length}</p>
+                    Open Company
 
-<p><strong>Total Inventory Value:</strong> ₹${totalValue}</p>
+                </button>
 
-</div>
+            </div>
 
-${productCards}
+            `;
 
-${bottomNav("products")}
+        });
 
-</div>
+    }
 
-`;
+
+    /* =====================================
+       PAGE
+    ===================================== */
+
+    app.innerHTML = `
+
+    <div class="dashboard">
+
+        <div class="header">
+
+            <h1>
+                All Products
+            </h1>
+
+            <p class="subtitle">
+                ${products.length} Products
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <p>
+                <strong>Total Products:</strong>
+                ${products.length}
+            </p>
+
+            <p>
+                <strong>
+                    Total Inventory Value:
+                </strong>
+
+                ₹${totalValue}
+
+            </p>
+
+        </div>
+
+
+        ${productCards}
+
+
+        ${bottomNav("products")}
+
+    </div>
+
+    `;
 
 }
