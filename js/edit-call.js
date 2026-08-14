@@ -1,105 +1,256 @@
-function loadEditCall(companyId, callId){
+/* =========================================
+   EDIT CALL
+========================================= */
 
-const company = getCompany(companyId);
+function loadEditCall(
+    companyId,
+    callId
+) {
 
-const call = company.calls.find(
-c => c.id == callId
-);
+    const company =
+        getCompany(companyId);
 
-const app = document.getElementById("app");
 
-app.innerHTML = `
+    if (!company) {
 
-<div class="dashboard">
+        console.error(
+            "Edit call failed: company not found",
+            companyId
+        );
 
-<div class="header">
+        return;
 
-<h1>Edit Call</h1>
+    }
 
-<p class="subtitle">
 
-${company.companyName}
+    const call =
+        (company.calls || []).find(
+            c =>
+                String(c.id) ===
+                String(callId)
+        );
 
-</p>
 
-</div>
+    if (!call) {
 
-<input
-class="search"
-id="callType"
-placeholder="Call Type"
-value="${call.type}">
+        console.error(
+            "Edit call failed: call not found",
+            callId
+        );
 
-<input
-class="search"
-id="callDuration"
-type="number"
-placeholder="Duration (minutes)"
-value="${call.duration}">
+        return;
 
-<input
-class="search"
-id="callOutcome"
-placeholder="Outcome"
-value="${call.outcome}">
+    }
 
-<input
-class="search"
-id="callFollowUp"
-type="date"
-value="${call.followUp}">
 
-<textarea
-class="search"
-id="callNotes"
-style="height:150px;">
+    const app =
+        document.getElementById("app");
 
-${call.notes}
 
-</textarea>
+    app.innerHTML = `
 
-<button
-class="fab"
-style="position:static;width:100%;height:60px;border-radius:18px;"
-onclick="updateCall(${companyId},${callId})">
+    <div class="dashboard">
 
-Update Call
+        <div class="header">
 
-</button>
+            <h1>
+                Edit Call
+            </h1>
 
-<button
-class="search"
-style="margin-top:20px;"
-onclick="loadCalls(${companyId})">
+            <p class="subtitle">
+                ${company.companyName}
+            </p>
 
-← Back
+        </div>
 
-</button>
 
-${bottomNav("companies")}
+        <input
+            class="search"
+            id="callType"
+            placeholder="Call Type"
+            value="${call.type || ""}">
 
-</div>
 
-`;
+        <input
+            class="search"
+            id="callDuration"
+            type="number"
+            min="0"
+            placeholder="Duration (minutes)"
+            value="${call.duration || ""}">
+
+
+        <input
+            class="search"
+            id="callOutcome"
+            placeholder="Outcome"
+            value="${call.outcome || ""}">
+
+
+        <input
+            class="search"
+            id="callFollowUp"
+            type="date"
+            value="${call.followUp || ""}">
+
+
+        <textarea
+            class="search"
+            id="callNotes"
+            placeholder="Notes"
+            style="height:150px;">${call.notes || ""}</textarea>
+
+
+        <button
+            class="fab"
+            style="
+                position:static;
+                width:100%;
+                height:60px;
+                border-radius:18px;
+            "
+            onclick="updateCall(
+                ${companyId},
+                ${callId}
+            )">
+
+            Update Call
+
+        </button>
+
+
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="loadCalls(${companyId})">
+
+            ← Back
+
+        </button>
+
+
+        ${bottomNav("companies")}
+
+    </div>
+
+    `;
 
 }
 
-function updateCall(companyId, callId){
 
-const company = getCompany(companyId);
+/* =========================================
+   UPDATE CALL
+========================================= */
 
-const call = company.calls.find(
-c => c.id == callId
-);
+function updateCall(
+    companyId,
+    callId
+) {
 
-call.type = document.getElementById("callType").value;
-call.duration = Number(document.getElementById("callDuration").value);
-call.outcome = document.getElementById("callOutcome").value;
-call.followUp = document.getElementById("callFollowUp").value;
-call.notes = document.getElementById("callNotes").value;
+    const company =
+        getCompany(companyId);
 
-updateCompany(company);
 
-loadCalls(companyId);
+    if (!company) {
+
+        console.error(
+            "Update call failed: company not found",
+            companyId
+        );
+
+        return;
+
+    }
+
+
+    const call =
+        (company.calls || []).find(
+            c =>
+                String(c.id) ===
+                String(callId)
+        );
+
+
+    if (!call) {
+
+        console.error(
+            "Update call failed: call not found",
+            callId
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       UPDATE FIELDS
+    ===================================== */
+
+    call.type =
+        document
+            .getElementById("callType")
+            .value
+            .trim() ||
+        "General Call";
+
+
+    call.duration =
+        Number(
+            document
+                .getElementById(
+                    "callDuration"
+                )
+                .value
+        ) || 0;
+
+
+    call.outcome =
+        document
+            .getElementById(
+                "callOutcome"
+            )
+            .value
+            .trim() ||
+        "-";
+
+
+    call.followUp =
+        document
+            .getElementById(
+                "callFollowUp"
+            )
+            .value;
+
+
+    call.notes =
+        document
+            .getElementById(
+                "callNotes"
+            )
+            .value
+            .trim();
+
+
+    /* =====================================
+       SAVE
+    ===================================== */
+
+    const saved =
+        updateCompany(company);
+
+
+    if (!saved) {
+
+        console.error(
+            "Update call failed"
+        );
+
+        return;
+
+    }
+
+
+    loadCalls(companyId);
 
 }
