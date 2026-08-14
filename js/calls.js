@@ -1,247 +1,505 @@
-function loadCalls(companyId){
+/* =========================================
+   COMPANY CALL HISTORY
+========================================= */
 
-const company = getCompany(companyId);
+function loadCalls(companyId) {
 
-const app = document.getElementById("app");
+    const company = getCompany(companyId);
 
-if(!company.calls){
+    const app = document.getElementById("app");
 
-company.calls=[];
 
-updateCompany(company);
+    /* =====================================
+       COMPANY CHECK
+    ===================================== */
+
+    if (!company) {
+
+        app.innerHTML = `
+
+        <div class="dashboard">
+
+            <div class="card">
+
+                <h2>Company not found</h2>
+
+                <br>
+
+                <button
+                    class="search"
+                    onclick="location.hash='companies'">
+
+                    ← Back
+
+                </button>
+
+            </div>
+
+            ${bottomNav("companies")}
+
+        </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    /* =====================================
+       INITIALIZE CALLS
+    ===================================== */
+
+    if (!company.calls) {
+
+        company.calls = [];
+
+        updateCompany(company);
+
+    }
+
+
+    let callCards = "";
+
+
+    /* =====================================
+       NO CALLS
+    ===================================== */
+
+    if (company.calls.length === 0) {
+
+        callCards = `
+
+        <div class="card">
+
+            <h3>No Calls Yet</h3>
+
+            <p>
+                Log your first call with this company.
+            </p>
+
+        </div>
+
+        `;
+
+    }
+
+
+    /* =====================================
+       CALL CARDS
+    ===================================== */
+
+    else {
+
+        company.calls.forEach(call => {
+
+            callCards += `
+
+            <div class="card">
+
+                <h3>
+                    ${call.type || "Call"}
+                </h3>
+
+                <p>
+                    <strong>Date:</strong>
+                    ${call.date || "-"}
+                </p>
+
+                <p>
+                    <strong>Time:</strong>
+                    ${call.time || "-"}
+                </p>
+
+                <p>
+                    <strong>Duration:</strong>
+                    ${call.duration || 0} min
+                </p>
+
+                <p>
+                    <strong>Outcome:</strong>
+                    ${call.outcome || "-"}
+                </p>
+
+                <p>
+                    <strong>Next Follow-up:</strong>
+                    ${call.followUp || "-"}
+                </p>
+
+                <br>
+
+                <p>
+                    ${call.notes || "No notes."}
+                </p>
+
+                <br>
+
+                <button
+                    class="search"
+                    onclick="loadEditCall(
+                        ${companyId},
+                        ${call.id}
+                    )">
+
+                    ✏️ Edit
+
+                </button>
+
+                <br>
+                <br>
+
+                <button
+                    class="search"
+                    onclick="deleteCallConfirm(
+                        ${companyId},
+                        ${call.id}
+                    )">
+
+                    🗑 Delete
+
+                </button>
+
+            </div>
+
+            `;
+
+        });
+
+    }
+
+
+    /* =====================================
+       PAGE
+    ===================================== */
+
+    app.innerHTML = `
+
+    <div class="dashboard">
+
+        <div class="header">
+
+            <h1>
+                Call History
+            </h1>
+
+            <p class="subtitle">
+                ${company.companyName}
+            </p>
+
+        </div>
+
+        ${callCards}
+
+
+        <!-- BACK -->
+
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="loadCompany(${company.id})">
+
+            ← Back to Company
+
+        </button>
+
+
+        <!-- ADD CALL -->
+
+        <button
+            class="fab"
+            onclick="loadAddCall(${company.id})">
+
+            +
+
+        </button>
+
+
+        ${bottomNav("companies")}
+
+    </div>
+
+    `;
 
 }
 
-let callCards = "";
 
-if(company.calls.length===0){
+/* =========================================
+   ADD CALL
+========================================= */
 
-callCards=`
+function loadAddCall(companyId) {
 
-<div class="card">
+    const app =
+        document.getElementById("app");
 
-<h3>No Calls Yet</h3>
 
-<p>Log your first call with this company.</p>
+    app.innerHTML = `
 
-</div>
+    <div class="dashboard">
 
-`;
+        <div class="header">
 
-}else{
+            <h1>
+                Log Call
+            </h1>
 
-company.calls.forEach(call=>{
+            <p class="subtitle">
+                Record your conversation
+            </p>
 
-callCards+=`
+        </div>
 
-<div class="card">
 
-<h3>${call.type}</h3>
+        <input
+            class="search"
+            id="callType"
+            placeholder="Call Type">
 
-<p><strong>Date:</strong> ${call.date}</p>
-<p><strong>Time:</strong> ${call.time}</p>
-<p><strong>Duration:</strong> ${call.duration} min</p>
-<p><strong>Outcome:</strong> ${call.outcome}</p>
-<p><strong>Next Follow-up:</strong> ${call.followUp}</p>
 
-<br>
+        <input
+            class="search"
+            id="callDuration"
+            type="number"
+            min="0"
+            placeholder="Duration (minutes)">
 
-<p>${call.notes}</p>
 
-<br>
+        <input
+            class="search"
+            id="callOutcome"
+            placeholder="Outcome">
 
-<button
-class="search"
-onclick="loadEditCall(${companyId},${call.id})">
 
-✏️ Edit
+        <input
+            class="search"
+            id="callFollowUp"
+            type="date">
 
-</button>
 
-<br><br>
+        <textarea
+            class="search"
+            id="callNotes"
+            placeholder="Notes"
+            style="height:150px;"></textarea>
 
-<button
-class="search"
-onclick="deleteCallConfirm(${companyId},${call.id})">
 
-🗑 Delete
+        <button
+            class="fab"
+            style="
+                position:static;
+                width:100%;
+                height:60px;
+                border-radius:18px;
+            "
+            onclick="saveCall(${companyId})">
 
-</button>
+            Save Call
 
-</div>
+        </button>
 
-`;
 
-});
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="loadCalls(${companyId})">
 
-}
+            ← Back to Call History
 
-app.innerHTML=`
+        </button>
 
-<div class="dashboard">
 
-<div class="header">
+        ${bottomNav("companies")}
 
-<h1>Call History</h1>
+    </div>
 
-<p class="subtitle">
-
-${company.companyName}
-
-</p>
-
-</div>
-
-${callCards}
-
-<button
-class="search"
-style="margin-top:20px;"
-onclick="loadCompany(${company.id})">
-
-← Back to Company
-
-</button>
-
-<button
-class="fab"
-onclick="loadAddCall(${company.id})">
-
-+
-
-</button>
-
-${bottomNav("companies")}
-
-</div>
-
-`;
+    `;
 
 }
 
-function loadAddCall(companyId){
 
-const app=document.getElementById("app");
+/* =========================================
+   SAVE CALL
+========================================= */
 
-app.innerHTML=`
+function saveCall(companyId) {
 
-<div class="dashboard">
+    const company =
+        getCompany(companyId);
 
-<div class="header">
 
-<h1>Log Call</h1>
+    if (!company) {
 
-<p class="subtitle">
+        console.error(
+            "Save call failed: company not found",
+            companyId
+        );
 
-Record your conversation
+        return;
 
-</p>
+    }
 
-</div>
 
-<input
-class="search"
-id="callType"
-placeholder="Call Type">
+    if (!company.calls) {
 
-<input
-class="search"
-id="callDuration"
-type="number"
-placeholder="Duration (minutes)">
+        company.calls = [];
 
-<input
-class="search"
-id="callOutcome"
-placeholder="Outcome">
+    }
 
-<input
-class="search"
-id="callFollowUp"
-type="date">
 
-<textarea
-class="search"
-id="callNotes"
-placeholder="Notes"
-style="height:150px;"></textarea>
+    const type =
+        document.getElementById(
+            "callType"
+        ).value.trim();
 
-<button
-class="fab"
-style="position:static;width:100%;height:60px;border-radius:18px;"
-onclick="saveCall(${companyId})">
 
-Save Call
+    const durationValue =
+        document.getElementById(
+            "callDuration"
+        ).value;
 
-</button>
 
-<button
-class="search"
-style="margin-top:20px;"
-onclick="loadCalls(${companyId})">
+    const outcome =
+        document.getElementById(
+            "callOutcome"
+        ).value.trim();
 
-← Back to Call History
 
-</button>
+    const followUp =
+        document.getElementById(
+            "callFollowUp"
+        ).value;
 
-${bottomNav("companies")}
 
-</div>
+    const notes =
+        document.getElementById(
+            "callNotes"
+        ).value.trim();
 
-`;
+
+    /* =====================================
+       CREATE CALL
+    ===================================== */
+
+    const call = {
+
+        id: Date.now(),
+
+        date:
+            new Date().toISOString(),
+
+        time:
+            new Date().toLocaleTimeString(
+                "en-IN",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            ),
+
+        type:
+            type || "General Call",
+
+        duration:
+            Number(durationValue) || 0,
+
+        outcome:
+            outcome || "-",
+
+        followUp:
+            followUp || "",
+
+        notes:
+            notes || ""
+
+    };
+
+
+    /* =====================================
+       SAVE
+    ===================================== */
+
+    company.calls.unshift(call);
+
+
+    const saved =
+        updateCompany(company);
+
+
+    if (!saved) {
+
+        console.error(
+            "Save call failed"
+        );
+
+        return;
+
+    }
+
+
+    loadCalls(companyId);
 
 }
 
-function saveCall(companyId){
 
-const company=getCompany(companyId);
+/* =========================================
+   DELETE CALL
+========================================= */
 
-company.calls.unshift({
+function deleteCallConfirm(
+    companyId,
+    callId
+) {
 
-id:Date.now(),
+    const confirmDelete =
+        confirm("Delete this call?");
 
-date:new Date().toLocaleDateString(),
 
-time:new Date().toLocaleTimeString(),
+    if (!confirmDelete) {
 
-type:document.getElementById("callType").value,
+        return;
 
-duration:Number(document.getElementById("callDuration").value),
+    }
 
-outcome:document.getElementById("callOutcome").value,
 
-followUp:document.getElementById("callFollowUp").value,
+    const company =
+        getCompany(companyId);
 
-notes:document.getElementById("callNotes").value
 
-});
+    if (!company) {
 
-updateCompany(company);
+        console.error(
+            "Delete call failed: company not found",
+            companyId
+        );
 
-loadCalls(companyId);
+        return;
 
-}
+    }
 
-function deleteCallConfirm(companyId, callId){
 
-const confirmDelete = confirm(
-"Delete this call?"
-);
+    company.calls =
+        (company.calls || []).filter(
+            call =>
+                String(call.id) !==
+                String(callId)
+        );
 
-if(!confirmDelete){
 
-return;
+    const saved =
+        updateCompany(company);
 
-}
 
-const company = getCompany(companyId);
+    if (!saved) {
 
-company.calls = company.calls.filter(
-call => call.id != callId
-);
+        console.error(
+            "Delete call failed"
+        );
 
-updateCompany(company);
+        return;
 
-loadCalls(companyId);
+    }
+
+
+    loadCalls(companyId);
 
 }
