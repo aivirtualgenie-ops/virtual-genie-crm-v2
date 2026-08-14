@@ -140,8 +140,12 @@ onclick="location.hash='calendar'">
 
 <br>
 
-<p>
-✅ Notifications
+<p
+style="cursor:pointer;"
+onclick="location.hash='notifications'">
+
+🔔 Notifications
+
 </p>
 
 <br>
