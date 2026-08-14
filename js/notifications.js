@@ -1,374 +1,474 @@
+/* =========================================
+   NOTIFICATIONS
+========================================= */
+
 function loadNotifications() {
 
-const companies = getCompanies();
+    const companies = getCompanies();
 
-const app = document.getElementById("app");
+    const app = document.getElementById("app");
 
-let notifications = [];
+    let notifications = [];
 
-const today = new Date();
-today.setHours(0, 0, 0, 0);
+    const today = new Date();
 
+    today.setHours(0, 0, 0, 0);
 
-/* DATE DIFFERENCE */
 
-function getDifference(dateString) {
+    /* =====================================
+       DATE DIFFERENCE
+    ===================================== */
 
-const date = new Date(dateString);
-date.setHours(0, 0, 0, 0);
+    function getDifference(dateString) {
 
-return Math.ceil(
-(date - today) /
-(1000 * 60 * 60 * 24)
-);
+        const date = new Date(dateString);
 
-}
+        date.setHours(0, 0, 0, 0);
 
+        return Math.ceil(
+            (date - today) /
+            (1000 * 60 * 60 * 24)
+        );
 
-/* ADD NOTIFICATION */
+    }
 
-function addNotification(
-type,
-company,
-details,
-priority,
-companyId,
-difference
-) {
 
-notifications.push({
+    /* =====================================
+       ADD NOTIFICATION
+    ===================================== */
 
-type,
-company,
-details,
-priority,
-companyId,
-difference
+    function addNotification(
+        type,
+        company,
+        details,
+        priority,
+        companyId,
+        difference
+    ) {
 
-});
+        notifications.push({
 
-}
+            type,
+            company,
+            details,
+            priority,
+            companyId,
+            difference
 
+        });
 
-/* PROCESS COMPANIES */
+    }
 
-companies.forEach((company, companyIndex) => {
 
-const companyId =
-company.id ||
-company.companyId ||
-companyIndex;
+    /* =====================================
+       PROCESS COMPANIES
+    ===================================== */
 
+    companies.forEach((company, companyIndex) => {
 
-/* COMPANY FOLLOW-UP */
+        const companyId =
+            company.id ||
+            company.companyId ||
+            companyIndex;
 
-if (company.nextFollowUp) {
 
-const difference =
-getDifference(company.nextFollowUp);
+        /* =================================
+           COMPANY FOLLOW-UP
+        ================================= */
 
-if (difference < 0) {
+        if (company.nextFollowUp) {
 
-addNotification(
-"Overdue Follow-up",
-company.companyName,
-"Company follow-up is overdue.",
-"High",
-companyId,
-difference
-);
+            const difference =
+                getDifference(
+                    company.nextFollowUp
+                );
 
-} else if (difference === 0) {
 
-addNotification(
-"Follow-up Today",
-company.companyName,
-"Company follow-up is due today.",
-"High",
-companyId,
-difference
-);
+            if (difference < 0) {
 
-} else if (difference <= 3) {
+                addNotification(
+                    "Overdue Follow-up",
+                    company.companyName,
+                    "Company follow-up is overdue.",
+                    "High",
+                    companyId,
+                    difference
+                );
 
-addNotification(
-"Upcoming Follow-up",
-company.companyName,
-"Company follow-up is due in " +
-difference +
-" day(s).",
-"Medium",
-companyId,
-difference
-);
+            } else if (difference === 0) {
 
-}
+                addNotification(
+                    "Follow-up Today",
+                    company.companyName,
+                    "Company follow-up is due today.",
+                    "High",
+                    companyId,
+                    difference
+                );
 
-}
+            } else if (difference <= 7) {
 
+                addNotification(
+                    "Upcoming Follow-up",
+                    company.companyName,
+                    "Company follow-up is due in " +
+                    difference +
+                    " day(s).",
+                    "Medium",
+                    companyId,
+                    difference
+                );
 
-/* TASKS */
+            }
 
-(company.tasks || []).forEach(task => {
+        }
 
-if (!task.dueDate || task.status === "Completed") {
-return;
-}
 
-const difference =
-getDifference(task.dueDate);
+        /* =================================
+           TASKS
+        ================================= */
 
-if (difference < 0) {
+        (company.tasks || []).forEach(task => {
 
-addNotification(
-"Overdue Task",
-company.companyName,
-task.title,
-"High",
-companyId,
-difference
-);
+            if (
+                !task.dueDate ||
+                task.status === "Completed"
+            ) {
 
-} else if (difference === 0) {
+                return;
 
-addNotification(
-"Task Due Today",
-company.companyName,
-task.title,
-task.priority || "Medium",
-companyId,
-difference
-);
+            }
 
-} else if (difference <= 3) {
 
-addNotification(
-"Upcoming Task",
-company.companyName,
-task.title,
-task.priority || "Medium",
-companyId,
-difference
-);
+            const difference =
+                getDifference(
+                    task.dueDate
+                );
 
-}
 
-});
+            if (difference < 0) {
 
+                addNotification(
+                    "Overdue Task",
+                    company.companyName,
+                    task.title,
+                    "High",
+                    companyId,
+                    difference
+                );
 
-/* CALL FOLLOW-UPS */
+            } else if (difference === 0) {
 
-(company.calls || []).forEach(call => {
+                addNotification(
+                    "Task Due Today",
+                    company.companyName,
+                    task.title,
+                    task.priority || "Medium",
+                    companyId,
+                    difference
+                );
 
-if (!call.followUp) {
-return;
-}
+            } else if (difference <= 7) {
 
-const difference =
-getDifference(call.followUp);
+                addNotification(
+                    "Upcoming Task",
+                    company.companyName,
+                    task.title,
+                    task.priority || "Medium",
+                    companyId,
+                    difference
+                );
 
-const details =
-call.outcome ||
-"Follow up after call";
+            }
 
-if (difference < 0) {
+        });
 
-addNotification(
-"Overdue Call Follow-up",
-company.companyName,
-details,
-"High",
-companyId,
-difference
-);
 
-} else if (difference === 0) {
+        /* =================================
+           CALL FOLLOW-UPS
+        ================================= */
 
-addNotification(
-"Call Follow-up Today",
-company.companyName,
-details,
-"High",
-companyId,
-difference
-);
+        (company.calls || []).forEach(call => {
 
-} else if (difference <= 3) {
+            if (!call.followUp) {
 
-addNotification(
-"Upcoming Call Follow-up",
-company.companyName,
-details,
-"Medium",
-companyId,
-difference
-);
+                return;
 
-}
+            }
 
-});
 
-});
+            const difference =
+                getDifference(
+                    call.followUp
+                );
 
 
-/* SORT
-   Overdue first,
-   then today,
-   then upcoming.
-*/
+            const details =
+                call.outcome ||
+                "Follow up after call";
 
-notifications.sort((a, b) => {
 
-return a.difference - b.difference;
+            if (difference < 0) {
 
-});
+                addNotification(
+                    "Overdue Call Follow-up",
+                    company.companyName,
+                    details,
+                    "High",
+                    companyId,
+                    difference
+                );
 
+            } else if (difference === 0) {
 
-/* BUILD NOTIFICATION CARDS */
+                addNotification(
+                    "Call Follow-up Today",
+                    company.companyName,
+                    details,
+                    "High",
+                    companyId,
+                    difference
+                );
 
-let notificationCards = "";
+            } else if (difference <= 7) {
 
+                addNotification(
+                    "Upcoming Call Follow-up",
+                    company.companyName,
+                    details,
+                    "Medium",
+                    companyId,
+                    difference
+                );
 
-if (notifications.length === 0) {
+            }
 
-notificationCards = `
+        });
 
-<div class="card">
+    });
 
-<h3>You're all caught up 🎉</h3>
 
-<p>
-No upcoming or overdue notifications.
-</p>
+    /* =====================================
+       SORT
+       Overdue first,
+       then today,
+       then upcoming.
+    ===================================== */
 
-</div>
+    notifications.sort((a, b) => {
 
-`;
+        return a.difference - b.difference;
 
-} else {
+    });
 
-notifications.forEach(notification => {
 
-let icon = "🟡";
-let status = "Upcoming";
+    /* =====================================
+       BUILD NOTIFICATION CARDS
+    ===================================== */
 
-if (notification.difference < 0) {
+    let notificationCards = "";
 
-icon = "🔴";
-status = "Overdue";
 
-} else if (notification.difference === 0) {
+    if (notifications.length === 0) {
 
-icon = "🟢";
-status = "Today";
+        notificationCards = `
 
-}
+        <div class="card">
 
+            <h3>
+                You're all caught up 🎉
+            </h3>
 
-let priorityIcon = "⚪";
+            <p>
+                No upcoming or overdue notifications.
+            </p>
 
-if (notification.priority === "High") {
+        </div>
 
-priorityIcon = "🔴";
+        `;
 
-} else if (notification.priority === "Medium") {
+    } else {
 
-priorityIcon = "🟡";
+        notifications.forEach(notification => {
 
-} else if (notification.priority === "Low") {
+            let icon = "🟡";
 
-priorityIcon = "🟢";
+            let status = "Upcoming";
 
-}
 
+            if (notification.difference < 0) {
 
-notificationCards += `
+                icon = "🔴";
 
-<div
-class="card"
-style="
-margin-top:20px;
-cursor:pointer;
-"
-onclick="location.hash='company-${notification.companyId}'">
+                status = "Overdue";
 
-<h3>
-${icon} ${notification.type}
-</h3>
+            } else if (
+                notification.difference === 0
+            ) {
 
-<p>
-<strong>Status:</strong>
-${status}
-</p>
+                icon = "🟢";
 
-<p>
-<strong>Company:</strong>
-${notification.company}
-</p>
+                status = "Today";
 
-<p>
-<strong>Details:</strong>
-${notification.details}
-</p>
+            }
 
-<p>
-<strong>Priority:</strong>
-${priorityIcon}
-${notification.priority}
-</p>
 
-<p
-style="
-margin-top:15px;
-font-size:14px;
-opacity:0.7;
-">
-Tap to open company
-</p>
+            /* =============================
+               PRIORITY ICON
+            ============================= */
 
-</div>
+            let priorityIcon = "⚪";
 
-`;
 
-});
+            if (
+                notification.priority === "High"
+            ) {
 
-}
+                priorityIcon = "🔴";
 
+            } else if (
+                notification.priority === "Medium"
+            ) {
 
-/* PAGE */
+                priorityIcon = "🟡";
 
-app.innerHTML = `
+            } else if (
+                notification.priority === "Low"
+            ) {
 
-<div class="dashboard">
+                priorityIcon = "🟢";
 
-<div class="header">
+            }
 
-<h1>Notifications</h1>
 
-<p class="subtitle">
-Follow-ups, tasks and reminders
-</p>
+            notificationCards += `
 
-</div>
+            <div
+                class="card"
+                style="
+                    margin-top:20px;
+                    cursor:pointer;
+                "
+                onclick="
+                    location.hash='company-${notification.companyId}'
+                ">
 
+                <h3>
 
-<div class="card">
+                    ${icon}
+                    ${notification.type}
 
-<p>
-<strong>Total Notifications:</strong>
-${notifications.length}
-</p>
+                </h3>
 
-</div>
 
+                <p>
 
-${notificationCards}
+                    <strong>
+                        Status:
+                    </strong>
 
+                    ${status}
 
-${bottomNav("notifications")}
+                </p>
 
-</div>
 
-`;
+                <p>
+
+                    <strong>
+                        Company:
+                    </strong>
+
+                    ${notification.company}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Details:
+                    </strong>
+
+                    ${notification.details}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Priority:
+                    </strong>
+
+                    ${priorityIcon}
+                    ${notification.priority}
+
+                </p>
+
+
+                <p
+                    style="
+                        margin-top:15px;
+                        font-size:14px;
+                        opacity:0.7;
+                    ">
+
+                    Tap to open company
+
+                </p>
+
+            </div>
+
+            `;
+
+        });
+
+    }
+
+
+    /* =====================================
+       PAGE
+    ===================================== */
+
+    app.innerHTML = `
+
+    <div class="dashboard">
+
+        <div class="header">
+
+            <h1>
+                Notifications
+            </h1>
+
+            <p class="subtitle">
+                Follow-ups, tasks and reminders
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <p>
+
+                <strong>
+                    Total Notifications:
+                </strong>
+
+                ${notifications.length}
+
+            </p>
+
+        </div>
+
+
+        ${notificationCards}
+
+
+        ${bottomNav("notifications")}
+
+    </div>
+
+    `;
 
 }
