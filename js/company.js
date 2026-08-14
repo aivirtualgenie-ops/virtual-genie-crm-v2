@@ -196,19 +196,25 @@ function loadCompany(id) {
 
 
             <button
-                class="fab"
-                style="
-                    position:static;
-                    width:100%;
-                    height:60px;
-                    border-radius:18px;
-                    margin-top:15px;
-                "
-                onclick="savePipelineStage(${company.id})">
+    class="fab"
+    style="
+        position:static;
+        width:100%;
+        height:60px;
+        border-radius:18px;
+        margin-top:15px;
+        font-size:20px;
+        white-space:nowrap;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        line-height:1;
+    "
+    onclick="savePipelineStage(${company.id})">
 
-                Save Pipeline Stage
+    Save Pipeline Stage
 
-            </button>
+</button>
 
         </div>
 
