@@ -268,14 +268,15 @@ function loadCompany(id) {
             <br>
 
             <p>
-                <strong>Created:</strong>
-                ${company.createdAt || "-"}
-            </p>
+                <p>
+    <strong>Created:</strong>
+    ${formatDateTime(company.createdAt)}
+</p>
 
-            <p>
-                <strong>Last Updated:</strong>
-                ${company.updatedAt || "-"}
-            </p>
+<p>
+    <strong>Last Updated:</strong>
+    ${formatDateTime(company.updatedAt)}
+</p>
 
         </div>
 
