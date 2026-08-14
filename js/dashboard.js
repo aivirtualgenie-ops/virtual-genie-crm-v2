@@ -77,7 +77,7 @@ onclick="loadGlobalProducts()">
 <div
 class="card"
 style="cursor:pointer;"
-onclick="loadPipeline()">
+onclick="location.hash='pipeline'">
 
 <p>Pipeline</p>
 
