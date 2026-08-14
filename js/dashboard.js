@@ -150,8 +150,12 @@ onclick="location.hash='notifications'">
 
 <br>
 
-<p>
-✅ Analytics Dashboard
+<p
+style="cursor:pointer;"
+onclick="location.hash='analytics'">
+
+📊 Analytics Dashboard
+
 </p>
 
 </div>
