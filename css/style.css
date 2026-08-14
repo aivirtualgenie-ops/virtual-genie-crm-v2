@@ -239,14 +239,40 @@ font-size:32px;
 
 }
 /* =========================================================
-   VIRTUAL GENIE CRM — PHASE 1 UI REDESIGN
-   CSS ONLY — CRM LOGIC UNTOUCHED
+   VIRTUAL GENIE CRM
+   PREMIUM AI / NEON COMMAND CENTER UI
+   CSS ONLY
 ========================================================= */
 
+:root {
+    --bg: #050816;
+    --bg-2: #080d1d;
 
-/* =========================
-   GLOBAL
-========================= */
+    --surface: rgba(15, 24, 48, 0.78);
+    --surface-2: rgba(20, 30, 58, 0.88);
+
+    --blue: #1683ff;
+    --cyan: #00d9ff;
+    --violet: #7c3cff;
+    --purple: #a855f7;
+    --pink: #ec4899;
+
+    --text: #f8fbff;
+    --muted: #91a4c2;
+
+    --border: rgba(110, 160, 255, 0.18);
+
+    --glow-blue:
+        0 0 25px rgba(22, 131, 255, 0.30);
+
+    --glow-purple:
+        0 0 30px rgba(124, 60, 255, 0.25);
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
 
 * {
     box-sizing: border-box;
@@ -257,9 +283,11 @@ html {
 }
 
 body {
+
     margin: 0;
-    background: #070b14;
-    color: #f4f7fb;
+
+    color: var(--text);
+
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -267,240 +295,721 @@ body {
         Roboto,
         Arial,
         sans-serif;
+
+    background:
+
+        radial-gradient(
+            circle at 10% 5%,
+            rgba(0, 217, 255, 0.12),
+            transparent 28%
+        ),
+
+        radial-gradient(
+            circle at 90% 15%,
+            rgba(124, 60, 255, 0.15),
+            transparent 30%
+        ),
+
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(236, 72, 153, 0.08),
+            transparent 35%
+        ),
+
+        linear-gradient(
+            145deg,
+            #03050d,
+            #071021 55%,
+            #050816
+        );
+
+    background-attachment: fixed;
+
+    min-height: 100vh;
+
     -webkit-font-smoothing: antialiased;
 }
 
 
-/* =========================
-   MAIN DASHBOARD
-========================= */
+/* =========================================================
+   AMBIENT LIGHT
+========================================================= */
+
+body::before {
+
+    content: "";
+
+    position: fixed;
+
+    width: 280px;
+    height: 280px;
+
+    top: 15%;
+    left: -120px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0, 217, 255, 0.18),
+            transparent 70%
+        );
+
+    filter: blur(30px);
+
+    pointer-events: none;
+
+    animation:
+        ambientFloat 8s ease-in-out infinite alternate;
+
+    z-index: -1;
+}
+
+
+body::after {
+
+    content: "";
+
+    position: fixed;
+
+    width: 320px;
+    height: 320px;
+
+    right: -150px;
+    bottom: 15%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(124, 60, 255, 0.20),
+            transparent 70%
+        );
+
+    filter: blur(35px);
+
+    pointer-events: none;
+
+    animation:
+        ambientFloatReverse 10s ease-in-out infinite alternate;
+
+    z-index: -1;
+}
+
+
+@keyframes ambientFloat {
+
+    from {
+        transform: translateY(-20px);
+    }
+
+    to {
+        transform: translateY(80px);
+    }
+
+}
+
+
+@keyframes ambientFloatReverse {
+
+    from {
+        transform: translateY(40px);
+    }
+
+    to {
+        transform: translateY(-70px);
+    }
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
 
 .dashboard {
+
     width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 28px 18px 120px;
+
+    max-width: 920px;
+
+    margin: auto;
+
+    padding:
+        28px
+        18px
+        130px;
 }
 
 
-/* =========================
+/* =========================================================
    HEADER
-========================= */
+========================================================= */
 
 .header {
+
     margin-bottom: 28px;
+
+    animation:
+        heroEnter
+        0.7s
+        cubic-bezier(.16,1,.3,1)
+        both;
 }
+
 
 .header h1 {
-    margin: 4px 0 8px;
-    font-size: clamp(32px, 8vw, 48px);
-    line-height: 1.05;
-    font-weight: 750;
-    letter-spacing: -1.5px;
+
+    margin: 5px 0 8px;
+
+    font-size:
+        clamp(36px, 9vw, 54px);
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: -2px;
+
+    background:
+        linear-gradient(
+            100deg,
+            #ffffff 0%,
+            #8fdcff 38%,
+            #a78bfa 75%,
+            #f0abfc 100%
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    background-size: 200% auto;
+
+    animation:
+        gradientText
+        5s
+        ease
+        infinite;
 }
+
 
 .header .subtitle {
+
     margin: 0;
-    color: #8fa1bb;
+
+    color: var(--muted);
+
     font-size: 17px;
-    line-height: 1.5;
+
+    letter-spacing: .2px;
 }
+
 
 .greeting {
+
     margin: 0;
-    color: #7f91aa;
-    font-size: 16px;
-    font-weight: 500;
+
+    color: #6fdcff;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    letter-spacing: .5px;
+
+    text-transform: uppercase;
 }
 
 
-/* =========================
+@keyframes heroEnter {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(25px)
+            scale(.97);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+@keyframes gradientText {
+
+    0% {
+        background-position: 0% center;
+    }
+
+    50% {
+        background-position: 100% center;
+    }
+
+    100% {
+        background-position: 0% center;
+    }
+
+}
+
+
+/* =========================================================
    CARDS
-========================= */
+========================================================= */
 
 .card {
+
+    position: relative;
+
+    overflow: hidden;
+
     background:
         linear-gradient(
             145deg,
-            rgba(19, 30, 49, 0.98),
-            rgba(13, 22, 38, 0.98)
+            rgba(20, 31, 61, .86),
+            rgba(9, 17, 35, .86)
         );
 
-    border: 1px solid rgba(126, 151, 184, 0.16);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 
-    border-radius: 24px;
+    border-radius: 26px;
+
+    border:
+        1px solid
+        rgba(117, 166, 255, .16);
 
     padding: 24px;
 
     margin-top: 18px;
 
     box-shadow:
-        0 12px 35px rgba(0, 0, 0, 0.22);
+
+        0 20px 55px
+        rgba(0, 0, 0, .30),
+
+        inset 0 1px 0
+        rgba(255,255,255,.04);
+
+    animation:
+        cardEnter
+        .55s
+        cubic-bezier(.16,1,.3,1)
+        both;
 
     transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
 
-    animation: cardEnter 0.35s ease both;
-}
+        transform .35s
+        cubic-bezier(.16,1,.3,1),
 
-.card h2,
-.card h3 {
-    color: #f7f9fc;
-}
+        border-color .35s ease,
 
-.card h3 {
-    margin-top: 0;
-    font-size: 24px;
-    line-height: 1.2;
-}
-
-.card p {
-    color: #91a3bd;
-    line-height: 1.55;
-}
-
-.card strong {
-    color: #b9c6d8;
+        box-shadow .35s ease;
 }
 
 
-/* =========================
-   CARD INTERACTION
-========================= */
+/* animated light across card */
 
-@media (hover: hover) {
+.card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: -100%;
+
+    left: -50%;
+
+    width: 200%;
+
+    height: 200%;
+
+    background:
+        linear-gradient(
+            115deg,
+            transparent 40%,
+            rgba(0,217,255,.07) 48%,
+            rgba(124,60,255,.08) 52%,
+            transparent 60%
+        );
+
+    transform:
+        translateX(-35%);
+
+    transition:
+        transform .8s ease;
+
+    pointer-events: none;
+}
+
+
+.card:hover::before {
+
+    transform:
+        translateX(35%);
+
+}
+
+
+@media (hover:hover) {
 
     .card:hover {
-        transform: translateY(-2px);
+
+        transform:
+            translateY(-5px)
+            scale(1.008);
 
         border-color:
-            rgba(40, 132, 255, 0.28);
+            rgba(54, 150, 255, .35);
 
         box-shadow:
-            0 18px 45px rgba(0, 0, 0, 0.30);
+
+            0 25px 65px
+            rgba(0,0,0,.38),
+
+            0 0 35px
+            rgba(22,131,255,.08);
     }
 
 }
 
 
-/* =========================
-   SEARCH / INPUTS
-========================= */
+.card h2,
+.card h3 {
+
+    color: #ffffff;
+
+}
+
+
+.card h3 {
+
+    margin-top: 0;
+
+    font-size: 25px;
+
+    letter-spacing: -.4px;
+}
+
+
+.card p {
+
+    color: var(--muted);
+
+    line-height: 1.55;
+}
+
+
+.card strong {
+
+    color: #c7d5e9;
+}
+
+
+@keyframes cardEnter {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(25px)
+            scale(.96);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0,1fr));
+
+    gap: 12px;
+}
+
+
+.stats-grid .card {
+
+    margin-top: 0;
+
+    padding: 21px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(22, 131, 255, .12),
+            rgba(124, 60, 255, .09),
+            rgba(15,24,48,.85)
+        );
+}
+
+
+.stats-grid .card h2 {
+
+    margin: 0;
+
+    font-size: 30px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #69d9ff,
+            #a78bfa
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+
+.stats-grid .card p {
+
+    margin: 0 0 8px;
+
+    font-size: 13px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+    color: #7f9bbb;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
 
 input.search,
 textarea.search,
 select.search {
+
     width: 100%;
 
-    min-height: 54px;
+    min-height: 56px;
 
     margin-top: 12px;
 
-    padding: 15px 17px;
+    padding:
+        15px
+        17px;
 
-    border-radius: 16px;
+    border-radius: 17px;
 
-    border: 1px solid
-        rgba(126, 151, 184, 0.18);
+    border:
+        1px solid
+        rgba(108, 153, 225, .18);
 
-    background: #101a2c;
+    background:
+        rgba(8,16,33,.72);
 
-    color: #f4f7fb;
+    color: white;
 
     font-size: 16px;
 
     outline: none;
 
     transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
+
+        border-color .25s ease,
+
+        box-shadow .25s ease,
+
+        background .25s ease,
+
+        transform .2s ease;
 }
 
+
 textarea.search {
+
     min-height: 120px;
+
     resize: vertical;
 }
 
+
 input.search::placeholder,
 textarea.search::placeholder {
-    color: #71839d;
+
+    color: #627590;
 }
+
 
 input.search:focus,
 textarea.search:focus,
 select.search:focus {
-    border-color: #1677ff;
+
+    border-color:
+        #1b8cff;
+
+    background:
+        rgba(12,25,50,.95);
 
     box-shadow:
-        0 0 0 3px rgba(22, 119, 255, 0.14);
 
-    background: #111d32;
+        0 0 0 3px
+        rgba(22,131,255,.12),
+
+        0 0 25px
+        rgba(22,131,255,.10);
+
+    transform:
+        translateY(-1px);
 }
 
 
-/* =========================
+/* =========================================================
    BUTTONS
-========================= */
-
-button {
-    font-family: inherit;
-}
+========================================================= */
 
 button.search {
+
+    position: relative;
+
+    overflow: hidden;
+
     width: 100%;
 
-    min-height: 54px;
+    min-height: 55px;
 
     margin-top: 12px;
 
-    padding: 13px 18px;
+    padding:
+        13px
+        18px;
 
-    border-radius: 16px;
+    border-radius: 17px;
 
-    border: 1px solid
-        rgba(126, 151, 184, 0.16);
+    border:
+        1px solid
+        rgba(105,150,225,.18);
 
-    background: #101a2c;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(25,38,68,.9),
+            rgba(12,21,40,.95)
+        );
 
-    color: #f4f7fb;
+    color: #f5f9ff;
 
     font-size: 16px;
-    font-weight: 600;
+
+    font-weight: 650;
 
     cursor: pointer;
 
     transition:
-        transform 0.15s ease,
-        background 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
 
-button.search:hover {
-    background: #16243a;
+        transform .18s ease,
 
-    border-color:
-        rgba(40, 132, 255, 0.35);
-}
+        box-shadow .25s ease,
 
-button.search:active {
-    transform: scale(0.975);
+        border-color .25s ease,
+
+        background .25s ease;
 }
 
 
-/* =========================
-   PRIMARY / FAB BUTTON
-========================= */
+button.search::after {
 
-button.fab {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: -120%;
+
+    width: 80%;
+
+    height: 100%;
+
     background:
         linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.10),
+            transparent
+        );
+
+    transform:
+        skewX(-20deg);
+
+    transition:
+        left .6s ease;
+}
+
+
+button.search:hover::after {
+
+    left: 140%;
+
+}
+
+
+button.search:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(0,217,255,.32);
+
+    box-shadow:
+        0 8px 25px
+        rgba(0,0,0,.25);
+}
+
+
+button.search:active {
+
+    transform:
+        scale(.965);
+}
+
+
+/* =========================================================
+   PRIMARY / FAB
+========================================================= */
+
+button.fab {
+
+    background:
+
+        linear-gradient(
             135deg,
-            #1680ff,
-            #0964df
+            #00c6ff,
+            #1677ff 42%,
+            #7c3cff
         );
 
     color: white;
@@ -508,183 +1017,219 @@ button.fab {
     border: none;
 
     box-shadow:
-        0 12px 30px rgba(0, 104, 255, 0.30);
+
+        0 10px 30px
+        rgba(22,119,255,.40),
+
+        0 0 35px
+        rgba(124,60,255,.22);
 
     transition:
-        transform 0.15s ease,
-        box-shadow 0.2s ease;
+
+        transform .2s
+        cubic-bezier(.16,1,.3,1),
+
+        box-shadow .25s ease;
+
+    animation:
+        fabPulse
+        3s
+        ease-in-out
+        infinite;
 }
+
 
 button.fab:hover {
+
+    transform:
+        translateY(-4px)
+        scale(1.04);
+
     box-shadow:
-        0 16px 38px rgba(0, 104, 255, 0.38);
+
+        0 15px 40px
+        rgba(22,119,255,.48),
+
+        0 0 55px
+        rgba(124,60,255,.35);
 }
+
 
 button.fab:active {
-    transform: scale(0.94);
+
+    transform:
+        scale(.90);
+
 }
 
 
-/* =========================
-   STATS
-========================= */
+@keyframes fabPulse {
 
-.stats-grid {
-    display: grid;
+    0%,
+    100% {
 
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+        box-shadow:
+            0 10px 30px
+            rgba(22,119,255,.40),
+            0 0 25px
+            rgba(124,60,255,.18);
 
-    gap: 12px;
-}
+    }
 
-.stats-grid .card {
-    margin-top: 0;
-    padding: 20px;
-}
+    50% {
 
-.stats-grid .card p {
-    margin: 0 0 8px;
-    font-size: 14px;
-}
+        box-shadow:
+            0 12px 35px
+            rgba(22,119,255,.52),
+            0 0 45px
+            rgba(124,60,255,.32);
 
-.stats-grid .card h2 {
-    margin: 0;
-    font-size: 28px;
-    letter-spacing: -0.5px;
+    }
+
 }
 
 
-/* =========================
-   ACTIVITY / TASK CARDS
-========================= */
-
-.activity-card,
-.task-card {
-    margin-top: 18px;
-}
-
-.task-card p {
-    transition:
-        transform 0.15s ease,
-        color 0.15s ease;
-}
-
-.task-card p:active {
-    transform: translateX(3px);
-}
-
-
-/* =========================
-   LINKS / CLICKABLE TEXT
-========================= */
-
-[onclick] {
-    -webkit-tap-highlight-color:
-        transparent;
-}
-
-
-/* =========================
-   PAGE ENTRANCE ANIMATION
-========================= */
+/* =========================================================
+   PAGE TRANSITION
+========================================================= */
 
 #app {
-    animation: pageEnter 0.25s ease both;
+
+    animation:
+        pageEnter
+        .38s
+        cubic-bezier(.16,1,.3,1)
+        both;
 }
+
 
 @keyframes pageEnter {
 
     from {
+
         opacity: 0;
-        transform: translateY(6px);
+
+        transform:
+            translateY(14px);
+
+        filter:
+            blur(3px);
+
     }
 
     to {
+
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
+
+        filter:
+            blur(0);
+
     }
 
 }
 
 
-/* =========================
-   CARD ENTRANCE ANIMATION
-========================= */
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
 
-@keyframes cardEnter {
+.task-card p {
 
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+    padding: 4px 0;
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
+    transition:
+        transform .2s ease,
+        color .2s ease;
 }
 
 
-/* =========================
+.task-card p:hover {
+
+    transform:
+        translateX(6px);
+
+    color:
+        #ffffff;
+}
+
+
+/* =========================================================
    MOBILE
-========================= */
+========================================================= */
 
-@media (max-width: 600px) {
+@media (max-width:600px) {
 
     .dashboard {
+
         padding:
-            24px
+            25px
             16px
-            120px;
+            130px;
+
     }
+
 
     .header h1 {
-        font-size: 34px;
+
+        font-size: 37px;
+
     }
 
-    .header .subtitle {
-        font-size: 16px;
-    }
 
     .card {
+
         padding: 22px;
-        border-radius: 22px;
+
+        border-radius: 24px;
+
     }
 
-    .card h3 {
-        font-size: 22px;
-    }
 
     .stats-grid {
+
         gap: 10px;
+
     }
+
 
     .stats-grid .card {
+
         padding: 18px;
+
     }
 
+
     .stats-grid .card h2 {
-        font-size: 25px;
+
+        font-size: 27px;
+
     }
 
 }
 
 
-/* =========================
-   REDUCE MOTION
-========================= */
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion:reduce) {
 
     *,
     *::before,
     *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
+
+        animation-duration:
+            .01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        transition-duration:
+            .01ms !important;
+
     }
 
-}
+   }
