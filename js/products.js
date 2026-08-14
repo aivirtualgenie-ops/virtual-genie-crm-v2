@@ -1,141 +1,281 @@
-function loadProducts(companyId){
+/* =========================================
+   COMPANY PRODUCTS
+========================================= */
 
-const company = getCompany(companyId);
+function loadProducts(companyId) {
 
-const products = getProducts(companyId);
+    const company = getCompany(companyId);
 
-const app = document.getElementById("app");
+    const app = document.getElementById("app");
 
-let totalValue = 0;
 
-products.forEach(product=>{
+    if (!company) {
 
-totalValue += Number(product.quantity || 0) * Number(product.price || 0);
+        app.innerHTML = `
 
-});
+        <div class="dashboard">
 
-app.innerHTML = `
+            <div class="card">
 
-<div class="dashboard">
+                <h2>Company not found</h2>
 
-<div class="header">
+                <br>
 
-<h1>Products</h1>
+                <button
+                    class="search"
+                    onclick="location.hash='companies'">
 
-<p class="subtitle">${company.companyName}</p>
+                    ← Back
 
-</div>
+                </button>
 
-<div class="card">
+            </div>
 
-<p><strong>Total Products:</strong> ${products.length}</p>
+            ${bottomNav("companies")}
 
-<p><strong>Total Inventory Value:</strong> ₹${totalValue}</p>
+        </div>
 
-<br>
+        `;
 
-<button
-class="search"
-onclick="loadAddProduct(${companyId})">
+        return;
 
-➕ Add Product
+    }
 
-</button>
 
-</div>
+    const products =
+        getProducts(companyId);
 
-${
-products.length===0
 
-?
+    let totalValue = 0;
 
-`
 
-<div class="card" style="margin-top:20px;">
+    products.forEach(product => {
 
-<h3>No Products Yet</h3>
+        totalValue +=
+            Number(product.quantity || 0) *
+            Number(product.price || 0);
 
-<p>Add your first product.</p>
+    });
 
-</div>
 
-`
+    let productCards = "";
 
-:
 
-products.map(product=>`
+    if (products.length === 0) {
 
-<div class="card" style="margin-top:20px;">
+        productCards = `
 
-<h3>${product.name}</h3>
+        <div
+            class="card"
+            style="margin-top:20px;">
 
-<p><strong>SKU:</strong> ${product.sku || "-"}</p>
+            <h3>
+                No Products Yet
+            </h3>
 
-<p><strong>Category:</strong> ${product.category || "-"}</p>
+            <p>
+                Add your first product.
+            </p>
 
-<p><strong>Quantity:</strong> ${product.quantity || 0}</p>
+        </div>
 
-<p><strong>Unit Price:</strong> ₹${product.price || 0}</p>
+        `;
 
-<p><strong>Total Value:</strong> ₹${(Number(product.quantity || 0) * Number(product.price || 0))}</p>
+    } else {
 
-<p><strong>Description:</strong></p>
+        products.forEach(product => {
 
-<p>${product.description || "No description available."}</p>
+            const quantity =
+                Number(product.quantity || 0);
 
-<br>
+            const price =
+                Number(product.price || 0);
 
-<button
-class="search"
-onclick="loadEditProduct(${companyId},${product.id})">
+            const productValue =
+                quantity * price;
 
-✏️ Edit
 
-</button>
+            productCards += `
 
-<br><br>
+            <div
+                class="card"
+                style="margin-top:20px;">
 
-<button
-class="search"
-onclick="deleteProductConfirm(${companyId},${product.id})">
+                <h3>
+                    ${product.name || "Unnamed Product"}
+                </h3>
 
-🗑 Delete
+                <p>
+                    <strong>SKU:</strong>
+                    ${product.sku || "-"}
+                </p>
 
-</button>
+                <p>
+                    <strong>Category:</strong>
+                    ${product.category || "-"}
+                </p>
 
-</div>
+                <p>
+                    <strong>Quantity:</strong>
+                    ${quantity}
+                </p>
 
-`).join("")
+                <p>
+                    <strong>Unit Price:</strong>
+                    ₹${price}
+                </p>
+
+                <p>
+                    <strong>Total Value:</strong>
+                    ₹${productValue}
+                </p>
+
+                <p>
+                    <strong>Description:</strong>
+                </p>
+
+                <p>
+                    ${product.description || "No description available."}
+                </p>
+
+                <br>
+
+                <button
+                    class="search"
+                    onclick="loadEditProduct(
+                        ${companyId},
+                        ${product.id}
+                    )">
+
+                    ✏️ Edit
+
+                </button>
+
+                <br>
+                <br>
+
+                <button
+                    class="search"
+                    onclick="deleteProductConfirm(
+                        ${companyId},
+                        ${product.id}
+                    )">
+
+                    🗑 Delete
+
+                </button>
+
+            </div>
+
+            `;
+
+        });
+
+    }
+
+
+    app.innerHTML = `
+
+    <div class="dashboard">
+
+        <div class="header">
+
+            <h1>
+                Products
+            </h1>
+
+            <p class="subtitle">
+                ${company.companyName}
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <p>
+                <strong>Total Products:</strong>
+                ${products.length}
+            </p>
+
+            <p>
+                <strong>Total Inventory Value:</strong>
+                ₹${totalValue}
+            </p>
+
+            <br>
+
+            <button
+                class="search"
+                onclick="loadAddProduct(${companyId})">
+
+                ➕ Add Product
+
+            </button>
+
+        </div>
+
+
+        ${productCards}
+
+
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="loadCompany(${companyId})">
+
+            ← Back to Company
+
+        </button>
+
+
+        ${bottomNav("companies")}
+
+    </div>
+
+    `;
 
 }
 
-<button
-class="search"
-style="margin-top:20px;"
-onclick="loadCompany(${companyId})">
 
-← Back to Company
+/* =========================================
+   DELETE PRODUCT
+========================================= */
 
-</button>
+function deleteProductConfirm(
+    companyId,
+    productId
+) {
 
-${bottomNav("companies")}
+    const confirmDelete =
+        confirm("Delete this product?");
 
-</div>
 
-`;
+    if (!confirmDelete) {
 
-}
+        return;
 
-function deleteProductConfirm(companyId, productId){
+    }
 
-const confirmDelete = confirm("Delete this product?");
 
-if(!confirmDelete){
-return;
-}
+    const saved =
+        deleteProduct(
+            companyId,
+            productId
+        );
 
-deleteProduct(companyId, productId);
 
-loadProducts(companyId);
+    if (!saved) {
+
+        console.error(
+            "Delete product failed"
+        );
+
+        return;
+
+    }
+
+
+    loadProducts(companyId);
 
 }
