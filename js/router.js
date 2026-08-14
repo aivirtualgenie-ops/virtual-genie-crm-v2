@@ -26,6 +26,12 @@ loadCompanies();
 
 break;
 
+case "pipeline":
+
+loadPipeline();
+
+break;
+
 case "add-company":
 
 loadAddCompany();
