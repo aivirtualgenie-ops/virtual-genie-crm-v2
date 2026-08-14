@@ -126,7 +126,7 @@ onclick="alert('Revenue Analytics coming soon')">
 
 <p
 style="cursor:pointer;"
-onclick="location.hash='calendar'">
+onclick="alert('CALENDAR CLICK WORKS')">
 
 📅 Calendar
 
