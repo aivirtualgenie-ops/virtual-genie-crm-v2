@@ -36,6 +36,8 @@ return;
 
 }
 
+const pipelineStage = company.pipelineStage || "New Lead";
+
 app.innerHTML=`
 
 <div class="dashboard">
@@ -84,8 +86,60 @@ ${company.status}
 <br>
 
 <p><strong>Pipeline Value:</strong> ₹${company.pipelineValue || 0}</p>
+
 <p><strong>Revenue:</strong> ₹${company.revenue || 0}</p>
+
 <p><strong>Next Follow-up:</strong> ${company.nextFollowUp || "-"}</p>
+
+<br>
+
+<label>
+<strong>Pipeline Stage</strong>
+</label>
+
+<select
+class="search"
+id="pipelineStage"
+style="margin-top:10px;">
+
+<option value="New Lead" ${pipelineStage==="New Lead"?"selected":""}>
+New Lead
+</option>
+
+<option value="Contacted" ${pipelineStage==="Contacted"?"selected":""}>
+Contacted
+</option>
+
+<option value="Meeting Scheduled" ${pipelineStage==="Meeting Scheduled"?"selected":""}>
+Meeting Scheduled
+</option>
+
+<option value="Proposal Sent" ${pipelineStage==="Proposal Sent"?"selected":""}>
+Proposal Sent
+</option>
+
+<option value="Negotiation" ${pipelineStage==="Negotiation"?"selected":""}>
+Negotiation
+</option>
+
+<option value="Won" ${pipelineStage==="Won"?"selected":""}>
+Won
+</option>
+
+<option value="Lost" ${pipelineStage==="Lost"?"selected":""}>
+Lost
+</option>
+
+</select>
+
+<button
+class="fab"
+style="position:static;width:100%;height:60px;border-radius:18px;margin-top:15px;"
+onclick="savePipelineStage(${company.id})">
+
+Save Pipeline Stage
+
+</button>
 
 </div>
 
@@ -106,6 +160,7 @@ ${company.status}
 <br>
 
 <p><strong>Created:</strong> ${company.createdAt || "-"}</p>
+
 <p><strong>Last Updated:</strong> ${company.updatedAt || "-"}</p>
 
 </div>
@@ -175,6 +230,26 @@ ${bottomNav("companies")}
 
 }
 
+function savePipelineStage(companyId){
+
+const company = getCompany(companyId);
+
+if(!company){
+
+return;
+
+}
+
+const stage = document.getElementById("pipelineStage").value;
+
+company.pipelineStage = stage;
+
+updateCompany(company);
+
+loadCompany(companyId);
+
+}
+
 function deleteCompanyConfirm(id){
 
 const confirmDelete = confirm(
@@ -182,7 +257,9 @@ const confirmDelete = confirm(
 );
 
 if(!confirmDelete){
+
 return;
+
 }
 
 deleteCompany(id);
