@@ -1,16 +1,23 @@
+/* =========================================
+   STORAGE
+========================================= */
+
 const STORAGE_KEY = "virtual_genie_crm";
 
 
-/* ================================
+/* =========================================
    GET ALL COMPANIES
-================================ */
+========================================= */
 
 function getCompanies() {
 
-    const data = localStorage.getItem(STORAGE_KEY);
+    const data =
+        localStorage.getItem(STORAGE_KEY);
 
     if (!data) {
+
         return [];
+
     }
 
     try {
@@ -19,7 +26,10 @@ function getCompanies() {
 
     } catch (error) {
 
-        console.error("Failed to read CRM data:", error);
+        console.error(
+            "Failed to parse CRM storage:",
+            error
+        );
 
         return [];
 
@@ -28,27 +38,43 @@ function getCompanies() {
 }
 
 
-/* ================================
+/* =========================================
    SAVE ALL COMPANIES
-================================ */
+========================================= */
 
 function saveCompanies(companies) {
 
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(companies)
-    );
+    try {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(companies)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Failed to save companies:",
+            error
+        );
+
+        return false;
+
+    }
 
 }
 
 
-/* ================================
+/* =========================================
    ADD COMPANY
-================================ */
+========================================= */
 
 function addCompany(company) {
 
-    const companies = getCompanies();
+    const companies =
+        getCompanies();
 
     company.id = Date.now();
 
@@ -57,6 +83,9 @@ function addCompany(company) {
 
     company.updatedAt =
         new Date().toISOString();
+
+    company.pipelineStage =
+        company.pipelineStage || "New Lead";
 
     company.tasks =
         company.tasks || [];
@@ -67,50 +96,64 @@ function addCompany(company) {
     company.calls =
         company.calls || [];
 
-    company.pipelineStage =
-        company.pipelineStage || "New Lead";
-
     companies.push(company);
 
-    saveCompanies(companies);
+    return saveCompanies(companies);
 
 }
 
 
-/* ================================
+/* =========================================
    GET SINGLE COMPANY
-================================ */
+========================================= */
 
 function getCompany(id) {
 
-    const companies = getCompanies();
+    const companies =
+        getCompanies();
 
     return companies.find(
         company =>
-            String(company.id) === String(id)
+            String(company.id) ===
+            String(id)
     );
 
 }
 
 
-/* ================================
+/* =========================================
    UPDATE COMPANY
-================================ */
+========================================= */
 
 function updateCompany(updatedCompany) {
 
-    const companies = getCompanies();
+    if (!updatedCompany) {
 
-    const index = companies.findIndex(
-        company =>
-            String(company.id) ===
-            String(updatedCompany.id)
-    );
+        console.error(
+            "updateCompany: no company provided"
+        );
+
+        return false;
+
+    }
+
+
+    const companies =
+        getCompanies();
+
+
+    const index =
+        companies.findIndex(
+            company =>
+                String(company.id) ===
+                String(updatedCompany.id)
+        );
+
 
     if (index === -1) {
 
         console.error(
-            "Company not found for update:",
+            "updateCompany: company not found",
             updatedCompany.id
         );
 
@@ -118,54 +161,127 @@ function updateCompany(updatedCompany) {
 
     }
 
+
+    /* ================================
+       UPDATE TIMESTAMP
+    ================================= */
+
     updatedCompany.updatedAt =
         new Date().toISOString();
 
-    companies[index] = updatedCompany;
 
-    saveCompanies(companies);
+    /* ================================
+       PRESERVE ARRAYS
+    ================================= */
+
+    updatedCompany.tasks =
+        updatedCompany.tasks || [];
+
+    updatedCompany.products =
+        updatedCompany.products || [];
+
+    updatedCompany.calls =
+        updatedCompany.calls || [];
+
+
+    /* ================================
+       REPLACE COMPANY
+    ================================= */
+
+    companies[index] =
+        updatedCompany;
+
+
+    /* ================================
+       SAVE
+    ================================= */
+
+    const saved =
+        saveCompanies(companies);
+
+
+    if (!saved) {
+
+        console.error(
+            "updateCompany: localStorage save failed"
+        );
+
+        return false;
+
+    }
+
+
+    console.log(
+        "Company successfully updated:",
+        updatedCompany.companyName,
+        "Pipeline:",
+        updatedCompany.pipelineStage
+    );
+
 
     return true;
 
 }
 
 
-/* ================================
+/* =========================================
    DELETE COMPANY
-================================ */
+========================================= */
 
 function deleteCompany(id) {
 
-    const companies = getCompanies();
+    const companies =
+        getCompanies();
 
-    const filteredCompanies =
+    const filtered =
         companies.filter(
             company =>
-                String(company.id) !== String(id)
+                String(company.id) !==
+                String(id)
         );
 
-    saveCompanies(filteredCompanies);
+    if (
+        filtered.length ===
+        companies.length
+    ) {
+
+        console.error(
+            "deleteCompany: company not found",
+            id
+        );
+
+        return false;
+
+    }
+
+    return saveCompanies(filtered);
 
 }
 
 
-/* ================================
+/* =========================================
    PRODUCTS
-================================ */
+========================================= */
 
 function getProducts(companyId) {
 
-    const company = getCompany(companyId);
+    const company =
+        getCompany(companyId);
 
     if (!company) {
+
+        console.error(
+            "Company not found:",
+            companyId
+        );
+
         return [];
+
     }
 
     if (!company.products) {
 
         company.products = [];
-
-        updateCompany(company);
 
     }
 
@@ -176,7 +292,8 @@ function getProducts(companyId) {
 
 function addProduct(companyId, product) {
 
-    const company = getCompany(companyId);
+    const company =
+        getCompany(companyId);
 
     if (!company) {
 
@@ -202,9 +319,13 @@ function addProduct(companyId, product) {
 }
 
 
-function deleteProduct(companyId, productId) {
+function deleteProduct(
+    companyId,
+    productId
+) {
 
-    const company = getCompany(companyId);
+    const company =
+        getCompany(companyId);
 
     if (!company) {
 
@@ -229,23 +350,29 @@ function deleteProduct(companyId, productId) {
 }
 
 
-/* ================================
+/* =========================================
    TASKS
-================================ */
+========================================= */
 
 function getTasks(companyId) {
 
-    const company = getCompany(companyId);
+    const company =
+        getCompany(companyId);
 
     if (!company) {
+
+        console.error(
+            "Company not found:",
+            companyId
+        );
+
         return [];
+
     }
 
     if (!company.tasks) {
 
         company.tasks = [];
-
-        updateCompany(company);
 
     }
 
@@ -254,9 +381,13 @@ function getTasks(companyId) {
 }
 
 
-function addTask(companyId, task) {
+function addTask(
+    companyId,
+    task
+) {
 
-    const company = getCompany(companyId);
+    const company =
+        getCompany(companyId);
 
     if (!company) {
 
@@ -282,9 +413,13 @@ function addTask(companyId, task) {
 }
 
 
-function deleteTask(companyId, taskId) {
+function deleteTask(
+    companyId,
+    taskId
+) {
 
-    const company = getCompany(companyId);
+    const company =
+        getCompany(companyId);
 
     if (!company) {
 
