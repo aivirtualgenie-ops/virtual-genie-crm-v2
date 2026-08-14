@@ -1,110 +1,272 @@
-function loadEditProduct(companyId, productId){
+/* =========================================
+   EDIT PRODUCT
+========================================= */
 
-const company = getCompany(companyId);
+function loadEditProduct(
+    companyId,
+    productId
+) {
 
-const product = company.products.find(
-p => p.id == productId
-);
+    const company =
+        getCompany(companyId);
 
-const app = document.getElementById("app");
 
-app.innerHTML = `
+    if (!company) {
 
-<div class="dashboard">
+        console.error(
+            "Edit product failed: company not found",
+            companyId
+        );
 
-<div class="header">
+        return;
 
-<h1>Edit Product</h1>
+    }
 
-<p class="subtitle">
 
-${company.companyName}
+    const product =
+        (company.products || []).find(
+            p =>
+                String(p.id) ===
+                String(productId)
+        );
 
-</p>
 
-</div>
+    if (!product) {
 
-<input
-class="search"
-id="productName"
-placeholder="Product Name"
-value="${product.name}">
+        console.error(
+            "Edit product failed: product not found",
+            productId
+        );
 
-<input
-class="search"
-id="productSKU"
-placeholder="SKU"
-value="${product.sku || ""}">
+        return;
 
-<input
-class="search"
-id="productCategory"
-placeholder="Category"
-value="${product.category || ""}">
+    }
 
-<input
-class="search"
-id="productQuantity"
-type="number"
-placeholder="Quantity"
-value="${product.quantity}">
 
-<input
-class="search"
-id="productPrice"
-type="number"
-placeholder="Unit Price"
-value="${product.price}">
+    const app =
+        document.getElementById("app");
 
-<textarea
-class="search"
-id="productDescription"
-placeholder="Description"
-style="height:120px;resize:none;">${product.description || ""}</textarea>
 
-<button
-class="fab"
-style="position:static;width:100%;height:60px;border-radius:18px;font-size:20px;"
-onclick="updateProduct(${companyId},${productId})">
+    app.innerHTML = `
 
-Update Product
+    <div class="dashboard">
 
-</button>
+        <div class="header">
 
-<button
-class="search"
-style="margin-top:20px;"
-onclick="loadProducts(${companyId})">
+            <h1>
+                Edit Product
+            </h1>
 
-← Back
+            <p class="subtitle">
+                ${company.companyName}
+            </p>
 
-</button>
+        </div>
 
-${bottomNav("companies")}
 
-</div>
+        <input
+            class="search"
+            id="productName"
+            placeholder="Product Name"
+            value="${product.name || ""}">
 
-`;
+
+        <input
+            class="search"
+            id="productSKU"
+            placeholder="SKU"
+            value="${product.sku || ""}">
+
+
+        <input
+            class="search"
+            id="productCategory"
+            placeholder="Category"
+            value="${product.category || ""}">
+
+
+        <input
+            class="search"
+            id="productQuantity"
+            type="number"
+            min="0"
+            placeholder="Quantity"
+            value="${product.quantity || 0}">
+
+
+        <input
+            class="search"
+            id="productPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Unit Price"
+            value="${product.price || 0}">
+
+
+        <textarea
+            class="search"
+            id="productDescription"
+            placeholder="Description"
+            style="
+                height:120px;
+                resize:none;
+            ">${product.description || ""}</textarea>
+
+
+        <button
+            class="fab"
+            style="
+                position:static;
+                width:100%;
+                height:60px;
+                border-radius:18px;
+                font-size:20px;
+            "
+            onclick="updateProduct(
+                ${companyId},
+                ${productId}
+            )">
+
+            Update Product
+
+        </button>
+
+
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="loadProducts(${companyId})">
+
+            ← Back
+
+        </button>
+
+
+        ${bottomNav("companies")}
+
+    </div>
+
+    `;
 
 }
 
-function updateProduct(companyId, productId){
 
-const company = getCompany(companyId);
+/* =========================================
+   UPDATE PRODUCT
+========================================= */
 
-const product = company.products.find(
-p => p.id == productId
-);
+function updateProduct(
+    companyId,
+    productId
+) {
 
-product.name = document.getElementById("productName").value.trim();
-product.sku = document.getElementById("productSKU").value.trim();
-product.category = document.getElementById("productCategory").value.trim();
-product.quantity = Number(document.getElementById("productQuantity").value);
-product.price = Number(document.getElementById("productPrice").value);
-product.description = document.getElementById("productDescription").value.trim();
+    const company =
+        getCompany(companyId);
 
-updateCompany(company);
 
-loadProducts(companyId);
+    if (!company) {
+
+        console.error(
+            "Update product failed: company not found",
+            companyId
+        );
+
+        return;
+
+    }
+
+
+    const product =
+        (company.products || []).find(
+            p =>
+                String(p.id) ===
+                String(productId)
+        );
+
+
+    if (!product) {
+
+        console.error(
+            "Update product failed: product not found",
+            productId
+        );
+
+        return;
+
+    }
+
+
+    product.name =
+        document
+            .getElementById("productName")
+            .value
+            .trim();
+
+
+    if (product.name === "") {
+
+        alert(
+            "Product name is required."
+        );
+
+        return;
+
+    }
+
+
+    product.sku =
+        document
+            .getElementById("productSKU")
+            .value
+            .trim();
+
+
+    product.category =
+        document
+            .getElementById("productCategory")
+            .value
+            .trim();
+
+
+    product.quantity =
+        Number(
+            document
+                .getElementById("productQuantity")
+                .value
+        ) || 0;
+
+
+    product.price =
+        Number(
+            document
+                .getElementById("productPrice")
+                .value
+        ) || 0;
+
+
+    product.description =
+        document
+            .getElementById("productDescription")
+            .value
+            .trim();
+
+
+    const saved =
+        updateCompany(company);
+
+
+    if (!saved) {
+
+        console.error(
+            "Update product failed"
+        );
+
+        return;
+
+    }
+
+
+    loadProducts(companyId);
 
 }
