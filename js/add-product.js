@@ -1,119 +1,239 @@
-function loadAddProduct(companyId){
+/* =========================================
+   ADD PRODUCT
+========================================= */
 
-const app = document.getElementById("app");
+function loadAddProduct(companyId) {
 
-app.innerHTML = `
+    const company =
+        getCompany(companyId);
 
-<div class="dashboard">
+    const app =
+        document.getElementById("app");
 
-<div class="header">
 
-<h1>Add Product</h1>
+    if (!company) {
 
-<p class="subtitle">
+        console.error(
+            "Add product failed: company not found",
+            companyId
+        );
 
-Create a product for this company
+        return;
 
-</p>
+    }
 
-</div>
 
-<input
-class="search"
-id="productName"
-placeholder="Product Name">
+    app.innerHTML = `
 
-<input
-class="search"
-id="productSKU"
-placeholder="SKU">
+    <div class="dashboard">
 
-<input
-class="search"
-id="productCategory"
-placeholder="Category">
+        <div class="header">
 
-<input
-class="search"
-id="productQuantity"
-type="number"
-placeholder="Quantity">
+            <h1>
+                Add Product
+            </h1>
 
-<input
-class="search"
-id="productPrice"
-type="number"
-placeholder="Unit Price">
+            <p class="subtitle">
+                Create a product for this company
+            </p>
 
-<textarea
-class="search"
-id="productDescription"
-placeholder="Description"
-style="height:120px;resize:none;"></textarea>
+        </div>
 
-<button
-class="fab"
-style="position:static;width:100%;height:60px;border-radius:18px;font-size:20px;"
-onclick="saveProduct(${companyId})">
 
-Save Product
+        <input
+            class="search"
+            id="productName"
+            placeholder="Product Name">
 
-</button>
 
-<button
-class="search"
-style="margin-top:20px;"
-onclick="loadProducts(${companyId})">
+        <input
+            class="search"
+            id="productSKU"
+            placeholder="SKU">
 
-← Back
 
-</button>
+        <input
+            class="search"
+            id="productCategory"
+            placeholder="Category">
 
-${bottomNav("companies")}
 
-</div>
+        <input
+            class="search"
+            id="productQuantity"
+            type="number"
+            min="0"
+            placeholder="Quantity">
 
-`;
+
+        <input
+            class="search"
+            id="productPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Unit Price">
+
+
+        <textarea
+            class="search"
+            id="productDescription"
+            placeholder="Description"
+            style="
+                height:120px;
+                resize:none;
+            "></textarea>
+
+
+        <button
+            class="fab"
+            style="
+                position:static;
+                width:100%;
+                height:60px;
+                border-radius:18px;
+                font-size:20px;
+            "
+            onclick="saveProduct(${companyId})">
+
+            Save Product
+
+        </button>
+
+
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="loadProducts(${companyId})">
+
+            ← Back
+
+        </button>
+
+
+        ${bottomNav("companies")}
+
+    </div>
+
+    `;
 
 }
 
-function saveProduct(companyId){
 
-const name = document.getElementById("productName").value.trim();
-const sku = document.getElementById("productSKU").value.trim();
-const category = document.getElementById("productCategory").value.trim();
-const quantity = Number(document.getElementById("productQuantity").value);
-const price = Number(document.getElementById("productPrice").value);
-const description = document.getElementById("productDescription").value.trim();
+/* =========================================
+   SAVE PRODUCT
+========================================= */
 
-if(name===""){
+function saveProduct(companyId) {
 
-alert("Product name is required.");
+    const company =
+        getCompany(companyId);
 
-return;
 
-}
+    if (!company) {
 
-const product = {
+        console.error(
+            "Save product failed: company not found",
+            companyId
+        );
 
-id: Date.now(),
+        return;
 
-name,
+    }
 
-sku,
 
-category,
+    const name =
+        document
+            .getElementById("productName")
+            .value
+            .trim();
 
-quantity,
 
-price,
+    const sku =
+        document
+            .getElementById("productSKU")
+            .value
+            .trim();
 
-description
 
-};
+    const category =
+        document
+            .getElementById("productCategory")
+            .value
+            .trim();
 
-addProduct(companyId, product);
 
-loadProducts(companyId);
+    const quantity =
+        Number(
+            document
+                .getElementById("productQuantity")
+                .value
+        ) || 0;
+
+
+    const price =
+        Number(
+            document
+                .getElementById("productPrice")
+                .value
+        ) || 0;
+
+
+    const description =
+        document
+            .getElementById("productDescription")
+            .value
+            .trim();
+
+
+    if (name === "") {
+
+        alert(
+            "Product name is required."
+        );
+
+        return;
+
+    }
+
+
+    const product = {
+
+        id: Date.now(),
+
+        name,
+
+        sku,
+
+        category,
+
+        quantity,
+
+        price,
+
+        description
+
+    };
+
+
+    const saved =
+        addProduct(
+            companyId,
+            product
+        );
+
+
+    if (!saved) {
+
+        console.error(
+            "Save product failed"
+        );
+
+        return;
+
+    }
+
+
+    loadProducts(companyId);
 
 }
