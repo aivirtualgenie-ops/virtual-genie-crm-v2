@@ -32,6 +32,12 @@ loadPipeline();
 
 break;
 
+case "calendar":
+
+loadCalendar();
+
+break;
+
 case "add-company":
 
 loadAddCompany();
