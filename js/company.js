@@ -281,55 +281,94 @@ function loadCompany(id) {
         </div>
 
 
-        <div
-            class="card"
-            style="margin-top:20px;">
+<!-- QUICK ACTIONS -->
 
-            <h3>Quick Actions</h3>
+<div
+    class="card"
+    style="margin-top:20px;">
 
-            <br>
+    <h3>Quick Actions</h3>
 
-            <button
-                class="search"
-                onclick="loadCalls(${company.id})">
+    <div
+        style="
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+            margin-top:20px;
+        ">
 
-                📞 Call History
+        <button
+            class="search"
+            style="
+                width:100%;
+                min-height:52px;
+                margin:0;
+            "
+            onclick="loadCalls(${company.id})">
 
-            </button>
+            📞 Call History
 
-            <button
-                class="search"
-                onclick="loadProducts(${company.id})">
+        </button>
 
-                📦 Products
 
-            </button>
+        <button
+            class="search"
+            style="
+                width:100%;
+                min-height:52px;
+                margin:0;
+            "
+            onclick="loadProducts(${company.id})">
 
-            <button
-                class="search"
-                onclick="loadTasks(${company.id})">
+            📦 Products
 
-                ✅ Tasks
+        </button>
 
-            </button>
 
-            <button
-                class="search"
-                onclick="location.hash='edit-company-${company.id}'">
+        <button
+            class="search"
+            style="
+                width:100%;
+                min-height:52px;
+                margin:0;
+            "
+            onclick="loadTasks(${company.id})">
 
-                ✏️ Edit Company
+            ✅ Tasks
 
-            </button>
+        </button>
 
-            <button
-                class="search"
-                onclick="deleteCompanyConfirm(${company.id})">
 
-                🗑 Delete Company
+        <button
+            class="search"
+            style="
+                width:100%;
+                min-height:52px;
+                margin:0;
+            "
+            onclick="location.hash='edit-company-${company.id}'">
 
-            </button>
+            ✏️ Edit Company
 
-        </div>
+        </button>
+
+
+        <button
+            class="search"
+            style="
+                width:100%;
+                min-height:52px;
+                margin:0;
+            "
+            onclick="deleteCompanyConfirm(${company.id})">
+
+            🗑 Delete Company
+
+        </button>
+
+    </div>
+
+</div>
 
 
         <button
