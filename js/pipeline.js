@@ -1,106 +1,171 @@
-function loadPipeline(){
+/* =========================================
+   SALES PIPELINE
+========================================= */
 
-const companies = getCompanies();
+function loadPipeline() {
 
-const stages = [
+    const companies = getCompanies();
 
-"New Lead",
-"Contacted",
-"Meeting Scheduled",
-"Proposal Sent",
-"Negotiation",
-"Won",
-"Lost"
+    const stages = [
+        "New Lead",
+        "Contacted",
+        "Meeting Scheduled",
+        "Proposal Sent",
+        "Negotiation",
+        "Won",
+        "Lost"
+    ];
 
-];
+    const app = document.getElementById("app");
 
-const app = document.getElementById("app");
 
-let html = `
+    /* =====================================
+       PAGE HEADER
+    ===================================== */
 
-<div class="dashboard">
+    let html = `
 
-<div class="header">
+    <div class="dashboard">
 
-<h1>Sales Pipeline</h1>
+        <div class="header">
 
-<p class="subtitle">
+            <h1>
+                Sales Pipeline
+            </h1>
 
-Manage your sales process
+            <p class="subtitle">
+                Manage your sales process
+            </p>
 
-</p>
+        </div>
 
-</div>
+    `;
 
-`;
 
-stages.forEach(stage=>{
+    /* =====================================
+       PIPELINE STAGES
+    ===================================== */
 
-const stageCompanies = companies.filter(company=>
+    stages.forEach(stage => {
 
-(company.pipelineStage || "New Lead")===stage
+        const stageCompanies =
+            companies.filter(company => {
 
-);
+                const currentStage =
+                    company.pipelineStage || "New Lead";
 
-html += `
+                return currentStage === stage;
 
-<div class="card" style="margin-top:20px;">
+            });
 
-<h3>${stage}</h3>
 
-<p>${stageCompanies.length} Company(s)</p>
+        html += `
 
-`;
+        <div
+            class="card"
+            style="margin-top:20px;">
 
-if(stageCompanies.length===0){
+            <h3>
+                ${stage}
+            </h3>
 
-html += `
+            <p>
+                ${stageCompanies.length}
+                Company(s)
+            </p>
 
-<p>No companies</p>
+        `;
 
-`;
 
-}else{
+        /* =================================
+           EMPTY STAGE
+        ================================= */
 
-stageCompanies.forEach(company=>{
+        if (stageCompanies.length === 0) {
 
-html += `
+            html += `
 
-<div
-class="card"
-style="margin-top:15px;cursor:pointer;"
-onclick="loadCompany(${company.id})">
+                <p>
+                    No companies
+                </p>
 
-<h3>${company.companyName}</h3>
+            `;
 
-<p>${company.contactPerson || "-"}</p>
+        }
 
-<p>${company.phone || "-"}</p>
 
-</div>
+        /* =================================
+           COMPANIES IN STAGE
+        ================================= */
 
-`;
+        else {
 
-});
+            stageCompanies.forEach(company => {
 
-}
+                html += `
 
-html += `
+                <div
+                    class="card"
+                    style="
+                        margin-top:15px;
+                        cursor:pointer;
+                    "
+                    onclick="
+                        location.hash='company-${company.id}'
+                    ">
 
-</div>
+                    <h3>
+                        ${company.companyName || "Unnamed Company"}
+                    </h3>
 
-`;
+                    <p>
+                        ${company.contactPerson || "-"}
+                    </p>
 
-});
+                    <p>
+                        ${company.phone || "-"}
+                    </p>
 
-html += `
+                    <p>
+                        Pipeline:
+                        ${company.pipelineStage || "New Lead"}
+                    </p>
 
-${bottomNav("dashboard")}
+                </div>
 
-</div>
+                `;
 
-`;
+            });
 
-app.innerHTML = html;
+        }
+
+
+        html += `
+
+        </div>
+
+        `;
+
+    });
+
+
+    /* =====================================
+       NAVIGATION
+    ===================================== */
+
+    html += `
+
+        ${bottomNav("pipeline")}
+
+    </div>
+
+    `;
+
+
+    /* =====================================
+       RENDER
+    ===================================== */
+
+    app.innerHTML = html;
 
 }
