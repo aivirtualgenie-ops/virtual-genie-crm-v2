@@ -120,13 +120,19 @@ onclick="alert('Revenue Analytics coming soon')">
 
 <br>
 
-<p>✅ Sales Pipeline</p>
+<p
+style="cursor:pointer;"
+onclick="location.hash='pipeline'">
+
+✅ Sales Pipeline
+
+</p>
 
 <br>
 
 <p
 style="cursor:pointer;"
-onclick="location.hash='calendar'"
+onclick="location.hash='calendar'">
 
 📅 Calendar
 
@@ -134,11 +140,15 @@ onclick="location.hash='calendar'"
 
 <br>
 
-<p>✅ Notifications</p>
+<p>
+✅ Notifications
+</p>
 
 <br>
 
-<p>✅ Analytics Dashboard</p>
+<p>
+✅ Analytics Dashboard
+</p>
 
 </div>
 
