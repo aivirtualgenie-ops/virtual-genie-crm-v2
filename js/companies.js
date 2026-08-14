@@ -1,113 +1,181 @@
+/* =========================================
+   COMPANIES PAGE
+========================================= */
+
 function loadCompanies(searchText = "") {
 
-const app = document.getElementById("app");
+    const app = document.getElementById("app");
 
-const companies = getCompanies();
+    const companies = getCompanies();
 
-const filteredCompanies = companies.filter(company=>{
+    const search =
+        searchText.toLowerCase().trim();
 
-const search = searchText.toLowerCase();
 
-return (
+    /* =====================================
+       FILTER COMPANIES
+    ===================================== */
 
-(company.companyName || "").toLowerCase().includes(search) ||
+    const filteredCompanies =
+        companies.filter(company => {
 
-(company.contactPerson || "").toLowerCase().includes(search) ||
+            return (
 
-(company.phone || "").toLowerCase().includes(search) ||
+                (company.companyName || "")
+                    .toLowerCase()
+                    .includes(search)
 
-(company.email || "").toLowerCase().includes(search) ||
+                ||
 
-(company.industry || "").toLowerCase().includes(search)
+                (company.contactPerson || "")
+                    .toLowerCase()
+                    .includes(search)
 
-);
+                ||
 
-});
+                (company.phone || "")
+                    .toLowerCase()
+                    .includes(search)
 
-let companyCards = "";
+                ||
 
-if(filteredCompanies.length===0){
+                (company.email || "")
+                    .toLowerCase()
+                    .includes(search)
 
-companyCards=`
+                ||
 
-<div class="card">
+                (company.industry || "")
+                    .toLowerCase()
+                    .includes(search)
 
-<h3>No Companies Found</h3>
+                ||
 
-<br>
+                (company.pipelineStage || "")
+                    .toLowerCase()
+                    .includes(search)
 
-<p>Try another search.</p>
+            );
 
-</div>
+        });
 
-`;
 
-}else{
+    /* =====================================
+       BUILD COMPANY CARDS
+    ===================================== */
 
-filteredCompanies.forEach(company=>{
+    let companyCards = "";
 
-companyCards+=`
 
-<div
-class="card"
-style="cursor:pointer;"
-onclick="location.hash='company-${company.id}'">
+    if (filteredCompanies.length === 0) {
 
-<h3>${company.companyName}</h3>
+        companyCards = `
 
-<p>${company.contactPerson || "-"}</p>
+        <div class="card">
 
-<p>${company.phone || "-"}</p>
+            <h3>No Companies Found</h3>
 
-<p>${company.email || "-"}</p>
+            <br>
 
-<p>Status: ${company.status}</p>
+            <p>
+                Try another search.
+            </p>
 
-</div>
+        </div>
 
-`;
+        `;
 
-});
+    } else {
 
-}
+        filteredCompanies.forEach(company => {
 
-app.innerHTML=`
+            const pipelineStage =
+                company.pipelineStage || "New Lead";
 
-<div class="dashboard">
 
-<div class="header">
+            companyCards += `
 
-<h1>Companies</h1>
+            <div
+                class="card"
+                style="cursor:pointer;"
+                onclick="location.hash='company-${company.id}'">
 
-<p class="subtitle">
+                <h3>
+                    ${company.companyName || "Unnamed Company"}
+                </h3>
 
-Manage all your leads and clients
+                <p>
+                    ${company.contactPerson || "-"}
+                </p>
 
-</p>
+                <p>
+                    ${company.phone || "-"}
+                </p>
 
-<input
-class="search"
-id="companySearch"
-placeholder="Search companies..."
-value="${searchText}"
-oninput="loadCompanies(this.value)">
+                <p>
+                    ${company.email || "-"}
+                </p>
 
-</div>
+                <p>
+                    Pipeline: ${pipelineStage}
+                </p>
 
-${companyCards}
+            </div>
 
-<button
-class="fab"
-onclick="location.hash='add-company'">
+            `;
 
-+
+        });
 
-</button>
+    }
 
-${bottomNav("companies")}
 
-</div>
+    /* =====================================
+       PAGE
+    ===================================== */
 
-`;
+    app.innerHTML = `
+
+    <div class="dashboard">
+
+        <div class="header">
+
+            <h1>
+                Companies
+            </h1>
+
+            <p class="subtitle">
+
+                Manage all your leads and clients
+
+            </p>
+
+
+            <input
+                class="search"
+                id="companySearch"
+                placeholder="Search companies..."
+                value="${searchText}"
+                oninput="loadCompanies(this.value)">
+
+        </div>
+
+
+        ${companyCards}
+
+
+        <button
+            class="fab"
+            onclick="location.hash='add-company'">
+
+            +
+
+        </button>
+
+
+        ${bottomNav("companies")}
+
+    </div>
+
+    `;
 
 }
