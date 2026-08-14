@@ -39,6 +39,12 @@ loadCalendar();
 
 break;
 
+case "notifications":
+
+loadNotifications();
+
+break;
+
 case "add-company":
 
 loadAddCompany();
