@@ -42,9 +42,18 @@ function loadDashboard() {
     let lost = 0;
 
 
+    /* =====================================
+       TODAY
+    ===================================== */
+
     const today = new Date();
 
-    today.setHours(0, 0, 0, 0);
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
 
 
     /* =====================================
@@ -155,8 +164,56 @@ function loadDashboard() {
            CALLS
         ================================= */
 
+        const companyCalls =
+            company.calls || [];
+
+
         totalCalls +=
-            (company.calls || []).length;
+            companyCalls.length;
+
+
+        /* ================================
+           CALL FOLLOW-UPS
+        ================================= */
+
+        companyCalls.forEach(call => {
+
+            if (!call.followUp) {
+
+                return;
+
+            }
+
+
+            const callFollowUpDate =
+                new Date(call.followUp);
+
+            callFollowUpDate.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+
+            if (callFollowUpDate < today) {
+
+                overdueFollowUps++;
+
+            } else if (
+                callFollowUpDate.getTime() ===
+                today.getTime()
+            ) {
+
+                todayFollowUps++;
+
+            } else {
+
+                upcomingFollowUps++;
+
+            }
+
+        });
 
 
         /* ================================
@@ -213,7 +270,8 @@ function loadDashboard() {
     const attentionCount =
         overdueTasks +
         overdueFollowUps +
-        todayFollowUps;
+        todayFollowUps +
+        upcomingFollowUps;
 
 
     /* =====================================
@@ -588,6 +646,8 @@ function dashboardSearchCompanies(
 ) {
 
     if (!searchText) {
+
+        loadDashboard();
 
         return;
 
