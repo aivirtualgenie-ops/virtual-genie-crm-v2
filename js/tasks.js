@@ -1,163 +1,446 @@
-function loadTasks(companyId){
+/* =========================================
+   COMPANY TASKS
+========================================= */
 
-const company = getCompany(companyId);
+function loadTasks(companyId) {
 
-const app = document.getElementById("app");
+    const company = getCompany(companyId);
 
-if(!company.tasks){
+    const app = document.getElementById("app");
 
-company.tasks = [];
 
-updateCompany(company);
+    /* =====================================
+       COMPANY CHECK
+    ===================================== */
+
+    if (!company) {
+
+        app.innerHTML = `
+
+        <div class="dashboard">
+
+            <div class="card">
+
+                <h2>Company not found</h2>
+
+                <br>
+
+                <button
+                    class="search"
+                    onclick="location.hash='companies'">
+
+                    ← Back
+
+                </button>
+
+            </div>
+
+            ${bottomNav("companies")}
+
+        </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    /* =====================================
+       INITIALIZE TASKS
+    ===================================== */
+
+    if (!company.tasks) {
+
+        company.tasks = [];
+
+        updateCompany(company);
+
+    }
+
+
+    let completed = 0;
+    let pending = 0;
+    let overdue = 0;
+
+
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+
+    /* =====================================
+       DATE HELPER
+    ===================================== */
+
+    function getTaskDate(dateString) {
+
+        if (!dateString) {
+            return null;
+        }
+
+        const date = new Date(dateString);
+
+        date.setHours(0, 0, 0, 0);
+
+        return date;
+
+    }
+
+
+    /* =====================================
+       FORMAT DATE
+    ===================================== */
+
+    function formatDate(dateString) {
+
+        if (!dateString) {
+            return "-";
+        }
+
+        const date = new Date(dateString);
+
+        return date.toLocaleDateString(
+            "en-IN",
+            {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            }
+        );
+
+    }
+
+
+    /* =====================================
+       COUNT TASKS
+    ===================================== */
+
+    company.tasks.forEach(task => {
+
+        if (task.status === "Completed") {
+
+            completed++;
+
+            return;
+
+        }
+
+
+        pending++;
+
+
+        if (task.dueDate) {
+
+            const dueDate =
+                getTaskDate(task.dueDate);
+
+            if (dueDate < today) {
+
+                overdue++;
+
+            }
+
+        }
+
+    });
+
+
+    /* =====================================
+       BUILD TASK CARDS
+    ===================================== */
+
+    let taskCards = "";
+
+
+    if (company.tasks.length === 0) {
+
+        taskCards = `
+
+        <div class="card">
+
+            <h3>No Tasks Yet</h3>
+
+            <p>
+                Create your first follow-up task.
+            </p>
+
+        </div>
+
+        `;
+
+    } else {
+
+        company.tasks.forEach(task => {
+
+            let statusIcon = "🟡";
+            let statusText =
+                task.status || "Pending";
+
+            let statusClass =
+                "upcoming";
+
+
+            /* =============================
+               COMPLETED
+            ============================= */
+
+            if (task.status === "Completed") {
+
+                statusIcon = "✅";
+                statusText = "Completed";
+                statusClass = "completed";
+
+            }
+
+
+            /* =============================
+               PENDING TASK
+            ============================= */
+
+            else if (task.dueDate) {
+
+                const dueDate =
+                    getTaskDate(task.dueDate);
+
+
+                if (dueDate < today) {
+
+                    statusIcon = "🔴";
+                    statusText = "Overdue";
+                    statusClass = "overdue";
+
+                } else if (
+                    dueDate.getTime() ===
+                    today.getTime()
+                ) {
+
+                    statusIcon = "🟢";
+                    statusText = "Due Today";
+                    statusClass = "today";
+
+                } else {
+
+                    statusIcon = "🟡";
+                    statusText = "Upcoming";
+                    statusClass = "upcoming";
+
+                }
+
+            }
+
+
+            /* =============================
+               PRIORITY ICON
+            ============================= */
+
+            let priorityIcon = "⚪";
+
+
+            if (task.priority === "High") {
+
+                priorityIcon = "🔴";
+
+            } else if (
+                task.priority === "Medium"
+            ) {
+
+                priorityIcon = "🟡";
+
+            } else if (
+                task.priority === "Low"
+            ) {
+
+                priorityIcon = "🟢";
+
+            }
+
+
+            /* =============================
+               TASK CARD
+            ============================= */
+
+            taskCards += `
+
+            <div
+                class="card ${statusClass}"
+                style="margin-top:20px;">
+
+                <h3>
+                    ${statusIcon}
+                    ${task.title || "Untitled Task"}
+                </h3>
+
+                <p>
+                    <strong>Status:</strong>
+                    ${statusText}
+                </p>
+
+                <p>
+                    <strong>Due:</strong>
+                    ${formatDate(task.dueDate)}
+                </p>
+
+                <p>
+                    <strong>Priority:</strong>
+                    ${priorityIcon}
+                    ${task.priority || "Medium"}
+                </p>
+
+                <br>
+
+                <p>
+                    ${task.notes || "No notes."}
+                </p>
+
+                <br>
+
+
+                <button
+                    class="search"
+                    onclick="loadEditTask(
+                        ${company.id},
+                        ${task.id}
+                    )">
+
+                    ✏️ Edit
+
+                </button>
+
+
+                <br>
+                <br>
+
+
+                <button
+                    class="search"
+                    onclick="deleteTaskConfirm(
+                        ${company.id},
+                        ${task.id}
+                    )">
+
+                    🗑 Delete
+
+                </button>
+
+            </div>
+
+            `;
+
+        });
+
+    }
+
+
+    /* =====================================
+       PAGE
+    ===================================== */
+
+    app.innerHTML = `
+
+    <div class="dashboard">
+
+        <div class="header">
+
+            <h1>
+                Tasks
+            </h1>
+
+            <p class="subtitle">
+                ${company.companyName}
+            </p>
+
+        </div>
+
+
+        <!-- TASK SUMMARY -->
+
+        <div class="card">
+
+            <p>
+                <strong>Total Tasks:</strong>
+                ${company.tasks.length}
+            </p>
+
+            <p>
+                <strong>Pending:</strong>
+                ${pending}
+            </p>
+
+            <p>
+                <strong>Completed:</strong>
+                ${completed}
+            </p>
+
+            <p>
+                <strong>Overdue:</strong>
+                ${overdue}
+            </p>
+
+        </div>
+
+
+        ${taskCards}
+
+
+        <!-- ADD TASK -->
+
+        <button
+            class="fab"
+            onclick="loadAddTask(${company.id})">
+
+            +
+
+        </button>
+
+
+        <!-- BACK -->
+
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="loadCompany(${company.id})">
+
+            ← Back to Company
+
+        </button>
+
+
+        ${bottomNav("companies")}
+
+    </div>
+
+    `;
 
 }
 
-let completed = 0;
-let pending = 0;
 
-let taskCards = "";
+/* =========================================
+   DELETE TASK
+========================================= */
 
-company.tasks.forEach(task=>{
+function deleteTaskConfirm(
+    companyId,
+    taskId
+) {
 
-if(task.status==="Completed"){
+    const confirmDelete =
+        confirm("Delete this task?");
 
-completed++;
 
-}else{
+    if (!confirmDelete) {
 
-pending++;
+        return;
 
-}
+    }
 
-});
 
-if(company.tasks.length===0){
+    deleteTask(
+        companyId,
+        taskId
+    );
 
-taskCards = `
 
-<div class="card">
-
-<h3>No Tasks Yet</h3>
-
-<p>Create your first follow-up task.</p>
-
-</div>
-
-`;
-
-}else{
-
-company.tasks.forEach(task=>{
-
-taskCards += `
-
-<div class="card">
-
-<h3>${task.title}</h3>
-
-<p><strong>Due:</strong> ${task.dueDate}</p>
-
-<p><strong>Priority:</strong> ${task.priority}</p>
-
-<p><strong>Status:</strong> ${task.status}</p>
-
-<br>
-
-<p>${task.notes}</p>
-
-<br>
-
-<button
-class="search"
-onclick="loadEditTask(${company.id},${task.id})">
-
-✏️ Edit
-
-</button>
-
-<br><br>
-
-<button
-class="search"
-onclick="deleteTaskConfirm(${company.id},${task.id})">
-
-🗑 Delete
-
-</button>
-
-</div>
-
-`;
-
-});
-
-}
-
-app.innerHTML = `
-
-<div class="dashboard">
-
-<div class="header">
-
-<h1>Tasks</h1>
-
-<p class="subtitle">
-
-${company.companyName}
-
-</p>
-
-</div>
-
-<div class="card">
-
-<p><strong>Total Tasks:</strong> ${company.tasks.length}</p>
-
-<p><strong>Pending:</strong> ${pending}</p>
-
-<p><strong>Completed:</strong> ${completed}</p>
-
-</div>
-
-${taskCards}
-
-<button
-class="fab"
-onclick="loadAddTask(${company.id})">
-
-+
-
-</button>
-
-<button
-class="search"
-style="margin-top:20px;"
-onclick="loadCompany(${company.id})">
-
-← Back to Company
-
-</button>
-
-${bottomNav("companies")}
-
-</div>
-
-`;
-
-}
-
-function deleteTaskConfirm(companyId, taskId){
-
-const confirmDelete = confirm("Delete this task?");
-
-if(!confirmDelete){
-
-return;
-
-}
-
-deleteTask(companyId, taskId);
-
-loadTasks(companyId);
+    loadTasks(companyId);
 
 }
