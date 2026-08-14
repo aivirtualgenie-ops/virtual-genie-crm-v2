@@ -1,179 +1,598 @@
+/* =========================================
+   DASHBOARD
+========================================= */
+
 function loadDashboard() {
 
-const companies = getCompanies();
+    const companies = getCompanies();
 
-let totalProducts = 0;
-let totalPipeline = 0;
-let totalRevenue = 0;
+    const app =
+        document.getElementById("app");
 
-companies.forEach(company => {
 
-totalProducts += (company.products || []).length;
+    /* =====================================
+       BASIC SALES METRICS
+    ===================================== */
 
-totalPipeline += Number(company.pipelineValue || 0);
+    let totalProducts = 0;
+    let totalPipeline = 0;
+    let totalRevenue = 0;
 
-totalRevenue += Number(company.revenue || 0);
+    let totalCalls = 0;
 
-});
+    let pendingTasks = 0;
+    let completedTasks = 0;
+    let overdueTasks = 0;
 
-const app = document.getElementById("app");
+    let overdueFollowUps = 0;
+    let todayFollowUps = 0;
+    let upcomingFollowUps = 0;
 
-app.innerHTML = `
 
-<div class="dashboard">
+    /* =====================================
+       PIPELINE METRICS
+    ===================================== */
 
-<div class="header">
+    let newLeads = 0;
+    let contacted = 0;
+    let meetings = 0;
+    let proposals = 0;
+    let negotiations = 0;
+    let won = 0;
+    let lost = 0;
 
-<p class="greeting">
 
-Good Evening 👋
+    const today = new Date();
 
-</p>
+    today.setHours(0, 0, 0, 0);
 
-<h1>
 
-Virtual Genie CRM
+    /* =====================================
+       PROCESS COMPANIES
+    ===================================== */
 
-</h1>
+    companies.forEach(company => {
 
-<p class="subtitle">
 
-Your Business Operating System
+        /* ================================
+           PRODUCTS
+        ================================= */
 
-</p>
+        totalProducts +=
+            (company.products || []).length;
 
-<input
-class="search"
-placeholder="Search companies...">
 
-</div>
+        /* ================================
+           SALES VALUES
+        ================================= */
 
-<div class="stats">
+        totalPipeline +=
+            Number(company.pipelineValue || 0);
 
-<div class="stats-grid">
+        totalRevenue +=
+            Number(company.revenue || 0);
 
-<div
-class="card"
-style="cursor:pointer;"
-onclick="location.hash='companies'">
 
-<p>Companies</p>
+        /* ================================
+           PIPELINE
+        ================================= */
 
-<h2>${companies.length}</h2>
+        const stage =
+            company.pipelineStage || "New Lead";
 
-</div>
 
-<div
-class="card"
-style="cursor:pointer;"
-onclick="loadGlobalProducts()">
+        switch (stage) {
 
-<p>Products</p>
+            case "New Lead":
+                newLeads++;
+                break;
 
-<h2>${totalProducts}</h2>
+            case "Contacted":
+                contacted++;
+                break;
 
-</div>
+            case "Meeting Scheduled":
+                meetings++;
+                break;
 
-<div
-class="card"
-style="cursor:pointer;"
-onclick="location.hash='pipeline'">
+            case "Proposal Sent":
+                proposals++;
+                break;
 
-<p>Pipeline</p>
+            case "Negotiation":
+                negotiations++;
+                break;
 
-<h2>₹${totalPipeline}</h2>
+            case "Won":
+                won++;
+                break;
 
-</div>
+            case "Lost":
+                lost++;
+                break;
 
-<div
-class="card"
-style="cursor:pointer;"
-onclick="alert('Revenue Analytics coming soon')">
+        }
 
-<p>Revenue</p>
 
-<h2>₹${totalRevenue}</h2>
+        /* ================================
+           COMPANY FOLLOW-UP
+        ================================= */
 
-</div>
+        if (company.nextFollowUp) {
 
-</div>
+            const followUpDate =
+                new Date(company.nextFollowUp);
 
-<div class="card activity-card">
+            followUpDate.setHours(
+                0,
+                0,
+                0,
+                0
+            );
 
-<h3>CRM Summary</h3>
 
-<br>
+            if (followUpDate < today) {
 
-<p><strong>Total Companies:</strong> ${companies.length}</p>
+                overdueFollowUps++;
 
-<p><strong>Total Products:</strong> ${totalProducts}</p>
+            } else if (
+                followUpDate.getTime() ===
+                today.getTime()
+            ) {
 
-<p><strong>Total Pipeline:</strong> ₹${totalPipeline}</p>
+                todayFollowUps++;
 
-<p><strong>Total Revenue:</strong> ₹${totalRevenue}</p>
+            } else {
 
-</div>
+                upcomingFollowUps++;
 
-<div class="card task-card">
+            }
 
-<h3>Coming Next</h3>
+        }
 
-<br>
 
-<p
-style="cursor:pointer;"
-onclick="location.hash='pipeline'">
+        /* ================================
+           CALLS
+        ================================= */
 
-✅ Sales Pipeline
+        totalCalls +=
+            (company.calls || []).length;
 
-</p>
 
-<br>
+        /* ================================
+           TASKS
+        ================================= */
 
-<p
-style="cursor:pointer;"
-onclick="location.hash='calendar'">
+        (company.tasks || []).forEach(task => {
 
-📅 Calendar
+            if (
+                task.status ===
+                "Completed"
+            ) {
 
-</p>
+                completedTasks++;
 
-<br>
+                return;
 
-<p
-style="cursor:pointer;"
-onclick="location.hash='notifications'">
+            }
 
-🔔 Notifications
 
-</p>
+            pendingTasks++;
 
-<br>
 
-<p
-style="cursor:pointer;"
-onclick="location.hash='analytics'">
+            if (task.dueDate) {
 
-📊 Analytics Dashboard
+                const dueDate =
+                    new Date(task.dueDate);
 
-</p>
+                dueDate.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
 
-</div>
 
-</div>
+                if (dueDate < today) {
 
-<button
-class="fab"
-onclick="location.hash='companies'">
+                    overdueTasks++;
 
-+
+                }
 
-</button>
+            }
 
-${bottomNav("dashboard")}
+        });
 
-</div>
+    });
 
-`;
+
+    /* =====================================
+       TOTAL ATTENTION ITEMS
+    ===================================== */
+
+    const attentionCount =
+        overdueTasks +
+        overdueFollowUps +
+        todayFollowUps;
+
+
+    /* =====================================
+       DASHBOARD
+    ===================================== */
+
+    app.innerHTML = `
+
+    <div class="dashboard">
+
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <p class="greeting">
+                Good Evening 👋
+            </p>
+
+            <h1>
+                Virtual Genie CRM
+            </h1>
+
+            <p class="subtitle">
+                Your Business Operating System
+            </p>
+
+
+            <input
+                class="search"
+                id="dashboardSearch"
+                placeholder="Search companies..."
+                oninput="dashboardSearchCompanies(this.value)">
+
+        </div>
+
+
+        <!-- PRIMARY STATS -->
+
+        <div class="stats">
+
+            <div class="stats-grid">
+
+
+                <!-- COMPANIES -->
+
+                <div
+                    class="card"
+                    style="cursor:pointer;"
+                    onclick="location.hash='companies'">
+
+                    <p>
+                        Companies
+                    </p>
+
+                    <h2>
+                        ${companies.length}
+                    </h2>
+
+                </div>
+
+
+                <!-- PIPELINE -->
+
+                <div
+                    class="card"
+                    style="cursor:pointer;"
+                    onclick="location.hash='pipeline'">
+
+                    <p>
+                        Pipeline
+                    </p>
+
+                    <h2>
+                        ₹${totalPipeline}
+                    </h2>
+
+                </div>
+
+
+                <!-- REVENUE -->
+
+                <div
+                    class="card"
+                    style="cursor:pointer;"
+                    onclick="location.hash='analytics'">
+
+                    <p>
+                        Revenue
+                    </p>
+
+                    <h2>
+                        ₹${totalRevenue}
+                    </h2>
+
+                </div>
+
+
+                <!-- PRODUCTS -->
+
+                <div
+                    class="card"
+                    style="cursor:pointer;"
+                    onclick="loadGlobalProducts()">
+
+                    <p>
+                        Products
+                    </p>
+
+                    <h2>
+                        ${totalProducts}
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <!-- CRM SUMMARY -->
+
+            <div
+                class="card"
+                style="margin-top:20px;">
+
+                <h3>
+                    CRM Summary
+                </h3>
+
+                <br>
+
+                <p>
+                    <strong>
+                        Total Companies:
+                    </strong>
+
+                    ${companies.length}
+
+                </p>
+
+                <p>
+                    <strong>
+                        Total Calls:
+                    </strong>
+
+                    ${totalCalls}
+
+                </p>
+
+                <p>
+                    <strong>
+                        Pending Tasks:
+                    </strong>
+
+                    ${pendingTasks}
+
+                </p>
+
+                <p>
+                    <strong>
+                        Completed Tasks:
+                    </strong>
+
+                    ${completedTasks}
+
+                </p>
+
+                <p>
+                    <strong>
+                        Total Products:
+                    </strong>
+
+                    ${totalProducts}
+
+                </p>
+
+            </div>
+
+
+            <!-- PIPELINE SUMMARY -->
+
+            <div
+                class="card"
+                style="margin-top:20px;">
+
+                <h3>
+                    Pipeline
+                </h3>
+
+                <br>
+
+                <p>
+                    🆕 New Leads:
+                    ${newLeads}
+                </p>
+
+                <p>
+                    📞 Contacted:
+                    ${contacted}
+                </p>
+
+                <p>
+                    📅 Meetings:
+                    ${meetings}
+                </p>
+
+                <p>
+                    📄 Proposals:
+                    ${proposals}
+                </p>
+
+                <p>
+                    🤝 Negotiations:
+                    ${negotiations}
+                </p>
+
+                <p>
+                    🏆 Won:
+                    ${won}
+                </p>
+
+                <p>
+                    ❌ Lost:
+                    ${lost}
+                </p>
+
+            </div>
+
+
+            <!-- ATTENTION -->
+
+            <div
+                class="card"
+                style="margin-top:20px;">
+
+                <h3>
+                    Attention
+                </h3>
+
+                <br>
+
+                <p
+                    style="cursor:pointer;"
+                    onclick="location.hash='notifications'">
+
+                    🔴 Overdue Tasks:
+                    ${overdueTasks}
+
+                </p>
+
+                <p
+                    style="cursor:pointer;"
+                    onclick="location.hash='notifications'">
+
+                    🔴 Overdue Follow-ups:
+                    ${overdueFollowUps}
+
+                </p>
+
+                <p
+                    style="cursor:pointer;"
+                    onclick="location.hash='notifications'">
+
+                    🟢 Follow-ups Today:
+                    ${todayFollowUps}
+
+                </p>
+
+                <p
+                    style="cursor:pointer;"
+                    onclick="location.hash='calendar'">
+
+                    🟡 Upcoming Follow-ups:
+                    ${upcomingFollowUps}
+
+                </p>
+
+                <br>
+
+                <p>
+                    <strong>
+                        Total Attention Items:
+                    </strong>
+
+                    ${attentionCount}
+
+                </p>
+
+            </div>
+
+
+            <!-- QUICK ACCESS -->
+
+            <div
+                class="card"
+                style="margin-top:20px;">
+
+                <h3>
+                    Quick Access
+                </h3>
+
+                <br>
+
+                <p
+                    style="cursor:pointer;"
+                    onclick="location.hash='pipeline'">
+
+                    ✅ Sales Pipeline
+
+                </p>
+
+                <br>
+
+                <p
+                    style="cursor:pointer;"
+                    onclick="location.hash='calendar'">
+
+                    📅 Calendar
+
+                </p>
+
+                <br>
+
+                <p
+                    style="cursor:pointer;"
+                    onclick="location.hash='notifications'">
+
+                    🔔 Notifications
+
+                </p>
+
+                <br>
+
+                <p
+                    style="cursor:pointer;"
+                    onclick="location.hash='analytics'">
+
+                    📊 Analytics Dashboard
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ADD COMPANY -->
+
+        <button
+            class="fab"
+            onclick="location.hash='add-company'">
+
+            +
+
+        </button>
+
+
+        ${bottomNav("dashboard")}
+
+    </div>
+
+    `;
+
+}
+
+
+/* =========================================
+   DASHBOARD SEARCH
+========================================= */
+
+function dashboardSearchCompanies(
+    searchText
+) {
+
+    if (!searchText) {
+
+        return;
+
+    }
+
+    loadCompanies(searchText);
 
 }
