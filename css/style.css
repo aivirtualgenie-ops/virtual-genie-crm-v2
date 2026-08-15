@@ -2142,3 +2142,358 @@ button.search:active {
         display: none;
     }
 }
+/* =========================================================
+   CINEMATIC BRAND REVEAL
+========================================================= */
+
+.brand-reveal {
+    position: relative;
+    overflow: hidden;
+    padding: 8px 0 4px;
+    isolation: isolate;
+}
+
+
+/* -----------------------------------------
+   PARTICLES
+----------------------------------------- */
+
+.brand-particles {
+    position: absolute;
+    inset: -35px -15px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.brand-particles span {
+    position: absolute;
+
+    color: #72ddff;
+    font-size: 10px;
+
+    opacity: 0;
+
+    animation:
+        particleFly
+        1.5s
+        cubic-bezier(.16,1,.3,1)
+        forwards;
+}
+
+
+/* individual particle paths */
+
+.brand-particles span:nth-child(1) {
+    left: 4%;
+    top: 80%;
+    --x: 110px;
+    --y: -55px;
+    animation-delay: .05s;
+}
+
+.brand-particles span:nth-child(2) {
+    left: 16%;
+    top: 65%;
+    --x: 40px;
+    --y: -80px;
+    animation-delay: .12s;
+}
+
+.brand-particles span:nth-child(3) {
+    left: 28%;
+    top: 90%;
+    --x: -20px;
+    --y: -95px;
+    animation-delay: .18s;
+}
+
+.brand-particles span:nth-child(4) {
+    left: 38%;
+    top: 70%;
+    --x: 30px;
+    --y: -70px;
+    animation-delay: .08s;
+}
+
+.brand-particles span:nth-child(5) {
+    left: 50%;
+    top: 100%;
+    --x: 0px;
+    --y: -110px;
+    animation-delay: .22s;
+}
+
+.brand-particles span:nth-child(6) {
+    left: 62%;
+    top: 75%;
+    --x: -30px;
+    --y: -80px;
+    animation-delay: .14s;
+}
+
+.brand-particles span:nth-child(7) {
+    left: 74%;
+    top: 90%;
+    --x: -55px;
+    --y: -90px;
+    animation-delay: .20s;
+}
+
+.brand-particles span:nth-child(8) {
+    left: 84%;
+    top: 65%;
+    --x: -80px;
+    --y: -65px;
+    animation-delay: .10s;
+}
+
+.brand-particles span:nth-child(9) {
+    left: 92%;
+    top: 85%;
+    --x: -120px;
+    --y: -75px;
+    animation-delay: .26s;
+}
+
+.brand-particles span:nth-child(10) {
+    left: 12%;
+    top: 25%;
+    --x: 80px;
+    --y: 30px;
+    animation-delay: .30s;
+}
+
+.brand-particles span:nth-child(11) {
+    left: 88%;
+    top: 20%;
+    --x: -100px;
+    --y: 40px;
+    animation-delay: .34s;
+}
+
+.brand-particles span:nth-child(12) {
+    left: 50%;
+    top: 10%;
+    --x: 0px;
+    --y: 70px;
+    animation-delay: .28s;
+}
+
+
+@keyframes particleFly {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(
+                var(--x),
+                var(--y)
+            )
+            scale(.2);
+        filter: blur(5px);
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: .18;
+        transform:
+            translate(0,0)
+            scale(1);
+        filter: blur(0);
+    }
+
+}
+
+
+/* -----------------------------------------
+   TITLE
+----------------------------------------- */
+
+.brand-title {
+    margin: 0;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 9px;
+
+    font-size:
+        clamp(36px, 9vw, 54px);
+
+    line-height: .98;
+
+    font-weight: 800;
+
+    letter-spacing: -2px;
+
+    color: #ffffff;
+}
+
+
+/* every letter starts scattered */
+
+.brand-title span span {
+    display: inline-block;
+
+    opacity: 0;
+
+    transform:
+        translateY(55px)
+        rotate(8deg)
+        scale(.82);
+
+    filter: blur(8px);
+
+    animation:
+        letterAssemble
+        .72s
+        cubic-bezier(.16,1,.3,1)
+        forwards;
+}
+
+
+/* stagger Virtual */
+
+.brand-virtual span:nth-child(1) { animation-delay: .10s; }
+.brand-virtual span:nth-child(2) { animation-delay: .14s; }
+.brand-virtual span:nth-child(3) { animation-delay: .18s; }
+.brand-virtual span:nth-child(4) { animation-delay: .22s; }
+.brand-virtual span:nth-child(5) { animation-delay: .26s; }
+.brand-virtual span:nth-child(6) { animation-delay: .30s; }
+.brand-virtual span:nth-child(7) { animation-delay: .34s; }
+
+
+/* stagger Genie */
+
+.brand-genie span:nth-child(1) { animation-delay: .40s; }
+.brand-genie span:nth-child(2) { animation-delay: .44s; }
+.brand-genie span:nth-child(3) { animation-delay: .48s; }
+.brand-genie span:nth-child(4) { animation-delay: .52s; }
+.brand-genie span:nth-child(5) { animation-delay: .56s; }
+
+
+/* CRM enters last */
+
+.brand-crm {
+    margin-left: 3px;
+
+    color: #63dcff;
+
+    text-shadow:
+        0 0 12px rgba(50,210,255,.45),
+        0 0 30px rgba(50,130,255,.22);
+}
+
+.brand-crm span:nth-child(1) { animation-delay: .68s; }
+.brand-crm span:nth-child(2) { animation-delay: .74s; }
+.brand-crm span:nth-child(3) { animation-delay: .80s; }
+
+
+@keyframes letterAssemble {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(55px)
+            rotate(8deg)
+            scale(.82);
+
+        filter: blur(8px);
+    }
+
+    65% {
+        opacity: 1;
+
+        transform:
+            translateY(-4px)
+            rotate(-1deg)
+            scale(1.02);
+
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            rotate(0)
+            scale(1);
+
+        filter: blur(0);
+    }
+
+}
+
+
+/* -----------------------------------------
+   SUBTITLE FOLLOWS THE REVEAL
+----------------------------------------- */
+
+.brand-reveal + .subtitle {
+    animation:
+        subtitleReveal
+        .65s
+        cubic-bezier(.16,1,.3,1)
+        .85s
+        both;
+}
+
+
+@keyframes subtitleReveal {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(15px);
+        filter: blur(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0);
+        filter: blur(0);
+    }
+
+}
+
+
+/* -----------------------------------------
+   MOBILE
+----------------------------------------- */
+
+@media (max-width: 600px) {
+
+    .brand-title {
+        gap: 7px;
+        letter-spacing: -1.8px;
+    }
+
+}
+
+
+/* -----------------------------------------
+   ACCESSIBILITY
+----------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .brand-title span span,
+    .brand-particles span,
+    .brand-reveal + .subtitle {
+
+        animation: none !important;
+
+        opacity: 1 !important;
+
+        transform: none !important;
+
+        filter: none !important;
+    }
+
+}
