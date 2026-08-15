@@ -3817,3 +3817,339 @@ button.search:active {
     }
 
 }
+/* =========================================================
+   COMPANY DEALS
+========================================================= */
+
+.company-deals-section {
+    padding: 22px;
+
+    border-radius: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(9, 40, 70, .94),
+            rgba(5, 22, 48, .97)
+        );
+
+    border: 1px solid rgba(0, 190, 255, .18);
+
+    box-shadow:
+        0 14px 35px rgba(0,0,0,.14);
+}
+
+.company-deals-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.company-deals-eyebrow {
+    margin: 0 0 4px;
+
+    color: #45dfff;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .14em;
+}
+
+.company-deals-header h2 {
+    margin: 0;
+
+    color: #f3f8ff;
+
+    font-size: 25px;
+}
+
+.company-deals-header p:last-child {
+    margin: 5px 0 0;
+
+    color: #718aa7;
+
+    font-size: 12px;
+}
+
+.company-deals-count {
+    min-width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: rgba(0,190,255,.09);
+
+    border: 1px solid rgba(0,210,255,.18);
+
+    color: #6fe2ff;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+
+/* DEAL CARD */
+
+.company-deal-card {
+    margin-top: 15px;
+
+    padding: 19px;
+
+    border-radius: 19px;
+
+    background: rgba(5, 24, 48, .78);
+
+    border: 1px solid rgba(100,160,210,.12);
+}
+
+.company-deal-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+.company-deal-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #63809e;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: .12em;
+}
+
+.company-deal-top h3 {
+    margin: 0;
+
+    color: #eef6ff;
+
+    font-size: 17px;
+}
+
+.company-deal-status {
+    padding: 6px 9px;
+
+    border-radius: 9px;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+.deal-status-open {
+    color: #6fddff;
+
+    background: rgba(0,190,255,.08);
+
+    border: 1px solid rgba(0,210,255,.16);
+}
+
+.deal-status-won {
+    color: #5de3ad;
+
+    background: rgba(30,210,140,.08);
+
+    border: 1px solid rgba(40,220,150,.18);
+}
+
+.deal-status-lost {
+    color: #ff7085;
+
+    background: rgba(255,70,100,.08);
+
+    border: 1px solid rgba(255,80,110,.18);
+}
+
+
+/* VALUE */
+
+.company-deal-value {
+    margin-top: 18px;
+
+    padding: 14px 0;
+
+    border-top: 1px solid rgba(100,150,200,.08);
+    border-bottom: 1px solid rgba(100,150,200,.08);
+}
+
+.company-deal-value span,
+.company-deal-details span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #607c9a;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: .11em;
+}
+
+.company-deal-value strong {
+    color: #f3f8ff;
+
+    font-size: 23px;
+}
+
+
+/* DETAILS */
+
+.company-deal-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+
+    padding-top: 15px;
+}
+
+.company-deal-details strong {
+    color: #cbdced;
+
+    font-size: 11px;
+}
+
+
+/* ACTIONS */
+
+.company-deal-actions {
+    display: flex;
+
+    gap: 9px;
+
+    margin-top: 17px;
+}
+
+.company-deal-edit,
+.company-deal-delete {
+    flex: 1;
+
+    min-height: 38px;
+
+    border-radius: 11px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.company-deal-edit {
+    color: #72ddff;
+
+    background: rgba(0,180,255,.07);
+
+    border: 1px solid rgba(0,200,255,.17);
+}
+
+.company-deal-delete {
+    color: #ff7186;
+
+    background: rgba(255,70,100,.05);
+
+    border: 1px solid rgba(255,80,110,.14);
+}
+
+
+/* EMPTY */
+
+.company-deals-empty {
+    padding: 27px 15px;
+
+    text-align: center;
+
+    border-radius: 17px;
+
+    background: rgba(0,150,220,.035);
+
+    border: 1px dashed rgba(100,170,220,.15);
+}
+
+.company-deals-empty-icon {
+    font-size: 30px;
+
+    margin-bottom: 10px;
+}
+
+.company-deals-empty h3 {
+    margin: 0;
+
+    color: #edf5ff;
+
+    font-size: 17px;
+}
+
+.company-deals-empty p {
+    margin: 6px 0 17px;
+
+    color: #718aa7;
+
+    font-size: 12px;
+}
+
+
+/* ADD BUTTON */
+
+.company-deal-add-button {
+    min-height: 42px;
+
+    padding: 0 17px;
+
+    border-radius: 12px;
+
+    color: #6edfff;
+
+    background: rgba(0,180,255,.08);
+
+    border: 1px solid rgba(0,205,255,.22);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.company-deal-add-full {
+    width: 100%;
+
+    margin-top: 15px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 430px) {
+
+    .company-deals-section {
+        padding: 18px;
+        border-radius: 21px;
+    }
+
+    .company-deal-card {
+        padding: 17px;
+    }
+
+    .company-deal-details {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
