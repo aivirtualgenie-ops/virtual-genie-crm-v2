@@ -1398,3 +1398,241 @@ button.search:active {
 
     font-size: 15px;
 }
+/* =========================================================
+   PIPELINE SUMMARY
+========================================================= */
+
+.pipeline-summary-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.pipeline-summary-header h3 {
+    margin-bottom: 5px;
+}
+
+.pipeline-summary-header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.pipeline-view-button {
+    border: 1px solid rgba(0,217,255,.18);
+
+    background: rgba(0,217,255,.07);
+
+    color: #8fdcff;
+
+    border-radius: 11px;
+
+    padding: 9px 11px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        transform .14s ease,
+        background .14s ease,
+        border-color .14s ease;
+}
+
+.pipeline-view-button span {
+    margin-left: 4px;
+}
+
+.pipeline-view-button:hover {
+    transform: translateY(-2px);
+
+    background: rgba(0,217,255,.12);
+
+    border-color: rgba(0,217,255,.32);
+}
+
+.pipeline-view-button:active {
+    transform: scale(.96);
+}
+
+
+/* STAGE LIST */
+
+.pipeline-stage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* STAGE */
+
+.pipeline-stage {
+    width: 100%;
+    min-height: 62px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 9px 11px;
+
+    border-radius: 16px;
+
+    border: 1px solid
+        rgba(110,151,213,.10);
+
+    background:
+        rgba(7,17,34,.70);
+
+    color: white;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform .14s ease,
+        background .14s ease,
+        border-color .14s ease,
+        box-shadow .14s ease;
+}
+
+.pipeline-stage:hover {
+    transform: translateX(3px);
+
+    background:
+        rgba(15,30,57,.90);
+
+    border-color:
+        rgba(0,217,255,.24);
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,.18);
+}
+
+.pipeline-stage:active {
+    transform: scale(.975);
+}
+
+
+/* ICON */
+
+.pipeline-stage-icon {
+    width: 41px;
+    height: 41px;
+
+    flex: 0 0 41px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    font-size: 19px;
+    font-weight: 800;
+}
+
+
+/* ICON PALETTE */
+
+.pipeline-blue {
+    background: rgba(22,131,255,.13);
+    color: #55a9ff;
+}
+
+.pipeline-cyan {
+    background: rgba(0,217,255,.11);
+    color: #52e7ff;
+}
+
+.pipeline-purple {
+    background: rgba(124,60,255,.13);
+    color: #a78bfa;
+}
+
+.pipeline-violet {
+    background: rgba(168,85,247,.13);
+    color: #c084fc;
+}
+
+.pipeline-orange {
+    background: rgba(255,150,50,.12);
+    color: #ffb454;
+}
+
+.pipeline-green {
+    background: rgba(50,220,110,.12);
+    color: #5ee887;
+}
+
+.pipeline-red {
+    background: rgba(255,60,80,.12);
+    color: #ff6475;
+}
+
+
+/* TEXT */
+
+.pipeline-stage-info {
+    min-width: 0;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.pipeline-stage-info strong {
+    color: #f5f8ff;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.pipeline-stage-info small {
+    color: #71839d;
+
+    font-size: 11px;
+}
+
+
+/* COUNT */
+
+.pipeline-stage-count {
+    min-width: 25px;
+
+    text-align: center;
+
+    color: #e3ecfa;
+
+    font-size: 16px;
+    font-weight: 800;
+}
+
+
+/* ARROW */
+
+.pipeline-stage-arrow {
+    color: #617590;
+
+    font-size: 18px;
+
+    transition:
+        transform .14s ease,
+        color .14s ease;
+}
+
+.pipeline-stage:hover .pipeline-stage-arrow {
+    color: #8fdcff;
+
+    transform: translateX(3px);
+}
