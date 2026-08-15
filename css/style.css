@@ -1164,3 +1164,237 @@ button.search:active {
 
     transform: translateX(3px);
 }
+/* =========================================================
+   ATTENTION
+========================================================= */
+
+.attention-card {
+    overflow: hidden;
+}
+
+.attention-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.attention-header h3 {
+    margin-bottom: 5px;
+}
+
+.attention-header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.attention-count {
+    min-width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,217,255,.14),
+            rgba(124,60,255,.16)
+        );
+
+    border: 1px solid
+        rgba(0,217,255,.22);
+
+    color: #8fdcff;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.attention-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.attention-item {
+    width: 100%;
+    min-height: 67px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px 12px;
+
+    border-radius: 17px;
+
+    border: 1px solid
+        rgba(110,151,213,.11);
+
+    background:
+        rgba(7,17,34,.72);
+
+    color: white;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform .14s ease,
+        background .14s ease,
+        border-color .14s ease,
+        box-shadow .14s ease;
+}
+
+.attention-item:hover {
+    transform: translateX(3px);
+
+    background:
+        rgba(15,30,57,.90);
+
+    border-color:
+        rgba(0,217,255,.25);
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,.18);
+}
+
+.attention-item:active {
+    transform: scale(.975);
+}
+
+
+/* ICON */
+
+.attention-icon {
+    width: 43px;
+    height: 43px;
+
+    flex: 0 0 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+
+/* STATUS COLORS */
+
+.attention-danger .attention-icon {
+    background:
+        rgba(255,55,75,.13);
+
+    color: #ff5969;
+}
+
+.attention-success .attention-icon {
+    background:
+        rgba(82,220,100,.12);
+
+    color: #65e875;
+}
+
+.attention-warning .attention-icon {
+    background:
+        rgba(255,190,50,.12);
+
+    color: #ffc83d;
+}
+
+
+/* TEXT */
+
+.attention-content {
+    min-width: 0;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.attention-content strong {
+    color: #f5f8ff;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.attention-content small {
+    color: #71839d;
+
+    font-size: 11px;
+}
+
+
+/* NUMBER */
+
+.attention-number {
+    min-width: 24px;
+
+    text-align: center;
+
+    color: #dce8f8;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+
+/* ARROW */
+
+.attention-arrow {
+    color: #617590;
+
+    font-size: 19px;
+
+    transition:
+        transform .14s ease,
+        color .14s ease;
+}
+
+.attention-item:hover .attention-arrow {
+    color: #8fdcff;
+    transform: translateX(3px);
+}
+
+
+/* TOTAL */
+
+.attention-total {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 16px;
+    padding-top: 16px;
+
+    border-top:
+        1px solid
+        rgba(110,151,213,.10);
+
+    color: #8da1bd;
+
+    font-size: 13px;
+}
+
+.attention-total strong {
+    color: #f4f8ff;
+
+    font-size: 15px;
+}
