@@ -1785,3 +1785,28 @@ button.search:active {
     }
 
 }
+/* =========================================
+   CRM SUMMARY — MOBILE REFINEMENT
+========================================= */
+
+.crm-summary-card .section-heading h2 {
+    font-size: 34px;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.crm-summary-card .section-heading {
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+
+    .crm-summary-card .section-heading h2 {
+        font-size: 30px;
+    }
+
+    .crm-summary-card .section-subtitle {
+        font-size: 16px;
+    }
+
+}
