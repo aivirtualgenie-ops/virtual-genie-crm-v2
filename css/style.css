@@ -1636,3 +1636,152 @@ button.search:active {
 
     transform: translateX(3px);
 }
+/* =========================================
+   CRM SUMMARY
+========================================= */
+
+.crm-summary-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.crm-summary-card::before {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    top: -120px;
+    right: -80px;
+    background: rgba(0, 180, 255, 0.12);
+    filter: blur(55px);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 22px;
+}
+
+.section-heading h2 {
+    margin: 0;
+}
+
+.section-subtitle {
+    margin: 6px 0 0;
+    font-size: 15px;
+    color: #7890ad;
+}
+
+.section-badge {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+    background: rgba(0, 150, 255, 0.12);
+    border: 1px solid rgba(0, 180, 255, 0.35);
+
+    color: #6edbff;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.crm-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.crm-kpi {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    min-height: 82px;
+    padding: 14px;
+
+    background: rgba(3, 15, 35, 0.65);
+    border: 1px solid rgba(80, 150, 220, 0.13);
+    border-radius: 18px;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.crm-kpi:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 180, 255, 0.4);
+    background: rgba(8, 25, 52, 0.8);
+}
+
+.crm-kpi-icon {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+    font-size: 22px;
+}
+
+.companies-icon {
+    background: rgba(0, 140, 255, 0.15);
+}
+
+.calls-icon {
+    background: rgba(0, 210, 255, 0.13);
+}
+
+.pending-icon {
+    background: rgba(255, 170, 0, 0.14);
+}
+
+.completed-icon {
+    background: rgba(0, 220, 150, 0.13);
+    color: #00e69a;
+}
+
+.products-icon {
+    background: rgba(170, 100, 255, 0.14);
+}
+
+.crm-kpi-label {
+    display: block;
+    color: #7890ad;
+    font-size: 13px;
+    margin-bottom: 3px;
+}
+
+.crm-kpi strong {
+    display: block;
+    color: #f4f8ff;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.crm-kpi:last-child {
+    grid-column: 1 / -1;
+}
+
+@media (min-width: 700px) {
+
+    .crm-kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .crm-kpi:last-child {
+        grid-column: auto;
+    }
+
+}
