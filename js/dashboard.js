@@ -311,83 +311,128 @@ function loadDashboard() {
 
         <!-- PRIMARY STATS -->
 
-        <div class="stats">
+<div class="stats primary-stats">
 
-            <div class="stats-grid">
+    <div class="stats-grid">
 
+        <!-- COMPANIES -->
 
-                <!-- COMPANIES -->
+        <button
+            class="primary-stat primary-stat-companies"
+            onclick="location.hash='companies'">
 
-                <div
-                    class="card"
-                    style="cursor:pointer;"
-                    onclick="location.hash='companies'">
+            <span class="primary-stat-icon">
+                🏢
+            </span>
 
-                    <p>
-                        Companies
-                    </p>
+            <span class="primary-stat-content">
 
-                    <h2>
-                        ${companies.length}
-                    </h2>
+                <span class="primary-stat-label">
+                    Companies
+                </span>
 
-                </div>
+                <strong>
+                    ${companies.length}
+                </strong>
 
+            </span>
 
-                <!-- PIPELINE -->
+            <span class="primary-stat-arrow">
+                →
+            </span>
 
-                <div
-                    class="card"
-                    style="cursor:pointer;"
-                    onclick="location.hash='pipeline'">
-
-                    <p>
-                        Pipeline
-                    </p>
-
-                    <h2>
-                        ₹${totalPipeline}
-                    </h2>
-
-                </div>
+        </button>
 
 
-                <!-- REVENUE -->
+        <!-- PIPELINE -->
 
-                <div
-                    class="card"
-                    style="cursor:pointer;"
-                    onclick="location.hash='analytics'">
+        <button
+            class="primary-stat primary-stat-pipeline"
+            onclick="location.hash='pipeline'">
 
-                    <p>
-                        Revenue
-                    </p>
+            <span class="primary-stat-icon">
+                📈
+            </span>
 
-                    <h2>
-                        ₹${totalRevenue}
-                    </h2>
+            <span class="primary-stat-content">
 
-                </div>
+                <span class="primary-stat-label">
+                    Pipeline
+                </span>
+
+                <strong>
+                    ₹${totalPipeline}
+                </strong>
+
+            </span>
+
+            <span class="primary-stat-arrow">
+                →
+            </span>
+
+        </button>
 
 
-                <!-- PRODUCTS -->
+        <!-- REVENUE -->
 
-                <div
-                    class="card"
-                    style="cursor:pointer;"
-                    onclick="loadGlobalProducts()">
+        <button
+            class="primary-stat primary-stat-revenue"
+            onclick="location.hash='analytics'">
 
-                    <p>
-                        Products
-                    </p>
+            <span class="primary-stat-icon">
+                💰
+            </span>
 
-                    <h2>
-                        ${totalProducts}
-                    </h2>
+            <span class="primary-stat-content">
 
-                </div>
+                <span class="primary-stat-label">
+                    Revenue
+                </span>
 
-            </div>
+                <strong>
+                    ₹${totalRevenue}
+                </strong>
+
+            </span>
+
+            <span class="primary-stat-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- PRODUCTS -->
+
+        <button
+            class="primary-stat primary-stat-products"
+            onclick="loadGlobalProducts()">
+
+            <span class="primary-stat-icon">
+                📦
+            </span>
+
+            <span class="primary-stat-content">
+
+                <span class="primary-stat-label">
+                    Products
+                </span>
+
+                <strong>
+                    ${totalProducts}
+                </strong>
+
+            </span>
+
+            <span class="primary-stat-arrow">
+                →
+            </span>
+
+        </button>
+
+    </div>
+
+</div>
 
 <!-- CRM SUMMARY -->
 
