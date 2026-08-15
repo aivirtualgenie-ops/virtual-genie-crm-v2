@@ -46,7 +46,6 @@ function loadGlobalProducts() {
 
     let totalValue = 0;
 
-
     products.forEach(product => {
 
         totalValue +=
@@ -67,16 +66,28 @@ function loadGlobalProducts() {
 
         productCards = `
 
-        <div class="card">
+        <div class="products-empty-state">
 
-            <h3>
-                No Products
-            </h3>
+            <div class="products-empty-icon">
+                📦
+            </div>
+
+            <h2>
+                No products yet
+            </h2>
 
             <p>
-                Products from all companies
+                Products from all your companies
                 will appear here.
             </p>
+
+            <button
+                class="products-primary-button"
+                onclick="location.hash='companies'">
+
+                + Add Your First Product
+
+            </button>
 
         </div>
 
@@ -96,55 +107,131 @@ function loadGlobalProducts() {
                 quantity * price;
 
 
+            let stockStatus = "In Stock";
+            let stockClass = "in-stock";
+
+
+            if (quantity <= 0) {
+
+                stockStatus = "Out of Stock";
+                stockClass = "out-stock";
+
+            } else if (quantity <= 5) {
+
+                stockStatus = "Low Stock";
+                stockClass = "low-stock";
+
+            }
+
+
             productCards += `
 
-            <div class="card">
+            <div class="product-card">
 
-                <h3>
-                    ${product.name || "Unnamed Product"}
-                </h3>
+                <div class="product-card-top">
 
-                <p>
-                    <strong>Company:</strong>
-                    ${product.companyName || "-"}
-                </p>
+                    <div>
 
-                <p>
-                    <strong>SKU:</strong>
-                    ${product.sku || "-"}
-                </p>
+                        <span class="product-company">
+                            ${product.companyName || "-"}
+                        </span>
 
-                <p>
-                    <strong>Category:</strong>
-                    ${product.category || "-"}
-                </p>
+                        <h2>
+                            ${product.name || "Unnamed Product"}
+                        </h2>
 
-                <p>
-                    <strong>Quantity:</strong>
-                    ${quantity}
-                </p>
+                    </div>
 
-                <p>
-                    <strong>Price:</strong>
-                    ₹${price}
-                </p>
+                    <span class="product-stock ${stockClass}">
+                        ${stockStatus}
+                    </span>
 
-                <p>
-                    <strong>Total:</strong>
-                    ₹${value}
-                </p>
+                </div>
 
-                <br>
 
-                <button
-                    class="search"
-                    onclick="loadCompany(
-                        ${product.companyId}
-                    )">
+                <div class="product-details">
 
-                    Open Company
+                    <div class="product-detail">
 
-                </button>
+                        <span>
+                            SKU
+                        </span>
+
+                        <strong>
+                            ${product.sku || "-"}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="product-detail">
+
+                        <span>
+                            Category
+                        </span>
+
+                        <strong>
+                            ${product.category || "-"}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="product-detail">
+
+                        <span>
+                            Quantity
+                        </span>
+
+                        <strong>
+                            ${quantity}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="product-detail">
+
+                        <span>
+                            Unit Price
+                        </span>
+
+                        <strong>
+                            ₹${price}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="product-card-bottom">
+
+                    <div>
+
+                        <span>
+                            Inventory Value
+                        </span>
+
+                        <strong>
+                            ₹${value}
+                        </strong>
+
+                    </div>
+
+
+                    <button
+                        class="products-secondary-button"
+                        onclick="loadCompany(
+                            ${product.companyId}
+                        )">
+
+                        Open Company
+                        <span>→</span>
+
+                    </button>
+
+                </div>
 
             </div>
 
@@ -161,41 +248,112 @@ function loadGlobalProducts() {
 
     app.innerHTML = `
 
-    <div class="dashboard">
-
-        <div class="header">
-
-            <h1>
-                All Products
-            </h1>
-
-            <p class="subtitle">
-                ${products.length} Products
-            </p>
-
-        </div>
+    <div class="dashboard products-page">
 
 
-        <div class="card">
+        <!-- PRODUCTS HEADER -->
 
-            <p>
-                <strong>Total Products:</strong>
-                ${products.length}
-            </p>
+        <div class="products-page-header">
 
-            <p>
-                <strong>
-                    Total Inventory Value:
-                </strong>
+            <div class="products-header-icon">
+                📦
+            </div>
 
-                ₹${totalValue}
+            <div>
 
-            </p>
+                <p class="products-eyebrow">
+                    INVENTORY
+                </p>
+
+                <h1>
+                    All Products
+                </h1>
+
+                <p class="products-subtitle">
+                    ${products.length}
+                    ${products.length === 1 ? "Product" : "Products"}
+                    across all companies
+                </p>
+
+            </div>
 
         </div>
 
 
-        ${productCards}
+        <!-- PRODUCT KPIs -->
+
+        <div class="products-kpi-grid">
+
+
+            <div class="products-kpi-card">
+
+                <div class="products-kpi-icon">
+                    📦
+                </div>
+
+                <div>
+
+                    <span>
+                        TOTAL PRODUCTS
+                    </span>
+
+                    <strong>
+                        ${products.length}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="products-kpi-card">
+
+                <div class="products-kpi-icon value-icon">
+                    ₹
+                </div>
+
+                <div>
+
+                    <span>
+                        INVENTORY VALUE
+                    </span>
+
+                    <strong>
+                        ₹${totalValue}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- PRODUCTS -->
+
+        <div class="products-section">
+
+            <div class="products-section-heading">
+
+                <div>
+
+                    <h2>
+                        Product Inventory
+                    </h2>
+
+                    <p>
+                        Products from all your companies
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            ${productCards}
+
+        </div>
 
 
         ${bottomNav("products")}
