@@ -2079,3 +2079,66 @@ button.search:active {
     color: #69dfff;
     font-size: 22px;
 }
+/* =========================================
+   PRIMARY STATS — MOBILE OVERFLOW FIX
+========================================= */
+
+.primary-stats .stats-grid {
+    width: 100%;
+    min-width: 0;
+}
+
+.primary-stat {
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.primary-stat-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.primary-stat-label {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.primary-stat-content strong {
+    white-space: nowrap;
+}
+
+.primary-stat-arrow {
+    flex-shrink: 0;
+    margin-left: 4px;
+}
+
+@media (max-width: 600px) {
+
+    .primary-stat {
+        min-height: 145px;
+        padding: 16px;
+        gap: 11px;
+    }
+
+    .primary-stat-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+    }
+
+    .primary-stat-content strong {
+        font-size: 27px;
+    }
+
+    .primary-stat-label {
+        font-size: 11px;
+        letter-spacing: 0.06em;
+    }
+
+    .primary-stat-arrow {
+        display: none;
+    }
+}
