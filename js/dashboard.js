@@ -499,67 +499,184 @@ function loadDashboard() {
 
             </div>
 
+<!-- ATTENTION -->
 
-            <!-- ATTENTION -->
+<div
+    class="card attention-card"
+    style="margin-top:20px;">
 
-            <div
-                class="card"
-                style="margin-top:20px;">
+    <div class="attention-header">
 
-                <h3>
-                    Attention
-                </h3>
+        <div>
 
-                <br>
+            <h3>
+                Attention
+            </h3>
 
-                <p
-                    style="cursor:pointer;"
-                    onclick="location.hash='notifications'">
+            <p>
+                What needs your attention
+            </p>
 
-                    🔴 Overdue Tasks:
-                    ${overdueTasks}
+        </div>
 
-                </p>
+        <div class="attention-count">
+            ${attentionCount}
+        </div>
 
-                <p
-                    style="cursor:pointer;"
-                    onclick="location.hash='notifications'">
+    </div>
 
-                    🔴 Overdue Follow-ups:
-                    ${overdueFollowUps}
 
-                </p>
+    <div class="attention-list">
 
-                <p
-                    style="cursor:pointer;"
-                    onclick="location.hash='notifications'">
 
-                    🟢 Follow-ups Today:
-                    ${todayFollowUps}
+        <!-- OVERDUE TASKS -->
 
-                </p>
+        <button
+            class="attention-item attention-danger"
+            onclick="location.hash='notifications'">
 
-                <p
-                    style="cursor:pointer;"
-                    onclick="location.hash='calendar'">
+            <span class="attention-icon">
+                ⏰
+            </span>
 
-                    🟡 Upcoming Follow-ups:
-                    ${upcomingFollowUps}
+            <span class="attention-content">
 
-                </p>
+                <strong>
+                    Overdue Tasks
+                </strong>
 
-                <br>
+                <small>
+                    Tasks requiring attention
+                </small>
 
-                <p>
-                    <strong>
-                        Total Attention Items:
-                    </strong>
+            </span>
 
-                    ${attentionCount}
+            <span class="attention-number">
+                ${overdueTasks}
+            </span>
 
-                </p>
+            <span class="attention-arrow">
+                →
+            </span>
 
-            </div>
+        </button>
+
+
+        <!-- OVERDUE FOLLOW-UPS -->
+
+        <button
+            class="attention-item attention-danger"
+            onclick="location.hash='notifications'">
+
+            <span class="attention-icon">
+                📞
+            </span>
+
+            <span class="attention-content">
+
+                <strong>
+                    Overdue Follow-ups
+                </strong>
+
+                <small>
+                    Follow-ups that need action
+                </small>
+
+            </span>
+
+            <span class="attention-number">
+                ${overdueFollowUps}
+            </span>
+
+            <span class="attention-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- TODAY -->
+
+        <button
+            class="attention-item attention-success"
+            onclick="location.hash='notifications'">
+
+            <span class="attention-icon">
+                ✓
+            </span>
+
+            <span class="attention-content">
+
+                <strong>
+                    Follow-ups Today
+                </strong>
+
+                <small>
+                    Due today
+                </small>
+
+            </span>
+
+            <span class="attention-number">
+                ${todayFollowUps}
+            </span>
+
+            <span class="attention-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- UPCOMING -->
+
+        <button
+            class="attention-item attention-warning"
+            onclick="location.hash='calendar'">
+
+            <span class="attention-icon">
+                🗓
+            </span>
+
+            <span class="attention-content">
+
+                <strong>
+                    Upcoming Follow-ups
+                </strong>
+
+                <small>
+                    Coming up next
+                </small>
+
+            </span>
+
+            <span class="attention-number">
+                ${upcomingFollowUps}
+            </span>
+
+            <span class="attention-arrow">
+                →
+            </span>
+
+        </button>
+
+
+    </div>
+
+
+    <div class="attention-total">
+
+        <span>
+            Total Attention Items
+        </span>
+
+        <strong>
+            ${attentionCount}
+        </strong>
+
+    </div>
+
+</div>
 
 <!-- QUICK ACCESS -->
 
