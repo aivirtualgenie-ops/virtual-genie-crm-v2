@@ -3188,3 +3188,73 @@ button.search:active {
     }
 
 }
+/* =========================================================
+   CALL FOLLOW-UP STATUS
+========================================================= */
+
+.followup-status {
+    display: flex !important;
+    align-items: center;
+    gap: 7px;
+
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
+.followup-status i {
+    width: 7px;
+    height: 7px;
+
+    flex-shrink: 0;
+
+    display: inline-block;
+
+    border-radius: 50%;
+}
+
+
+/* Scheduled */
+
+.followup-status.scheduled {
+    color: #72ddff !important;
+}
+
+.followup-status.scheduled i {
+    background: #20d9ff;
+    box-shadow: 0 0 9px rgba(32,217,255,.55);
+}
+
+
+/* Due today */
+
+.followup-status.today {
+    color: #ffd166 !important;
+}
+
+.followup-status.today i {
+    background: #ffd166;
+    box-shadow: 0 0 9px rgba(255,209,102,.5);
+}
+
+
+/* Overdue */
+
+.followup-status.overdue {
+    color: #ff7187 !important;
+}
+
+.followup-status.overdue i {
+    background: #ff526d;
+    box-shadow: 0 0 9px rgba(255,82,109,.5);
+}
+
+
+/* None */
+
+.followup-status.none {
+    color: #71859e !important;
+}
+
+.followup-status.none i {
+    background: #52657c;
+}
