@@ -561,58 +561,150 @@ function loadDashboard() {
 
             </div>
 
+<!-- QUICK ACCESS -->
 
-            <!-- QUICK ACCESS -->
+<div
+    class="card quick-access-card"
+    style="margin-top:20px;">
 
-            <div
-                class="card"
-                style="margin-top:20px;">
+    <div class="quick-access-header">
 
-                <h3>
-                    Quick Access
-                </h3>
+        <div>
+            <h3>Quick Access</h3>
 
-                <br>
+            <p>
+                Jump to your most-used tools
+            </p>
+        </div>
 
-                <p
-                    style="cursor:pointer;"
-                    onclick="location.hash='pipeline'">
+        <span class="quick-access-badge">
+            4
+        </span>
 
-                    ✅ Sales Pipeline
+    </div>
 
-                </p>
 
-                <br>
+    <div class="quick-access-grid">
 
-                <p
-                    style="cursor:pointer;"
-                    onclick="location.hash='calendar'">
 
-                    📅 Calendar
+        <!-- PIPELINE -->
 
-                </p>
+        <button
+            class="quick-action"
+            onclick="location.hash='pipeline'">
 
-                <br>
+            <span class="quick-action-icon pipeline-icon">
+                📈
+            </span>
 
-                <p
-                    style="cursor:pointer;"
-                    onclick="location.hash='notifications'">
+            <span class="quick-action-content">
 
-                    🔔 Notifications
+                <strong>
+                    Sales Pipeline
+                </strong>
 
-                </p>
+                <small>
+                    Manage opportunities
+                </small>
 
-                <br>
+            </span>
 
-                <p
-                    style="cursor:pointer;"
-                    onclick="location.hash='analytics'">
+            <span class="quick-action-arrow">
+                →
+            </span>
 
-                    📊 Analytics Dashboard
+        </button>
 
-                </p>
 
-            </div>
+        <!-- CALENDAR -->
+
+        <button
+            class="quick-action"
+            onclick="location.hash='calendar'">
+
+            <span class="quick-action-icon calendar-icon">
+                📅
+            </span>
+
+            <span class="quick-action-content">
+
+                <strong>
+                    Calendar
+                </strong>
+
+                <small>
+                    View your schedule
+                </small>
+
+            </span>
+
+            <span class="quick-action-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- NOTIFICATIONS -->
+
+        <button
+            class="quick-action"
+            onclick="location.hash='notifications'">
+
+            <span class="quick-action-icon notification-icon">
+                🔔
+            </span>
+
+            <span class="quick-action-content">
+
+                <strong>
+                    Notifications
+                </strong>
+
+                <small>
+                    Follow-ups & reminders
+                </small>
+
+            </span>
+
+            <span class="quick-action-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- ANALYTICS -->
+
+        <button
+            class="quick-action"
+            onclick="location.hash='analytics'">
+
+            <span class="quick-action-icon analytics-icon">
+                📊
+            </span>
+
+            <span class="quick-action-content">
+
+                <strong>
+                    Analytics
+                </strong>
+
+                <small>
+                    View performance
+                </small>
+
+            </span>
+
+            <span class="quick-action-arrow">
+                →
+            </span>
+
+        </button>
+
+    </div>
+
+</div>
 
         </div>
 
