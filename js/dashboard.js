@@ -389,66 +389,123 @@ function loadDashboard() {
 
             </div>
 
+<!-- CRM SUMMARY -->
 
-            <!-- CRM SUMMARY -->
+<div class="card crm-summary-card">
 
-            <div
-                class="card"
-                style="margin-top:20px;">
+    <div class="section-heading">
 
-                <h3>
-                    CRM Summary
-                </h3>
+        <div>
+            <h2>CRM Summary</h2>
+            <p class="section-subtitle">
+                Your business at a glance
+            </p>
+        </div>
 
-                <br>
+        <div class="section-badge">5</div>
 
-                <p>
-                    <strong>
-                        Total Companies:
-                    </strong>
+    </div>
 
-                    ${companies.length}
 
-                </p>
+    <div class="crm-kpi-grid">
 
-                <p>
-                    <strong>
-                        Total Calls:
-                    </strong>
+        <div class="crm-kpi">
 
-                    ${totalCalls}
-
-                </p>
-
-                <p>
-                    <strong>
-                        Pending Tasks:
-                    </strong>
-
-                    ${pendingTasks}
-
-                </p>
-
-                <p>
-                    <strong>
-                        Completed Tasks:
-                    </strong>
-
-                    ${completedTasks}
-
-                </p>
-
-                <p>
-                    <strong>
-                        Total Products:
-                    </strong>
-
-                    ${totalProducts}
-
-                </p>
-
+            <div class="crm-kpi-icon companies-icon">
+                🏢
             </div>
 
+            <div>
+                <span class="crm-kpi-label">
+                    Companies
+                </span>
+
+                <strong>
+                    ${companies.length}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="crm-kpi">
+
+            <div class="crm-kpi-icon calls-icon">
+                ☎️
+            </div>
+
+            <div>
+                <span class="crm-kpi-label">
+                    Calls
+                </span>
+
+                <strong>
+                    ${totalCalls}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="crm-kpi">
+
+            <div class="crm-kpi-icon pending-icon">
+                ◷
+            </div>
+
+            <div>
+                <span class="crm-kpi-label">
+                    Pending Tasks
+                </span>
+
+                <strong>
+                    ${pendingTasks}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="crm-kpi">
+
+            <div class="crm-kpi-icon completed-icon">
+                ✓
+            </div>
+
+            <div>
+                <span class="crm-kpi-label">
+                    Completed
+                </span>
+
+                <strong>
+                    ${completedTasks}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="crm-kpi">
+
+            <div class="crm-kpi-icon products-icon">
+                📦
+            </div>
+
+            <div>
+                <span class="crm-kpi-label">
+                    Products
+                </span>
+
+                <strong>
+                    ${totalProducts}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
             <!-- PIPELINE SUMMARY -->
 
