@@ -1935,3 +1935,63 @@ button.search:active {
     }
 
 }
+/* =========================================
+   PRIMARY STATS — VISUAL POLISH
+========================================= */
+
+.dashboard > .card:not(.crm-summary-card) {
+    transition:
+        transform 0.16s ease,
+        border-color 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+/* Stat card titles */
+.dashboard > .card:not(.crm-summary-card) h3 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #8ca3c2;
+}
+
+/* Stat numbers */
+.dashboard > .card:not(.crm-summary-card) h2 {
+    margin-top: 18px;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: #f5f9ff;
+}
+
+/* Subtle interaction */
+.dashboard > .card:not(.crm-summary-card):hover {
+    transform: translateY(-2px);
+
+    border-color:
+        rgba(40, 180, 255, 0.32);
+
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.22),
+        0 0 18px rgba(0, 160, 255, 0.08);
+}
+
+.dashboard > .card:not(.crm-summary-card):active {
+    transform: scale(0.985);
+}
+
+/* Mobile sizing */
+@media (max-width: 430px) {
+
+    .dashboard > .card:not(.crm-summary-card) h3 {
+        font-size: 12px;
+        letter-spacing: 0.7px;
+    }
+
+    .dashboard > .card:not(.crm-summary-card) h2 {
+        font-size: 32px;
+        margin-top: 16px;
+    }
+
+}
