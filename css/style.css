@@ -2497,3 +2497,235 @@ button.search:active {
     }
 
 }
+/* =========================================================
+   CALL HISTORY — HEADER & EMPTY STATE
+========================================================= */
+
+.call-history-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    margin-bottom: 24px;
+}
+
+.call-history-icon {
+    width: 56px;
+    height: 56px;
+
+    flex: 0 0 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0, 217, 255, 0.16),
+            rgba(90, 70, 255, 0.14)
+        );
+
+    border: 1px solid
+        rgba(0, 217, 255, 0.20);
+
+    color: #72ddff;
+
+    font-size: 25px;
+
+    box-shadow:
+        0 8px 24px rgba(0, 130, 255, 0.10);
+}
+
+.call-history-heading {
+    min-width: 0;
+}
+
+.call-history-label {
+    margin: 0 0 4px;
+
+    color: #6e9bc5;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 0.14em;
+}
+
+.call-history-heading h1 {
+    margin: 0;
+
+    color: #f5f9ff;
+
+    font-size: 30px;
+    line-height: 1.05;
+}
+
+.call-history-company {
+    margin: 6px 0 0;
+
+    color: #7e95b2;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   CALL EMPTY STATE
+========================================================= */
+
+.call-empty-state {
+    padding: 38px 22px;
+
+    text-align: center;
+
+    border-radius: 24px;
+
+    border: 1px solid
+        rgba(90, 160, 220, 0.13);
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(0, 190, 255, 0.09),
+            transparent 55%
+        ),
+        rgba(7, 17, 34, 0.78);
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.16);
+}
+
+.call-empty-icon {
+    width: 68px;
+    height: 68px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 21px;
+
+    background:
+        rgba(0, 190, 255, 0.10);
+
+    border: 1px solid
+        rgba(0, 210, 255, 0.18);
+
+    color: #62dcff;
+
+    font-size: 30px;
+
+    box-shadow:
+        0 0 30px rgba(0, 180, 255, 0.08);
+}
+
+.call-empty-state h2 {
+    margin: 0;
+
+    color: #f5f9ff;
+
+    font-size: 21px;
+}
+
+.call-empty-state p {
+    max-width: 290px;
+
+    margin: 9px auto 22px;
+
+    color: #748ba8;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+.call-empty-button {
+    min-height: 46px;
+
+    padding: 0 18px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    border: 1px solid
+        rgba(0, 210, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0, 180, 255, 0.16),
+            rgba(100, 70, 255, 0.15)
+        );
+
+    color: #a9eaff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        box-shadow .15s ease;
+}
+
+.call-empty-button span {
+    font-size: 18px;
+}
+
+.call-empty-button:hover {
+    transform: translateY(-2px);
+
+    border-color:
+        rgba(0, 220, 255, 0.45);
+
+    box-shadow:
+        0 8px 22px
+        rgba(0, 150, 255, 0.12);
+}
+
+.call-empty-button:active {
+    transform: scale(.97);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 430px) {
+
+    .call-history-header {
+        gap: 13px;
+    }
+
+    .call-history-icon {
+        width: 50px;
+        height: 50px;
+
+        flex-basis: 50px;
+
+        border-radius: 16px;
+
+        font-size: 22px;
+    }
+
+    .call-history-heading h1 {
+        font-size: 27px;
+    }
+
+}
