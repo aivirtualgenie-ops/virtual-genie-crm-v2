@@ -32,11 +32,28 @@ if(calls.length===0){
 
 callCards=`
 
-<div class="card">
+<div class="global-call-empty">
 
-<h3>No Calls Logged</h3>
+    <div class="global-call-empty-icon">
+        ☎
+    </div>
 
-<p>Calls from all companies will appear here.</p>
+    <h2>
+        No calls yet
+    </h2>
+
+    <p>
+        Calls from all your companies will appear here.
+    </p>
+
+    <button
+        class="global-call-empty-button"
+        onclick="location.hash='companies'">
+
+        <span>+</span>
+        Log a Call
+
+    </button>
 
 </div>
 
