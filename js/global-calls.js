@@ -245,15 +245,59 @@ function loadGlobalCalls(){
 
                     <div class="global-call-followup">
 
-                        <span>
-                            FOLLOW-UP
-                        </span>
+    <span>
+        FOLLOW-UP
+    </span>
 
-                        <strong>
-                            ${formatDate(call.followUp)}
-                        </strong>
+    ${
+        call.followUp
+        ? (() => {
 
-                    </div>
+            const followUpDate = new Date(call.followUp);
+            const today = new Date();
+
+            followUpDate.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+
+            if(followUpDate < today){
+
+                return `
+                    <strong class="followup-status overdue">
+                        <i></i>
+                        Overdue · ${formatDate(call.followUp)}
+                    </strong>
+                `;
+
+            }
+
+            if(followUpDate.getTime() === today.getTime()){
+
+                return `
+                    <strong class="followup-status today">
+                        <i></i>
+                        Due Today
+                    </strong>
+                `;
+
+            }
+
+            return `
+                <strong class="followup-status scheduled">
+                    <i></i>
+                    Scheduled · ${formatDate(call.followUp)}
+                </strong>
+            `;
+
+        })()
+        : `
+            <strong class="followup-status none">
+                <i></i>
+                No follow-up
+            </strong>
+        `
+    }
+
+</div>
 
 
                     <button
