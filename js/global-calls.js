@@ -65,35 +65,84 @@ calls.forEach(call=>{
 
 callCards+=`
 
-<div class="card">
+<div class="global-call-card">
 
-<h3>${call.companyName}</h3>
+    <div class="global-call-card-top">
 
-<p><strong>Type:</strong> ${call.type}</p>
+        <div class="global-call-company">
+            <div class="global-call-company-icon">
+                ☎
+            </div>
 
-<p><strong>Date:</strong> ${call.date}</p>
+            <div>
+                <h3>${call.companyName}</h3>
 
-<p><strong>Time:</strong> ${call.time}</p>
+                <span class="global-call-type">
+                    ${call.type}
+                </span>
+            </div>
+        </div>
 
-<p><strong>Duration:</strong> ${call.duration} min</p>
+        <div class="global-call-outcome">
+            ${call.outcome}
+        </div>
 
-<p><strong>Outcome:</strong> ${call.outcome}</p>
+    </div>
 
-<p><strong>Follow-up:</strong> ${call.followUp || "-"}</p>
 
-<br>
+    <div class="global-call-details">
 
-<p>${call.notes}</p>
+        <div class="global-call-detail">
+            <span>DATE</span>
+            <strong>${call.date}</strong>
+        </div>
 
-<br>
+        <div class="global-call-detail">
+            <span>TIME</span>
+            <strong>${call.time}</strong>
+        </div>
 
-<button
-class="search"
-onclick="loadCompany(${call.companyId})">
+        <div class="global-call-detail">
+            <span>DURATION</span>
+            <strong>${call.duration} min</strong>
+        </div>
 
-Open Company
+    </div>
 
-</button>
+
+    <div class="global-call-notes">
+
+        <span>NOTES</span>
+
+        <p>
+            ${call.notes || "No notes added."}
+        </p>
+
+    </div>
+
+
+    <div class="global-call-footer">
+
+        <div class="global-call-followup">
+
+            <span>FOLLOW-UP</span>
+
+            <strong>
+                ${call.followUp || "None"}
+            </strong>
+
+        </div>
+
+        <button
+            class="global-call-open"
+            onclick="loadCompany(${call.companyId})">
+
+            Open Company
+            <span>→</span>
+
+        </button>
+
+    </div>
 
 </div>
 
