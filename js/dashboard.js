@@ -287,13 +287,40 @@ function loadDashboard() {
 
         <div class="header">
 
-            <p class="greeting">
-                Good Evening 👋
-            </p>
+            <div class="brand-reveal">
 
-            <h1>
-                Virtual Genie CRM
-            </h1>
+    <div class="brand-particles" aria-hidden="true">
+        <span>✦</span>
+        <span>·</span>
+        <span>✧</span>
+        <span>·</span>
+        <span>✦</span>
+        <span>·</span>
+        <span>✧</span>
+        <span>·</span>
+        <span>✦</span>
+        <span>·</span>
+        <span>✧</span>
+        <span>✦</span>
+    </div>
+
+    <h1 class="brand-title" aria-label="Virtual Genie CRM">
+
+        <span class="brand-word brand-virtual">
+            <span>V</span><span>i</span><span>r</span><span>t</span><span>u</span><span>a</span><span>l</span>
+        </span>
+
+        <span class="brand-word brand-genie">
+            <span>G</span><span>e</span><span>n</span><span>i</span><span>e</span>
+        </span>
+
+        <span class="brand-crm">
+            <span>C</span><span>R</span><span>M</span>
+        </span>
+
+    </h1>
+
+</div>
 
             <p class="subtitle">
                 Your Business Operating System
