@@ -29,10 +29,11 @@ break;
 
 case "pipeline":
 
-loadPipeline();
+    console.log("PIPELINE ROUTE WORKING");
 
-break;
+    loadPipeline();
 
+    break;
 case "calendar":
 
 loadCalendar();
