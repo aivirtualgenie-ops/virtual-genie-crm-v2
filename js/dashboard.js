@@ -452,52 +452,273 @@ function loadDashboard() {
 
             <!-- PIPELINE SUMMARY -->
 
-            <div
-                class="card"
-                style="margin-top:20px;">
+<div
+    class="card pipeline-summary-card"
+    style="margin-top:20px;">
 
-                <h3>
-                    Pipeline
-                </h3>
+    <div class="pipeline-summary-header">
 
-                <br>
+        <div>
 
-                <p>
-                    🆕 New Leads:
-                    ${newLeads}
-                </p>
+            <h3>
+                Pipeline
+            </h3>
 
-                <p>
-                    📞 Contacted:
-                    ${contacted}
-                </p>
+            <p>
+                Sales opportunities by stage
+            </p>
 
-                <p>
-                    📅 Meetings:
-                    ${meetings}
-                </p>
+        </div>
 
-                <p>
-                    📄 Proposals:
-                    ${proposals}
-                </p>
+        <button
+            class="pipeline-view-button"
+            onclick="location.hash='pipeline'">
 
-                <p>
-                    🤝 Negotiations:
-                    ${negotiations}
-                </p>
+            View Pipeline
+            <span>→</span>
 
-                <p>
-                    🏆 Won:
-                    ${won}
-                </p>
+        </button>
 
-                <p>
-                    ❌ Lost:
-                    ${lost}
-                </p>
+    </div>
 
-            </div>
+
+    <div class="pipeline-stage-list">
+
+
+        <!-- NEW LEADS -->
+
+        <button
+            class="pipeline-stage"
+            onclick="location.hash='pipeline'">
+
+            <span class="pipeline-stage-icon pipeline-blue">
+                ✦
+            </span>
+
+            <span class="pipeline-stage-info">
+
+                <strong>
+                    New Leads
+                </strong>
+
+                <small>
+                    New opportunities
+                </small>
+
+            </span>
+
+            <span class="pipeline-stage-count">
+                ${newLeads}
+            </span>
+
+            <span class="pipeline-stage-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- CONTACTED -->
+
+        <button
+            class="pipeline-stage"
+            onclick="location.hash='pipeline'">
+
+            <span class="pipeline-stage-icon pipeline-cyan">
+                ☎
+            </span>
+
+            <span class="pipeline-stage-info">
+
+                <strong>
+                    Contacted
+                </strong>
+
+                <small>
+                    Initial contact made
+                </small>
+
+            </span>
+
+            <span class="pipeline-stage-count">
+                ${contacted}
+            </span>
+
+            <span class="pipeline-stage-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- MEETINGS -->
+
+        <button
+            class="pipeline-stage"
+            onclick="location.hash='pipeline'">
+
+            <span class="pipeline-stage-icon pipeline-purple">
+                ◷
+            </span>
+
+            <span class="pipeline-stage-info">
+
+                <strong>
+                    Meetings
+                </strong>
+
+                <small>
+                    Meetings scheduled
+                </small>
+
+            </span>
+
+            <span class="pipeline-stage-count">
+                ${meetings}
+            </span>
+
+            <span class="pipeline-stage-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- PROPOSALS -->
+
+        <button
+            class="pipeline-stage"
+            onclick="location.hash='pipeline'">
+
+            <span class="pipeline-stage-icon pipeline-violet">
+                ◈
+            </span>
+
+            <span class="pipeline-stage-info">
+
+                <strong>
+                    Proposals
+                </strong>
+
+                <small>
+                    Proposals sent
+                </small>
+
+            </span>
+
+            <span class="pipeline-stage-count">
+                ${proposals}
+            </span>
+
+            <span class="pipeline-stage-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- NEGOTIATIONS -->
+
+        <button
+            class="pipeline-stage"
+            onclick="location.hash='pipeline'">
+
+            <span class="pipeline-stage-icon pipeline-orange">
+                ⇄
+            </span>
+
+            <span class="pipeline-stage-info">
+
+                <strong>
+                    Negotiations
+                </strong>
+
+                <small>
+                    Deals being negotiated
+                </small>
+
+            </span>
+
+            <span class="pipeline-stage-count">
+                ${negotiations}
+            </span>
+
+            <span class="pipeline-stage-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- WON -->
+
+        <button
+            class="pipeline-stage"
+            onclick="location.hash='pipeline'">
+
+            <span class="pipeline-stage-icon pipeline-green">
+                ✓
+            </span>
+
+            <span class="pipeline-stage-info">
+
+                <strong>
+                    Won
+                </strong>
+
+                <small>
+                    Closed successfully
+                </small>
+
+            </span>
+
+            <span class="pipeline-stage-count">
+                ${won}
+            </span>
+
+            <span class="pipeline-stage-arrow">
+                →
+            </span>
+
+        </button>
+
+
+        <!-- LOST -->
+
+        <button
+            class="pipeline-stage"
+            onclick="location.hash='pipeline'">
+
+            <span class="pipeline-stage-icon pipeline-red">
+                ×
+            </span>
+
+            <span class="pipeline-stage-info">
+
+                <strong>
+                    Lost
+                </strong>
+
+                <small>
+                    Opportunities closed lost
+                </small>
+
+            </span>
+
+            <span class="pipeline-stage-count">
+                ${lost}
+            </span>
+
+            <span class="pipeline-stage-arrow">
+                →
+            </span>
+
+        </button>
+
+
+    </div>
+
+</div>
 
 <!-- ATTENTION -->
 
