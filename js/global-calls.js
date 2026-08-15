@@ -6,6 +6,70 @@ function loadGlobalCalls(){
 
     let calls = [];
 
+
+    /* =========================================================
+       DATE FORMATTER
+       Converts:
+       2026-08-15T19:01:17.687Z
+       → 15 Aug 2026
+
+       Also converts:
+       2026-08-21
+       → 21 Aug 2026
+    ========================================================= */
+
+    function formatDate(value){
+
+        if(!value){
+            return "-";
+        }
+
+        const dateString = String(value).split("T")[0];
+
+        const parts = dateString.split("-");
+
+        if(parts.length !== 3){
+            return value;
+        }
+
+        const year = parts[0];
+        const month = Number(parts[1]);
+        const day = Number(parts[2]);
+
+        const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+        ];
+
+        if(
+            !year ||
+            !month ||
+            !day ||
+            month < 1 ||
+            month > 12
+        ){
+            return value;
+        }
+
+        return `${day} ${months[month - 1]} ${year}`;
+
+    }
+
+
+    /* =========================================================
+       COLLECT CALLS
+    ========================================================= */
+
     companies.forEach(company => {
 
         (company.calls || []).forEach(call => {
@@ -24,9 +88,12 @@ function loadGlobalCalls(){
 
     });
 
+
     calls.sort((a,b) => b.id - a.id);
 
+
     let callCards = "";
+
 
     /* =========================================================
        EMPTY STATE
@@ -65,6 +132,7 @@ function loadGlobalCalls(){
 
     }else{
 
+
         /* =====================================================
            CALL CARDS
         ===================================================== */
@@ -74,6 +142,7 @@ function loadGlobalCalls(){
             callCards += `
 
             <div class="global-call-card">
+
 
                 <!-- TOP -->
 
@@ -111,6 +180,7 @@ function loadGlobalCalls(){
 
                 <div class="global-call-details">
 
+
                     <div class="global-call-detail">
 
                         <span>
@@ -118,7 +188,7 @@ function loadGlobalCalls(){
                         </span>
 
                         <strong>
-                            ${call.date}
+                            ${formatDate(call.date)}
                         </strong>
 
                     </div>
@@ -131,7 +201,7 @@ function loadGlobalCalls(){
                         </span>
 
                         <strong>
-                            ${call.time}
+                            ${call.time || "-"}
                         </strong>
 
                     </div>
@@ -144,10 +214,11 @@ function loadGlobalCalls(){
                         </span>
 
                         <strong>
-                            ${call.duration} min
+                            ${call.duration || 0} min
                         </strong>
 
                     </div>
+
 
                 </div>
 
@@ -171,6 +242,7 @@ function loadGlobalCalls(){
 
                 <div class="global-call-footer">
 
+
                     <div class="global-call-followup">
 
                         <span>
@@ -178,7 +250,7 @@ function loadGlobalCalls(){
                         </span>
 
                         <strong>
-                            ${call.followUp || "None"}
+                            ${formatDate(call.followUp)}
                         </strong>
 
                     </div>
@@ -196,7 +268,9 @@ function loadGlobalCalls(){
 
                     </button>
 
+
                 </div>
+
 
             </div>
 
@@ -238,9 +312,13 @@ function loadGlobalCalls(){
 
 
                 <p class="global-calls-count">
+
                     ${calls.length}
+
                     ${calls.length === 1 ? "Call" : "Calls"}
+
                     Logged
+
                 </p>
 
             </div>
