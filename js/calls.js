@@ -192,17 +192,29 @@ function loadCalls(companyId) {
 
     <div class="dashboard">
 
-        <div class="header">
+        <div class="call-history-header">
 
-            <h1>
-                Call History
-            </h1>
+    <div class="call-history-icon">
+        ☎
+    </div>
 
-            <p class="subtitle">
-                ${company.companyName}
-            </p>
+    <div class="call-history-heading">
 
-        </div>
+        <p class="call-history-label">
+            COMMUNICATION
+        </p>
+
+        <h1>
+            Call History
+        </h1>
+
+        <p class="call-history-company">
+            ${company.companyName}
+        </p>
+
+    </div>
+
+</div>
 
         ${callCards}
 
