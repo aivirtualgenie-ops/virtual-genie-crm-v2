@@ -107,15 +107,27 @@ app.innerHTML=`
 
 <div class="dashboard">
 
-<div class="header">
+<div class="global-calls-header">
 
-<h1>All Calls</h1>
+    <div class="global-calls-icon">
+        ☎
+    </div>
 
-<p class="subtitle">
+    <div>
 
-${calls.length} Calls Logged
+        <p class="global-calls-label">
+            COMMUNICATION
+        </p>
 
-</p>
+        <h1>
+            All Calls
+        </h1>
+
+        <p class="global-calls-count">
+            ${calls.length} ${calls.length === 1 ? "Call" : "Calls"} Logged
+        </p>
+
+    </div>
 
 </div>
 
