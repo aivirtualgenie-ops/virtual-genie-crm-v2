@@ -96,6 +96,11 @@ function addCompany(company) {
     company.calls =
         company.calls || [];
 
+    /* NEW: DEALS */
+
+    company.deals =
+        company.deals || [];
+
     companies.push(company);
 
     return saveCompanies(companies);
@@ -182,6 +187,11 @@ function updateCompany(updatedCompany) {
 
     updatedCompany.calls =
         updatedCompany.calls || [];
+
+    /* NEW: DEALS */
+
+    updatedCompany.deals =
+        updatedCompany.deals || [];
 
 
     /* ================================
@@ -344,6 +354,221 @@ function deleteProduct(
                 String(product.id) !==
                 String(productId)
         );
+
+    return updateCompany(company);
+
+}
+
+
+/* =========================================
+   DEALS / SALES OPPORTUNITIES
+========================================= */
+
+/*
+   Phase 1 only:
+   Adds safe CRUD for deals.
+
+   This does NOT change:
+   - pipelineValue
+   - revenue
+   - products
+   - calls
+   - tasks
+   - pipelineStage
+
+   Deals are simply stored alongside
+   the existing company data.
+*/
+
+
+/* =========================================
+   GET DEALS
+========================================= */
+
+function getDeals(companyId) {
+
+    const company =
+        getCompany(companyId);
+
+    if (!company) {
+
+        console.error(
+            "Company not found:",
+            companyId
+        );
+
+        return [];
+
+    }
+
+    if (!company.deals) {
+
+        company.deals = [];
+
+    }
+
+    return company.deals;
+
+}
+
+
+/* =========================================
+   ADD DEAL
+========================================= */
+
+function addDeal(
+    companyId,
+    deal
+) {
+
+    const company =
+        getCompany(companyId);
+
+    if (!company) {
+
+        console.error(
+            "Company not found:",
+            companyId
+        );
+
+        return false;
+
+    }
+
+    if (!company.deals) {
+
+        company.deals = [];
+
+    }
+
+    deal.id =
+        deal.id || Date.now();
+
+    deal.createdAt =
+        deal.createdAt ||
+        new Date().toISOString();
+
+    deal.updatedAt =
+        new Date().toISOString();
+
+    deal.value =
+        Number(deal.value || 0);
+
+    deal.stage =
+        deal.stage || "New Lead";
+
+    deal.status =
+        deal.status || "Open";
+
+    company.deals.push(deal);
+
+    return updateCompany(company);
+
+}
+
+
+/* =========================================
+   UPDATE DEAL
+========================================= */
+
+function updateDeal(
+    companyId,
+    updatedDeal
+) {
+
+    const company =
+        getCompany(companyId);
+
+    if (!company) {
+
+        console.error(
+            "Company not found:",
+            companyId
+        );
+
+        return false;
+
+    }
+
+    if (!company.deals) {
+
+        company.deals = [];
+
+    }
+
+
+    const index =
+        company.deals.findIndex(
+            deal =>
+                String(deal.id) ===
+                String(updatedDeal.id)
+        );
+
+
+    if (index === -1) {
+
+        console.error(
+            "updateDeal: deal not found",
+            updatedDeal.id
+        );
+
+        return false;
+
+    }
+
+
+    updatedDeal.updatedAt =
+        new Date().toISOString();
+
+    updatedDeal.value =
+        Number(updatedDeal.value || 0);
+
+    updatedDeal.stage =
+        updatedDeal.stage || "New Lead";
+
+    updatedDeal.status =
+        updatedDeal.status || "Open";
+
+
+    company.deals[index] =
+        updatedDeal;
+
+
+    return updateCompany(company);
+
+}
+
+
+/* =========================================
+   DELETE DEAL
+========================================= */
+
+function deleteDeal(
+    companyId,
+    dealId
+) {
+
+    const company =
+        getCompany(companyId);
+
+    if (!company) {
+
+        console.error(
+            "Company not found:",
+            companyId
+        );
+
+        return false;
+
+    }
+
+    company.deals =
+        (company.deals || []).filter(
+            deal =>
+                String(deal.id) !==
+                String(dealId)
+        );
+
 
     return updateCompany(company);
 
