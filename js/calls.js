@@ -68,19 +68,35 @@ function loadCalls(companyId) {
 
     if (company.calls.length === 0) {
 
-        callCards = `
+    callCards = `
 
-        <div class="card">
+    <div class="call-empty-state">
 
-            <h3>No Calls Yet</h3>
-
-            <p>
-                Log your first call with this company.
-            </p>
-
+        <div class="call-empty-icon">
+            ☎
         </div>
 
-        `;
+        <h2>
+            No calls yet
+        </h2>
+
+        <p>
+            Start building the conversation history
+            for ${company.companyName}.
+        </p>
+
+        <button
+            class="call-empty-button"
+            onclick="loadAddCall(${company.id})">
+
+            <span>+</span>
+            Log First Call
+
+        </button>
+
+    </div>
+
+    `;
 
     }
 
