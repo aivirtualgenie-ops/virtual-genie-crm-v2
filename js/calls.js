@@ -68,35 +68,35 @@ function loadCalls(companyId) {
 
     if (company.calls.length === 0) {
 
-    callCards = `
+        callCards = `
 
-    <div class="call-empty-state">
+        <div class="call-empty-state">
 
-        <div class="call-empty-icon">
-            ☎
+            <div class="call-empty-icon">
+                ☎
+            </div>
+
+            <h2>
+                No calls yet
+            </h2>
+
+            <p>
+                Start building the conversation history
+                for ${company.companyName}.
+            </p>
+
+            <button
+                class="call-empty-button"
+                onclick="loadAddCall(${company.id})">
+
+                <span>+</span>
+                Log First Call
+
+            </button>
+
         </div>
 
-        <h2>
-            No calls yet
-        </h2>
-
-        <p>
-            Start building the conversation history
-            for ${company.companyName}.
-        </p>
-
-        <button
-            class="call-empty-button"
-            onclick="loadAddCall(${company.id})">
-
-            <span>+</span>
-            Log First Call
-
-        </button>
-
-    </div>
-
-    `;
+        `;
 
     }
 
@@ -194,27 +194,27 @@ function loadCalls(companyId) {
 
         <div class="call-history-header">
 
-    <div class="call-history-icon">
-        ☎
-    </div>
+            <div class="call-history-icon">
+                ☎
+            </div>
 
-    <div class="call-history-heading">
+            <div class="call-history-heading">
 
-        <p class="call-history-label">
-            COMMUNICATION
-        </p>
+                <p class="call-history-label">
+                    COMMUNICATION
+                </p>
 
-        <h1>
-            Call History
-        </h1>
+                <h1>
+                    Call History
+                </h1>
 
-        <p class="call-history-company">
-            ${company.companyName}
-        </p>
+                <p class="call-history-company">
+                    ${company.companyName}
+                </p>
 
-    </div>
+            </div>
 
-</div>
+        </div>
 
         ${callCards}
 
@@ -367,6 +367,10 @@ function saveCall(companyId) {
     }
 
 
+    /* =====================================
+       INITIALIZE ARRAYS
+    ===================================== */
+
     if (!company.calls) {
 
         company.calls = [];
@@ -374,34 +378,56 @@ function saveCall(companyId) {
     }
 
 
+    if (!company.tasks) {
+
+        company.tasks = [];
+
+    }
+
+
+    /* =====================================
+       READ FORM
+    ===================================== */
+
     const type =
-        document.getElementById(
-            "callType"
-        ).value.trim();
+        document
+            .getElementById("callType")
+            .value
+            .trim();
 
 
     const durationValue =
-        document.getElementById(
-            "callDuration"
-        ).value;
+        document
+            .getElementById("callDuration")
+            .value;
 
 
     const outcome =
-        document.getElementById(
-            "callOutcome"
-        ).value.trim();
+        document
+            .getElementById("callOutcome")
+            .value
+            .trim();
 
 
     const followUp =
-        document.getElementById(
-            "callFollowUp"
-        ).value;
+        document
+            .getElementById("callFollowUp")
+            .value;
 
 
     const notes =
-        document.getElementById(
-            "callNotes"
-        ).value.trim();
+        document
+            .getElementById("callNotes")
+            .value
+            .trim();
+
+
+    /* =====================================
+       CREATE CALL ID
+    ===================================== */
+
+    const callId =
+        Date.now();
 
 
     /* =====================================
@@ -410,7 +436,8 @@ function saveCall(companyId) {
 
     const call = {
 
-        id: Date.now(),
+        id:
+            callId,
 
         date:
             new Date().toISOString(),
@@ -443,11 +470,68 @@ function saveCall(companyId) {
 
 
     /* =====================================
-       SAVE
+       SAVE CALL
     ===================================== */
 
     company.calls.unshift(call);
 
+
+    /* =====================================
+       AUTOMATIC FOLLOW-UP TASK
+    ===================================== */
+
+    if (followUp) {
+
+        const followUpTask = {
+
+            id:
+                Date.now() + 1,
+
+            title:
+                `Follow up with ${company.companyName}`,
+
+            dueDate:
+                followUp,
+
+            priority:
+                "Medium",
+
+            status:
+                "Pending",
+
+            notes:
+                [
+                    outcome
+                        ? `Call outcome: ${outcome}`
+                        : "",
+
+                    notes
+                        ? `Call notes: ${notes}`
+                        : ""
+
+                ]
+                .filter(Boolean)
+                .join("\n\n"),
+
+            source:
+                "call",
+
+            sourceCallId:
+                callId
+
+        };
+
+
+        company.tasks.push(
+            followUpTask
+        );
+
+    }
+
+
+    /* =====================================
+       SAVE COMPANY
+    ===================================== */
 
     const saved =
         updateCompany(company);
@@ -463,6 +547,10 @@ function saveCall(companyId) {
 
     }
 
+
+    /* =====================================
+       RETURN TO CALL HISTORY
+    ===================================== */
 
     loadCalls(companyId);
 
@@ -505,6 +593,10 @@ function deleteCallConfirm(
     }
 
 
+    /* =====================================
+       DELETE CALL
+    ===================================== */
+
     company.calls =
         (company.calls || []).filter(
             call =>
@@ -512,6 +604,25 @@ function deleteCallConfirm(
                 String(callId)
         );
 
+
+    /* =====================================
+       DELETE LINKED FOLLOW-UP TASK
+    ===================================== */
+
+    company.tasks =
+        (company.tasks || []).filter(
+            task =>
+                !(
+                    task.source === "call" &&
+                    String(task.sourceCallId) ===
+                    String(callId)
+                )
+        );
+
+
+    /* =====================================
+       SAVE
+    ===================================== */
 
     const saved =
         updateCompany(company);
