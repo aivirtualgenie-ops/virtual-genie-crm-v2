@@ -1,111 +1,470 @@
-function loadEditTask(companyId, taskId){
+/* =========================================
+   EDIT TASK
+========================================= */
 
-const company = getCompany(companyId);
+function loadEditTask(
+    companyId,
+    taskId
+) {
 
-const task = company.tasks.find(
-t => t.id == taskId
-);
+    const company =
+        getCompany(companyId);
 
-const app = document.getElementById("app");
 
-app.innerHTML = `
+    if (!company) {
 
-<div class="dashboard">
+        console.error(
+            "Edit task failed: company not found",
+            companyId
+        );
 
-<div class="header">
+        return;
 
-<h1>Edit Task</h1>
+    }
 
-<p class="subtitle">
 
-${company.companyName}
+    const task =
+        (company.tasks || []).find(
+            t =>
+                String(t.id) ===
+                String(taskId)
+        );
 
-</p>
 
-</div>
+    if (!task) {
 
-<input
-class="search"
-id="taskTitle"
-placeholder="Task Title"
-value="${task.title}">
+        console.error(
+            "Edit task failed: task not found",
+            taskId
+        );
 
-<input
-class="search"
-id="taskDueDate"
-type="date"
-value="${task.dueDate}">
+        return;
 
-<select
-class="search"
-id="taskPriority">
+    }
 
-<option ${task.priority=="Low"?"selected":""}>Low</option>
-<option ${task.priority=="Medium"?"selected":""}>Medium</option>
-<option ${task.priority=="High"?"selected":""}>High</option>
 
-</select>
+    const app =
+        document.getElementById("app");
 
-<select
-class="search"
-id="taskStatus">
 
-<option ${task.status=="Pending"?"selected":""}>Pending</option>
-<option ${task.status=="Completed"?"selected":""}>Completed</option>
+    app.innerHTML = `
 
-</select>
+    <div class="dashboard">
 
-<textarea
-class="search"
-id="taskNotes"
-style="height:150px;">
 
-${task.notes}
+        <div class="header">
 
-</textarea>
+            <h1>
+                Edit Task
+            </h1>
 
-<button
-class="fab"
-style="position:static;width:100%;height:60px;border-radius:18px;"
-onclick="updateTask(${companyId},${taskId})">
+            <p class="subtitle">
+                ${escapeTaskField(
+                    company.companyName
+                )}
+            </p>
 
-Update Task
+        </div>
 
-</button>
 
-<button
-class="search"
-style="margin-top:20px;"
-onclick="loadTasks(${companyId})">
+        <input
+            class="search"
+            id="taskTitle"
+            placeholder="Task Title"
+            value="${escapeTaskField(
+                task.title || ""
+            )}">
 
-← Back
 
-</button>
+        <input
+            class="search"
+            id="taskDueDate"
+            type="date"
+            value="${task.dueDate || ""}">
 
-${bottomNav("companies")}
 
-</div>
+        <select
+            class="search"
+            id="taskPriority">
 
-`;
+            <option
+                value="Low"
+                ${
+                    task.priority === "Low"
+                        ? "selected"
+                        : ""
+                }>
+
+                Low
+
+            </option>
+
+
+            <option
+                value="Medium"
+                ${
+                    task.priority === "Medium"
+                        ? "selected"
+                        : ""
+                }>
+
+                Medium
+
+            </option>
+
+
+            <option
+                value="High"
+                ${
+                    task.priority === "High"
+                        ? "selected"
+                        : ""
+                }>
+
+                High
+
+            </option>
+
+        </select>
+
+
+        <select
+            class="search"
+            id="taskStatus">
+
+            <option
+                value="Pending"
+                ${
+                    task.status !== "Completed"
+                        ? "selected"
+                        : ""
+                }>
+
+                Pending
+
+            </option>
+
+
+            <option
+                value="Completed"
+                ${
+                    task.status === "Completed"
+                        ? "selected"
+                        : ""
+                }>
+
+                Completed
+
+            </option>
+
+        </select>
+
+
+        <textarea
+            class="search"
+            id="taskNotes"
+            style="height:150px;"
+            placeholder="Notes">${escapeTaskField(
+                task.notes || ""
+            )}</textarea>
+
+
+        ${
+            task.source === "call"
+                ? `
+                <div
+                    class="card"
+                    style="
+                        margin-top:20px;
+                        padding:15px;
+                    ">
+
+                    <strong>
+                        📞 Call Follow-up
+                    </strong>
+
+                    <p
+                        style="
+                            margin-top:8px;
+                            opacity:0.7;
+                        ">
+
+                        This task is linked to a call.
+                        Changing the due date will
+                        update the call follow-up date.
+
+                    </p>
+
+                </div>
+                `
+                : ""
+        }
+
+
+        <button
+            class="fab"
+            style="
+                position:static;
+                width:100%;
+                height:60px;
+                border-radius:18px;
+                margin-top:20px;
+            "
+            onclick="
+                updateTask(
+                    ${companyId},
+                    ${taskId}
+                )
+            ">
+
+            Update Task
+
+        </button>
+
+
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="
+                loadTasks(
+                    ${companyId}
+                )
+            ">
+
+            ← Back
+
+        </button>
+
+
+        ${bottomNav("companies")}
+
+    </div>
+
+    `;
 
 }
 
-function updateTask(companyId, taskId){
 
-const company = getCompany(companyId);
+/* =========================================
+   UPDATE TASK
+========================================= */
 
-const task = company.tasks.find(
-t => t.id == taskId
-);
+function updateTask(
+    companyId,
+    taskId
+) {
 
-task.title = document.getElementById("taskTitle").value;
-task.dueDate = document.getElementById("taskDueDate").value;
-task.priority = document.getElementById("taskPriority").value;
-task.status = document.getElementById("taskStatus").value;
-task.notes = document.getElementById("taskNotes").value;
+    const company =
+        getCompany(companyId);
 
-updateCompany(company);
 
-loadTasks(companyId);
+    if (!company) {
+
+        console.error(
+            "Update task failed: company not found",
+            companyId
+        );
+
+        return;
+
+    }
+
+
+    const task =
+        (company.tasks || []).find(
+            t =>
+                String(t.id) ===
+                String(taskId)
+        );
+
+
+    if (!task) {
+
+        console.error(
+            "Update task failed: task not found",
+            taskId
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       READ FORM
+    ===================================== */
+
+    const title =
+        document
+            .getElementById(
+                "taskTitle"
+            )
+            .value
+            .trim();
+
+
+    const dueDate =
+        document
+            .getElementById(
+                "taskDueDate"
+            )
+            .value;
+
+
+    const priority =
+        document
+            .getElementById(
+                "taskPriority"
+            )
+            .value;
+
+
+    const status =
+        document
+            .getElementById(
+                "taskStatus"
+            )
+            .value;
+
+
+    const notes =
+        document
+            .getElementById(
+                "taskNotes"
+            )
+            .value
+            .trim();
+
+
+    /* =====================================
+       VALIDATION
+    ===================================== */
+
+    if (!title) {
+
+        alert(
+            "Task title is required."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       UPDATE TASK
+    ===================================== */
+
+    task.title =
+        title;
+
+
+    task.dueDate =
+        dueDate || "";
+
+
+    task.priority =
+        priority;
+
+
+    task.status =
+        status;
+
+
+    task.notes =
+        notes;
+
+
+    /* =====================================
+       CALL-LINKED TASK SYNC
+    ===================================== */
+
+    if (
+        task.source === "call" &&
+        task.sourceCallId
+    ) {
+
+        const linkedCall =
+            (company.calls || []).find(
+                call =>
+                    String(call.id) ===
+                    String(
+                        task.sourceCallId
+                    )
+            );
+
+
+        if (linkedCall) {
+
+            /*
+               The task due date is the
+               call's follow-up date.
+            */
+
+            linkedCall.followUp =
+                dueDate || "";
+
+        }
+
+    }
+
+
+    /* =====================================
+       SAVE
+    ===================================== */
+
+    const saved =
+        updateCompany(
+            company
+        );
+
+
+    if (!saved) {
+
+        alert(
+            "Could not update task."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       RETURN
+    ===================================== */
+
+    loadTasks(
+        companyId
+    );
 
 }
+
+
+/* =========================================
+   ESCAPE FORM VALUES
+========================================= */
+
+function escapeTaskField(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        );
+
+      }
