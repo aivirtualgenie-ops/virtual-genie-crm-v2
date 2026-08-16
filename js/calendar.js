@@ -1,305 +1,539 @@
+/* =========================================
+   CALENDAR
+========================================= */
+
 function loadCalendar() {
 
-const companies = getCompanies();
+    const companies = getCompanies();
 
-const app = document.getElementById("app");
+    const app =
+        document.getElementById("app");
 
-let events = [];
+    let events = [];
 
-/* GET TODAY AS LOCAL DATE */
 
-const today = new Date();
+    /* =====================================
+       TODAY AS LOCAL DATE
+    ===================================== */
 
-today.setHours(0, 0, 0, 0);
+    const today = new Date();
 
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
 
-/* DATE HELPER */
 
-function getEventDate(dateString) {
+    /* =====================================
+       DATE HELPER
+    ===================================== */
 
-const date = new Date(dateString);
+    function getEventDate(dateString) {
 
-date.setHours(0, 0, 0, 0);
+        const date =
+            new Date(dateString);
 
-return date;
+        date.setHours(
+            0,
+            0,
+            0,
+            0
+        );
 
-}
+        return date;
 
+    }
 
-/* FORMAT DATE */
 
-function formatDate(dateString) {
+    /* =====================================
+       FORMAT DATE
+    ===================================== */
 
-const date = new Date(dateString);
+    function formatDate(dateString) {
 
-return date.toLocaleDateString("en-IN", {
+        const date =
+            new Date(dateString);
 
-day: "numeric",
-month: "short",
-year: "numeric"
+        return date.toLocaleDateString(
+            "en-IN",
+            {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            }
+        );
 
-});
+    }
 
-}
 
+    /* =====================================
+       PROCESS COMPANIES
+    ===================================== */
 
-/* COMPANY FOLLOW-UPS */
+    companies.forEach(
+        (company, companyIndex) => {
 
-companies.forEach((company, companyIndex) => {
+        const companyId =
+            company.id ||
+            company.companyId ||
+            companyIndex;
 
-if (company.nextFollowUp) {
 
-events.push({
+        /* =================================
+           COMPANY FOLLOW-UP
+        ================================= */
 
-type: "Company Follow-up",
+        if (company.nextFollowUp) {
 
-date: company.nextFollowUp,
+            events.push({
 
-company: company.companyName,
+                type:
+                    "Company Follow-up",
 
-description: "Company follow-up",
+                date:
+                    company.nextFollowUp,
 
-priority: company.priority || "Medium",
+                company:
+                    company.companyName,
 
-companyId: company.id || company.companyId || companyIndex
+                description:
+                    "Company follow-up",
 
-});
+                priority:
+                    company.priority ||
+                    "Medium",
 
-}
+                companyId:
+                    companyId,
 
+                source:
+                    "company-followup"
 
-/* TASKS */
+            });
 
-(company.tasks || []).forEach(task => {
+        }
 
-if (task.dueDate) {
 
-events.push({
+        /* =================================
+           TASKS
+        ================================= */
 
-type: "Task",
+        (company.tasks || []).forEach(
+            task => {
 
-date: task.dueDate,
+            /*
+               Completed tasks are not active
+               calendar events.
+            */
 
-company: company.companyName,
+            if (
+                task.status ===
+                "Completed"
+            ) {
 
-description: task.title,
+                return;
 
-priority: task.priority || "Medium",
+            }
 
-companyId: company.id || company.companyId || companyIndex
 
-});
+            if (!task.dueDate) {
 
-}
+                return;
 
-});
+            }
 
 
-/* CALL FOLLOW-UPS */
+            const isCallFollowUp =
+                task.source === "call";
 
-(company.calls || []).forEach(call => {
 
-if (call.followUp) {
+            events.push({
 
-events.push({
+                type:
+                    isCallFollowUp
+                        ? "Call Follow-up"
+                        : "Task",
 
-type: "Call Follow-up",
+                date:
+                    task.dueDate,
 
-date: call.followUp,
+                company:
+                    company.companyName,
 
-company: company.companyName,
+                description:
+                    task.title,
 
-description: call.outcome || "Follow up after call",
+                priority:
+                    task.priority ||
+                    "Medium",
 
-priority: "Medium",
+                companyId:
+                    companyId,
 
-companyId: company.id || company.companyId || companyIndex
+                source:
+                    isCallFollowUp
+                        ? "call-followup"
+                        : "task",
 
-});
+                taskId:
+                    task.id
 
-}
+            });
 
-});
+        });
 
-});
 
+        /*
+           IMPORTANT:
 
-/* SORT BY DATE */
+           Do NOT process:
 
-events.sort((a, b) => {
+               company.calls[].followUp
 
-return getEventDate(a.date) - getEventDate(b.date);
+           here.
 
-});
+           Call follow-ups are converted
+           into tasks when the call is saved.
 
+           Processing them again would create
+           duplicate calendar events.
+        */
 
-/* BUILD EVENT CARDS */
+    });
 
-let eventCards = "";
 
+    /* =====================================
+       SORT BY DATE
+    ===================================== */
 
-if (events.length === 0) {
+    events.sort(
+        (a, b) => {
 
-eventCards = `
+            return (
+                getEventDate(a.date) -
+                getEventDate(b.date)
+            );
 
-<div class="card">
+        }
+    );
 
-<h3>No Upcoming Events</h3>
 
-<p>Your calendar is currently empty.</p>
+    /* =====================================
+       BUILD EVENT CARDS
+    ===================================== */
 
-</div>
+    let eventCards = "";
 
-`;
 
-} else {
+    if (
+        events.length === 0
+    ) {
 
-events.forEach((event, index) => {
+        eventCards = `
 
-const eventDate = getEventDate(event.date);
+        <div class="card">
 
-let status = "";
-let statusText = "";
-let statusIcon = "📅";
+            <h3>
+                No Upcoming Events
+            </h3>
 
+            <p>
+                Your calendar is currently empty.
+            </p>
 
-if (eventDate < today) {
+        </div>
 
-status = "overdue";
-statusText = "Overdue";
-statusIcon = "🔴";
+        `;
 
-} else if (eventDate.getTime() === today.getTime()) {
+    } else {
 
-status = "today";
-statusText = "Today";
-statusIcon = "🟢";
+        events.forEach(
+            (event, index) => {
 
-} else {
+            const eventDate =
+                getEventDate(
+                    event.date
+                );
 
-status = "upcoming";
-statusText = "Upcoming";
-statusIcon = "🟡";
 
-}
+            let status =
+                "";
 
+            let statusText =
+                "";
 
-/* PRIORITY */
+            let statusIcon =
+                "📅";
 
-let priorityIcon = "⚪";
 
-if (event.priority === "High") {
+            /* =============================
+               STATUS
+            ============================= */
 
-priorityIcon = "🔴";
+            if (
+                eventDate < today
+            ) {
 
-} else if (event.priority === "Medium") {
+                status =
+                    "overdue";
 
-priorityIcon = "🟡";
+                statusText =
+                    "Overdue";
 
-} else if (event.priority === "Low") {
+                statusIcon =
+                    "🔴";
 
-priorityIcon = "🟢";
+            } else if (
+                eventDate.getTime() ===
+                today.getTime()
+            ) {
 
-}
+                status =
+                    "today";
 
+                statusText =
+                    "Today";
 
-/* CLICK EVENT */
+                statusIcon =
+                    "🟢";
 
-const clickAction = `location.hash='company-${event.companyId}'`;
+            } else {
 
+                status =
+                    "upcoming";
 
-eventCards += `
+                statusText =
+                    "Upcoming";
 
-<div
-class="card calendar-event ${status}"
-style="
-margin-top:20px;
-cursor:pointer;
-"
-onclick="${clickAction}">
+                statusIcon =
+                    "🟡";
 
-<h3>
-${statusIcon} ${event.type}
-</h3>
+            }
 
-<p>
-<strong>Status:</strong>
-${statusText}
-</p>
 
-<p>
-<strong>Date:</strong>
-${formatDate(event.date)}
-</p>
+            /* =============================
+               PRIORITY
+            ============================= */
 
-<p>
-<strong>Company:</strong>
-${event.company}
-</p>
+            let priorityIcon =
+                "⚪";
 
-<p>
-<strong>Details:</strong>
-${event.description}
-</p>
 
-<p>
-<strong>Priority:</strong>
-${priorityIcon} ${event.priority}
-</p>
+            if (
+                event.priority ===
+                "High"
+            ) {
 
-<p
-style="
-margin-top:15px;
-font-size:14px;
-opacity:0.7;
-">
-Tap to open company
-</p>
+                priorityIcon =
+                    "🔴";
 
-</div>
+            } else if (
+                event.priority ===
+                "Medium"
+            ) {
 
-`;
+                priorityIcon =
+                    "🟡";
 
-});
+            } else if (
+                event.priority ===
+                "Low"
+            ) {
 
-}
+                priorityIcon =
+                    "🟢";
 
+            }
 
-/* PAGE */
 
-app.innerHTML = `
+            /* =============================
+               SOURCE ICON
+            ============================= */
 
-<div class="dashboard">
+            let sourceIcon =
+                "📋";
 
-<div class="header">
 
-<h1>Calendar</h1>
+            if (
+                event.source ===
+                "call-followup"
+            ) {
 
-<p class="subtitle">
-Follow-ups, tasks and call reminders
-</p>
+                sourceIcon =
+                    "📞";
 
-</div>
+            } else if (
+                event.source ===
+                "company-followup"
+            ) {
 
+                sourceIcon =
+                    "📅";
 
-<div class="card">
+            }
 
-<p>
-<strong>Total Events:</strong>
-${events.length}
-</p>
 
-</div>
+            /* =============================
+               CLICK EVENT
+            ============================= */
 
+            const clickAction =
+                `location.hash='company-${event.companyId}'`;
 
-${eventCards}
 
+            /* =============================
+               EVENT CARD
+            ============================= */
 
-${bottomNav("calendar")}
+            eventCards += `
 
+            <div
+                class="
+                    card
+                    calendar-event
+                    ${status}
+                "
+                style="
+                    margin-top:20px;
+                    cursor:pointer;
+                "
+                onclick="${clickAction}">
 
-</div>
 
-`;
+                <h3>
+
+                    ${sourceIcon}
+                    ${event.type}
+
+                </h3>
+
+
+                <p>
+
+                    <strong>
+                        Status:
+                    </strong>
+
+                    ${statusText}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Date:
+                    </strong>
+
+                    ${formatDate(
+                        event.date
+                    )}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Company:
+                    </strong>
+
+                    ${event.company}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Details:
+                    </strong>
+
+                    ${event.description}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Priority:
+                    </strong>
+
+                    ${priorityIcon}
+                    ${event.priority}
+
+                </p>
+
+
+                <p
+                    style="
+                        margin-top:15px;
+                        font-size:14px;
+                        opacity:0.7;
+                    ">
+
+                    Tap to open company
+
+                </p>
+
+
+            </div>
+
+            `;
+
+        });
+
+    }
+
+
+    /* =====================================
+       PAGE
+    ===================================== */
+
+    app.innerHTML = `
+
+    <div class="dashboard">
+
+
+        <div class="header">
+
+            <h1>
+                Calendar
+            </h1>
+
+            <p class="subtitle">
+                Follow-ups, tasks and call reminders
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <p>
+
+                <strong>
+                    Total Events:
+                </strong>
+
+                ${events.length}
+
+            </p>
+
+        </div>
+
+
+        ${eventCards}
+
+
+        ${bottomNav("calendar")}
+
+
+    </div>
+
+    `;
 
 }
