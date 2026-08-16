@@ -31,6 +31,7 @@ function loadDashboard() {
 
     /* =====================================
        PIPELINE METRICS
+       NOW BASED ON DEALS
     ===================================== */
 
     let newLeads = 0;
@@ -72,7 +73,7 @@ function loadDashboard() {
 
 
         /* ================================
-           SALES VALUES — FROM DEALS
+           DEALS
         ================================= */
 
         const companyDeals =
@@ -103,77 +104,64 @@ function loadDashboard() {
 
 
             /* ==============================
-               WON → REVENUE
+               FINANCIALS
             ============================== */
 
             if (status === "won") {
 
                 totalRevenue += value;
 
-                return;
+            } else if (status !== "lost") {
+
+                totalPipeline += value;
 
             }
 
 
             /* ==============================
-               LOST → NOTHING
+               DEAL STAGE COUNTS
             ============================== */
 
-            if (status === "lost") {
+            const dealStage =
+                String(
+                    deal.stage || "New Lead"
+                )
+                .trim();
 
-                return;
+
+            switch (dealStage) {
+
+                case "New Lead":
+                    newLeads++;
+                    break;
+
+                case "Contacted":
+                    contacted++;
+                    break;
+
+                case "Meeting Scheduled":
+                    meetings++;
+                    break;
+
+                case "Proposal Sent":
+                    proposals++;
+                    break;
+
+                case "Negotiation":
+                    negotiations++;
+                    break;
+
+                case "Won":
+                    won++;
+                    break;
+
+                case "Lost":
+                    lost++;
+                    break;
 
             }
-
-
-            /* ==============================
-               OPEN → PIPELINE
-            ============================== */
-
-            totalPipeline += value;
 
         });
-
-
-        /* ================================
-           PIPELINE
-        ================================= */
-
-        const stage =
-            company.pipelineStage || "New Lead";
-
-
-        switch (stage) {
-
-            case "New Lead":
-                newLeads++;
-                break;
-
-            case "Contacted":
-                contacted++;
-                break;
-
-            case "Meeting Scheduled":
-                meetings++;
-                break;
-
-            case "Proposal Sent":
-                proposals++;
-                break;
-
-            case "Negotiation":
-                negotiations++;
-                break;
-
-            case "Won":
-                won++;
-                break;
-
-            case "Lost":
-                lost++;
-                break;
-
-        }
 
 
         /* ================================
