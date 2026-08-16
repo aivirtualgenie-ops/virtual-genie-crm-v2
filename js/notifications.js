@@ -4,14 +4,23 @@
 
 function loadNotifications() {
 
-    const companies = getCompanies();
+    const companies =
+        getCompanies();
 
     const app =
         document.getElementById("app");
 
+
     let notifications = [];
 
-    const today = new Date();
+
+    /* =====================================
+       TODAY
+    ===================================== */
+
+    const today =
+        new Date();
+
 
     today.setHours(
         0,
@@ -22,13 +31,34 @@ function loadNotifications() {
 
 
     /* =====================================
-       DATE DIFFERENCE
+       DATE HELPER
     ===================================== */
 
-    function getDifference(dateString) {
+    function getDateOnly(
+        dateString
+    ) {
+
+        if (!dateString) {
+
+            return null;
+
+        }
+
 
         const date =
             new Date(dateString);
+
+
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return null;
+
+        }
+
 
         date.setHours(
             0,
@@ -37,9 +67,44 @@ function loadNotifications() {
             0
         );
 
-        return Math.ceil(
-            (date - today) /
-            (1000 * 60 * 60 * 24)
+
+        return date;
+
+    }
+
+
+    /* =====================================
+       DATE DIFFERENCE
+    ===================================== */
+
+    function getDifference(
+        dateString
+    ) {
+
+        const date =
+            getDateOnly(
+                dateString
+            );
+
+
+        if (!date) {
+
+            return null;
+
+        }
+
+
+        return Math.round(
+            (
+                date.getTime() -
+                today.getTime()
+            ) /
+            (
+                1000 *
+                60 *
+                60 *
+                24
+            )
         );
 
     }
@@ -57,19 +122,29 @@ function loadNotifications() {
         companyId,
         difference,
         source,
-        taskId
+        taskId,
+        dueDate
     ) {
 
         notifications.push({
 
             type,
+
             company,
+
             details,
+
             priority,
+
             companyId,
+
             difference,
+
             source,
-            taskId
+
+            taskId,
+
+            dueDate
 
         });
 
@@ -78,89 +153,52 @@ function loadNotifications() {
 
     /* =====================================
        PROCESS COMPANIES
+       
+       IMPORTANT:
+       Tasks are the ONLY source of
+       actionable notification data.
     ===================================== */
 
     companies.forEach(
-        (company, companyIndex) => {
+        company => {
+
 
         const companyId =
-            company.id ||
-            company.companyId ||
-            companyIndex;
+            company.id;
 
 
-        /* =================================
-           COMPANY FOLLOW-UP
-        ================================= */
-
-        if (company.nextFollowUp) {
-
-            const difference =
-                getDifference(
-                    company.nextFollowUp
-                );
+        const tasks =
+            Array.isArray(
+                company.tasks
+            )
+                ? company.tasks
+                : [];
 
 
-            if (difference < 0) {
+        tasks.forEach(
+            task => {
 
-                addNotification(
-                    "Overdue Follow-up",
-                    company.companyName,
-                    "Company follow-up is overdue.",
-                    "High",
-                    companyId,
-                    difference,
-                    "company-followup",
-                    null
-                );
 
-            } else if (
-                difference === 0
+            /* =============================
+               COMPLETED / INVALID
+            ============================= */
+
+            if (
+                String(
+                    task.status || ""
+                )
+                .trim()
+                .toLowerCase()
+                === "completed"
             ) {
 
-                addNotification(
-                    "Follow-up Today",
-                    company.companyName,
-                    "Company follow-up is due today.",
-                    "High",
-                    companyId,
-                    difference,
-                    "company-followup",
-                    null
-                );
-
-            } else if (
-                difference <= 7
-            ) {
-
-                addNotification(
-                    "Upcoming Follow-up",
-                    company.companyName,
-                    "Company follow-up is due in " +
-                    difference +
-                    " day(s).",
-                    "Medium",
-                    companyId,
-                    difference,
-                    "company-followup",
-                    null
-                );
+                return;
 
             }
 
-        }
-
-
-        /* =================================
-           TASKS
-        ================================= */
-
-        (company.tasks || []).forEach(
-            task => {
 
             if (
-                !task.dueDate ||
-                task.status === "Completed"
+                !task.dueDate
             ) {
 
                 return;
@@ -174,6 +212,30 @@ function loadNotifications() {
                 );
 
 
+            if (
+                difference === null
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+               Notifications only show
+               overdue, today and the next
+               7 days.
+            */
+
+            if (
+                difference > 7
+            ) {
+
+                return;
+
+            }
+
+
             /* =============================
                TASK TYPE
             ============================= */
@@ -182,120 +244,97 @@ function loadNotifications() {
                 task.source === "call";
 
 
-            let taskType =
-                "Task";
-
-            let details =
-                task.title;
-
-
-            if (isCallFollowUp) {
-
-                taskType =
-                    "Call Follow-up";
-
-                details =
-                    task.title ||
-                    "Follow up after call";
-
-            }
-
-
-            /* =============================
-               OVERDUE
-            ============================= */
-
-            if (difference < 0) {
-
-                addNotification(
+            const taskTitle =
+                task.title ||
+                (
                     isCallFollowUp
-                        ? "Overdue Call Follow-up"
-                        : "Overdue Task",
-
-                    company.companyName,
-
-                    details,
-
-                    "High",
-
-                    companyId,
-
-                    difference,
-
-                    isCallFollowUp
-                        ? "call-followup"
-                        : "task",
-
-                    task.id
+                        ? "Follow up after call"
+                        : "Untitled Task"
                 );
 
-            }
-
 
             /* =============================
-               TODAY
+               NOTIFICATION TYPE
             ============================= */
 
-            else if (
+            let type;
+
+
+            if (
+                difference < 0
+            ) {
+
+                type =
+                    isCallFollowUp
+                        ? "Overdue Call Follow-up"
+                        : "Overdue Task";
+
+
+            } else if (
                 difference === 0
             ) {
 
-                addNotification(
+                type =
                     isCallFollowUp
                         ? "Call Follow-up Today"
-                        : "Task Due Today",
+                        : "Task Due Today";
 
-                    company.companyName,
 
-                    details,
+            } else {
 
-                    task.priority || "Medium",
-
-                    companyId,
-
-                    difference,
-
+                type =
                     isCallFollowUp
-                        ? "call-followup"
-                        : "task",
-
-                    task.id
-                );
+                        ? "Upcoming Call Follow-up"
+                        : "Upcoming Task";
 
             }
 
 
             /* =============================
-               UPCOMING
+               PRIORITY
             ============================= */
 
-            else if (
-                difference <= 7
-            ) {
+            const priority =
+                task.priority ||
+                "Medium";
 
-                addNotification(
-                    isCallFollowUp
-                        ? "Upcoming Call Follow-up"
-                        : "Upcoming Task",
 
-                    company.companyName,
+            /* =============================
+               SOURCE
+            ============================= */
 
-                    details,
+            const source =
+                isCallFollowUp
+                    ? "call-followup"
+                    : "task";
 
-                    task.priority || "Medium",
 
-                    companyId,
+            /* =============================
+               ADD
+            ============================= */
 
-                    difference,
+            addNotification(
 
-                    isCallFollowUp
-                        ? "call-followup"
-                        : "task",
+                type,
 
-                    task.id
-                );
+                company.companyName ||
+                    "Unnamed Company",
 
-            }
+                taskTitle,
+
+                priority,
+
+                companyId,
+
+                difference,
+
+                source,
+
+                task.id,
+
+                task.dueDate
+
+            );
 
         });
 
@@ -304,23 +343,49 @@ function loadNotifications() {
 
     /* =====================================
        SORT
-       Overdue →
-       Today →
-       Upcoming
+       
+       Overdue first,
+       then today,
+       then upcoming.
     ===================================== */
 
     notifications.sort(
-        (a, b) =>
-            a.difference -
-            b.difference
+        (
+            a,
+            b
+        ) => {
+
+            if (
+                a.difference !==
+                b.difference
+            ) {
+
+                return (
+                    a.difference -
+                    b.difference
+                );
+
+            }
+
+
+            return String(
+                a.company
+            ).localeCompare(
+                String(
+                    b.company
+                )
+            );
+
+        }
     );
 
 
     /* =====================================
-       BUILD NOTIFICATION CARDS
+       BUILD CARDS
     ===================================== */
 
-    let notificationCards = "";
+    let notificationCards =
+        "";
 
 
     if (
@@ -336,7 +401,8 @@ function loadNotifications() {
             </h3>
 
             <p>
-                No upcoming or overdue notifications.
+                No upcoming or overdue
+                notifications.
             </p>
 
         </div>
@@ -348,31 +414,38 @@ function loadNotifications() {
         notifications.forEach(
             notification => {
 
-            let icon = "🟡";
-
-            let status =
-                "Upcoming";
-
 
             /* =============================
                STATUS
             ============================= */
 
+            let icon =
+                "🟡";
+
+            let status =
+                "Upcoming";
+
+
             if (
                 notification.difference < 0
             ) {
 
-                icon = "🔴";
+                icon =
+                    "🔴";
 
-                status = "Overdue";
+                status =
+                    "Overdue";
+
 
             } else if (
                 notification.difference === 0
             ) {
 
-                icon = "🟢";
+                icon =
+                    "🟢";
 
-                status = "Today";
+                status =
+                    "Today";
 
             }
 
@@ -381,7 +454,8 @@ function loadNotifications() {
                PRIORITY ICON
             ============================= */
 
-            let priorityIcon = "⚪";
+            let priorityIcon =
+                "⚪";
 
 
             if (
@@ -389,21 +463,26 @@ function loadNotifications() {
                 "High"
             ) {
 
-                priorityIcon = "🔴";
+                priorityIcon =
+                    "🔴";
+
 
             } else if (
                 notification.priority ===
                 "Medium"
             ) {
 
-                priorityIcon = "🟡";
+                priorityIcon =
+                    "🟡";
+
 
             } else if (
                 notification.priority ===
                 "Low"
             ) {
 
-                priorityIcon = "🟢";
+                priorityIcon =
+                    "🟢";
 
             }
 
@@ -412,24 +491,33 @@ function loadNotifications() {
                SOURCE ICON
             ============================= */
 
-            let sourceIcon = "📋";
-
-
-            if (
+            const sourceIcon =
                 notification.source ===
                 "call-followup"
-            ) {
+                    ? "📞"
+                    : "📋";
 
-                sourceIcon = "📞";
 
-            } else if (
-                notification.source ===
-                "company-followup"
-            ) {
+            /* =============================
+               TARGET
+               
+               If a task exists, take the
+               user directly to the task
+               list. Otherwise company.
+            ============================= */
 
-                sourceIcon = "📅";
-
-            }
+            const target =
+                notification.taskId
+                    ? `
+                        loadTasks(
+                            ${notification.companyId}
+                        )
+                      `
+                    : `
+                        loadCompany(
+                            ${notification.companyId}
+                        )
+                      `;
 
 
             notificationCards += `
@@ -441,13 +529,17 @@ function loadNotifications() {
                     cursor:pointer;
                 "
                 onclick="
-                    location.hash='company-${notification.companyId}'
+                    ${target}
                 ">
+
 
                 <h3>
 
                     ${sourceIcon}
-                    ${notification.type}
+
+                    ${escapeNotificationText(
+                        notification.type
+                    )}
 
                 </h3>
 
@@ -457,6 +549,8 @@ function loadNotifications() {
                     <strong>
                         Status:
                     </strong>
+
+                    ${icon}
 
                     ${status}
 
@@ -469,7 +563,9 @@ function loadNotifications() {
                         Company:
                     </strong>
 
-                    ${notification.company}
+                    ${escapeNotificationText(
+                        notification.company
+                    )}
 
                 </p>
 
@@ -480,7 +576,9 @@ function loadNotifications() {
                         Details:
                     </strong>
 
-                    ${notification.details}
+                    ${escapeNotificationText(
+                        notification.details
+                    )}
 
                 </p>
 
@@ -492,7 +590,23 @@ function loadNotifications() {
                     </strong>
 
                     ${priorityIcon}
-                    ${notification.priority}
+
+                    ${escapeNotificationText(
+                        notification.priority
+                    )}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Due:
+                    </strong>
+
+                    ${formatNotificationDate(
+                        notification.dueDate
+                    )}
 
                 </p>
 
@@ -504,7 +618,7 @@ function loadNotifications() {
                         opacity:0.7;
                     ">
 
-                    Tap to open company
+                    Tap to open task
 
                 </p>
 
@@ -524,6 +638,7 @@ function loadNotifications() {
     app.innerHTML = `
 
     <div class="dashboard">
+
 
         <div class="header">
 
@@ -558,8 +673,88 @@ function loadNotifications() {
 
         ${bottomNav("notifications")}
 
+
     </div>
 
     `;
+
+}
+
+
+/* =========================================
+   FORMAT DATE
+========================================= */
+
+function formatNotificationDate(
+    dateString
+) {
+
+    if (!dateString) {
+
+        return "-";
+
+    }
+
+
+    const date =
+        new Date(
+            dateString
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "-";
+
+    }
+
+
+    return date.toLocaleDateString(
+        "en-IN",
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+/* =========================================
+   ESCAPE TEXT
+========================================= */
+
+function escapeNotificationText(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
