@@ -4,9 +4,11 @@
 
 function loadTasks(companyId) {
 
-    const company = getCompany(companyId);
+    const company =
+        getCompany(companyId);
 
-    const app = document.getElementById("app");
+    const app =
+        document.getElementById("app");
 
 
     /* =====================================
@@ -21,7 +23,9 @@ function loadTasks(companyId) {
 
             <div class="card">
 
-                <h2>Company not found</h2>
+                <h2>
+                    Company not found
+                </h2>
 
                 <br>
 
@@ -47,10 +51,10 @@ function loadTasks(companyId) {
 
 
     /* =====================================
-       INITIALIZE TASKS
+       INITIALIZE
     ===================================== */
 
-    if (!company.tasks) {
+    if (!Array.isArray(company.tasks)) {
 
         company.tasks = [];
 
@@ -64,24 +68,48 @@ function loadTasks(companyId) {
     let overdue = 0;
 
 
-    const today = new Date();
+    const today =
+        new Date();
 
-    today.setHours(0, 0, 0, 0);
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
 
 
     /* =====================================
        DATE HELPER
     ===================================== */
 
-    function getTaskDate(dateString) {
+    function getTaskDate(
+        dateString
+    ) {
 
         if (!dateString) {
             return null;
         }
 
-        const date = new Date(dateString);
+        const date =
+            new Date(dateString);
 
-        date.setHours(0, 0, 0, 0);
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return null;
+
+        }
+
+        date.setHours(
+            0,
+            0,
+            0,
+            0
+        );
 
         return date;
 
@@ -92,13 +120,26 @@ function loadTasks(companyId) {
        FORMAT DATE
     ===================================== */
 
-    function formatDate(dateString) {
+    function formatDate(
+        dateString
+    ) {
 
         if (!dateString) {
             return "-";
         }
 
-        const date = new Date(dateString);
+        const date =
+            new Date(dateString);
+
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return dateString;
+
+        }
 
         return date.toLocaleDateString(
             "en-IN",
@@ -116,9 +157,13 @@ function loadTasks(companyId) {
        COUNT TASKS
     ===================================== */
 
-    company.tasks.forEach(task => {
+    company.tasks.forEach(
+        task => {
 
-        if (task.status === "Completed") {
+        if (
+            task.status ===
+            "Completed"
+        ) {
 
             completed++;
 
@@ -133,9 +178,15 @@ function loadTasks(companyId) {
         if (task.dueDate) {
 
             const dueDate =
-                getTaskDate(task.dueDate);
+                getTaskDate(
+                    task.dueDate
+                );
 
-            if (dueDate < today) {
+
+            if (
+                dueDate &&
+                dueDate < today
+            ) {
 
                 overdue++;
 
@@ -153,13 +204,17 @@ function loadTasks(companyId) {
     let taskCards = "";
 
 
-    if (company.tasks.length === 0) {
+    if (
+        company.tasks.length === 0
+    ) {
 
         taskCards = `
 
         <div class="card">
 
-            <h3>No Tasks Yet</h3>
+            <h3>
+                No Tasks Yet
+            </h3>
 
             <p>
                 Create your first follow-up task.
@@ -171,11 +226,15 @@ function loadTasks(companyId) {
 
     } else {
 
-        company.tasks.forEach(task => {
+        company.tasks.forEach(
+            task => {
 
-            let statusIcon = "🟡";
+            let statusIcon =
+                "🟡";
+
             let statusText =
-                task.status || "Pending";
+                task.status ||
+                "Pending";
 
             let statusClass =
                 "upcoming";
@@ -185,45 +244,76 @@ function loadTasks(companyId) {
                COMPLETED
             ============================= */
 
-            if (task.status === "Completed") {
+            if (
+                task.status ===
+                "Completed"
+            ) {
 
-                statusIcon = "✅";
-                statusText = "Completed";
-                statusClass = "completed";
+                statusIcon =
+                    "✅";
+
+                statusText =
+                    "Completed";
+
+                statusClass =
+                    "completed";
 
             }
 
 
             /* =============================
-               PENDING TASK
+               PENDING
             ============================= */
 
-            else if (task.dueDate) {
+            else if (
+                task.dueDate
+            ) {
 
                 const dueDate =
-                    getTaskDate(task.dueDate);
+                    getTaskDate(
+                        task.dueDate
+                    );
 
 
-                if (dueDate < today) {
+                if (
+                    dueDate &&
+                    dueDate < today
+                ) {
 
-                    statusIcon = "🔴";
-                    statusText = "Overdue";
-                    statusClass = "overdue";
+                    statusIcon =
+                        "🔴";
+
+                    statusText =
+                        "Overdue";
+
+                    statusClass =
+                        "overdue";
 
                 } else if (
+                    dueDate &&
                     dueDate.getTime() ===
                     today.getTime()
                 ) {
 
-                    statusIcon = "🟢";
-                    statusText = "Due Today";
-                    statusClass = "today";
+                    statusIcon =
+                        "🟢";
+
+                    statusText =
+                        "Due Today";
+
+                    statusClass =
+                        "today";
 
                 } else {
 
-                    statusIcon = "🟡";
-                    statusText = "Upcoming";
-                    statusClass = "upcoming";
+                    statusIcon =
+                        "🟡";
+
+                    statusText =
+                        "Upcoming";
+
+                    statusClass =
+                        "upcoming";
 
                 }
 
@@ -231,29 +321,56 @@ function loadTasks(companyId) {
 
 
             /* =============================
-               PRIORITY ICON
+               PRIORITY
             ============================= */
 
-            let priorityIcon = "⚪";
+            let priorityIcon =
+                "⚪";
 
 
-            if (task.priority === "High") {
-
-                priorityIcon = "🔴";
-
-            } else if (
-                task.priority === "Medium"
+            if (
+                task.priority ===
+                "High"
             ) {
 
-                priorityIcon = "🟡";
+                priorityIcon =
+                    "🔴";
 
             } else if (
-                task.priority === "Low"
+                task.priority ===
+                "Medium"
             ) {
 
-                priorityIcon = "🟢";
+                priorityIcon =
+                    "🟡";
+
+            } else if (
+                task.priority ===
+                "Low"
+            ) {
+
+                priorityIcon =
+                    "🟢";
 
             }
+
+
+            /* =============================
+               CALL LINK
+            ============================= */
+
+            const callLabel =
+                task.source === "call"
+                    ? `
+                        <p>
+                            <strong>
+                                Source:
+                            </strong>
+
+                            📞 Call Follow-up
+                        </p>
+                      `
+                    : "";
 
 
             /* =============================
@@ -263,45 +380,91 @@ function loadTasks(companyId) {
             taskCards += `
 
             <div
-                class="card ${statusClass}"
-                style="margin-top:20px;">
+                class="
+                    card
+                    ${statusClass}
+                "
+                style="
+                    margin-top:20px;
+                ">
 
                 <h3>
+
                     ${statusIcon}
-                    ${task.title || "Untitled Task"}
+
+                    ${
+                        task.title ||
+                        "Untitled Task"
+                    }
+
                 </h3>
 
+
                 <p>
-                    <strong>Status:</strong>
+
+                    <strong>
+                        Status:
+                    </strong>
+
                     ${statusText}
+
                 </p>
 
-                <p>
-                    <strong>Due:</strong>
-                    ${formatDate(task.dueDate)}
-                </p>
 
                 <p>
-                    <strong>Priority:</strong>
+
+                    <strong>
+                        Due:
+                    </strong>
+
+                    ${formatDate(
+                        task.dueDate
+                    )}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Priority:
+                    </strong>
+
                     ${priorityIcon}
-                    ${task.priority || "Medium"}
+
+                    ${
+                        task.priority ||
+                        "Medium"
+                    }
+
                 </p>
+
+
+                ${callLabel}
+
 
                 <br>
 
+
                 <p>
-                    ${task.notes || "No notes."}
+                    ${
+                        task.notes ||
+                        "No notes."
+                    }
                 </p>
+
 
                 <br>
 
 
                 <button
                     class="search"
-                    onclick="loadEditTask(
-                        ${company.id},
-                        ${task.id}
-                    )">
+                    onclick="
+                        loadEditTask(
+                            ${company.id},
+                            ${task.id}
+                        )
+                    ">
 
                     ✏️ Edit
 
@@ -314,10 +477,12 @@ function loadTasks(companyId) {
 
                 <button
                     class="search"
-                    onclick="deleteTaskConfirm(
-                        ${company.id},
-                        ${task.id}
-                    )">
+                    onclick="
+                        deleteTaskConfirm(
+                            ${company.id},
+                            ${task.id}
+                        )
+                    ">
 
                     🗑 Delete
 
@@ -358,23 +523,42 @@ function loadTasks(companyId) {
         <div class="card">
 
             <p>
-                <strong>Total Tasks:</strong>
+                <strong>
+                    Total Tasks:
+                </strong>
+
                 ${company.tasks.length}
+
             </p>
 
+
             <p>
-                <strong>Pending:</strong>
+                <strong>
+                    Pending:
+                </strong>
+
                 ${pending}
+
             </p>
 
+
             <p>
-                <strong>Completed:</strong>
+                <strong>
+                    Completed:
+                </strong>
+
                 ${completed}
+
             </p>
 
+
             <p>
-                <strong>Overdue:</strong>
+                <strong>
+                    Overdue:
+                </strong>
+
                 ${overdue}
+
             </p>
 
         </div>
@@ -387,7 +571,11 @@ function loadTasks(companyId) {
 
         <button
             class="fab"
-            onclick="loadAddTask(${company.id})">
+            onclick="
+                loadAddTask(
+                    ${company.id}
+                )
+            ">
 
             +
 
@@ -399,7 +587,11 @@ function loadTasks(companyId) {
         <button
             class="search"
             style="margin-top:20px;"
-            onclick="loadCompany(${company.id})">
+            onclick="
+                loadCompany(
+                    ${company.id}
+                )
+            ">
 
             ← Back to Company
 
@@ -424,23 +616,111 @@ function deleteTaskConfirm(
     taskId
 ) {
 
-    const confirmDelete =
-        confirm("Delete this task?");
+    const confirmed =
+        confirm(
+            "Delete this task?"
+        );
 
 
-    if (!confirmDelete) {
+    if (!confirmed) {
 
         return;
 
     }
 
 
-    deleteTask(
-        companyId,
-        taskId
+    const company =
+        getCompany(companyId);
+
+
+    if (!company) {
+
+        alert(
+            "Company not found."
+        );
+
+        return;
+
+    }
+
+
+    const task =
+        (company.tasks || []).find(
+            item =>
+                String(item.id) ===
+                String(taskId)
+        );
+
+
+    if (!task) {
+
+        alert(
+            "Task not found."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       CALL-GENERATED TASK
+       CLEAR LINKED CALL FOLLOW-UP
+    ===================================== */
+
+    if (
+        task.source === "call" &&
+        task.sourceCallId
+    ) {
+
+        const linkedCall =
+            (company.calls || []).find(
+                call =>
+                    String(call.id) ===
+                    String(
+                        task.sourceCallId
+                    )
+            );
+
+
+        if (linkedCall) {
+
+            linkedCall.followUp =
+                "";
+
+        }
+
+    }
+
+
+    /* =====================================
+       DELETE TASK
+    ===================================== */
+
+    const deleted =
+        deleteTask(
+            companyId,
+            taskId
+        );
+
+
+    if (!deleted) {
+
+        alert(
+            "Could not delete task."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       RELOAD
+    ===================================== */
+
+    loadTasks(
+        companyId
     );
 
-
-    loadTasks(companyId);
-
-}
+                  }
