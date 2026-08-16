@@ -7,6 +7,7 @@ function loadAddProduct(companyId) {
     const company =
         getCompany(companyId);
 
+
     const app =
         document.getElementById("app");
 
@@ -63,6 +64,7 @@ function loadAddProduct(companyId) {
             id="productQuantity"
             type="number"
             min="0"
+            step="1"
             placeholder="Quantity">
 
 
@@ -94,7 +96,11 @@ function loadAddProduct(companyId) {
                 border-radius:18px;
                 font-size:20px;
             "
-            onclick="saveProduct(${companyId})">
+            onclick="
+                saveProduct(
+                    ${companyId}
+                )
+            ">
 
             Save Product
 
@@ -104,7 +110,11 @@ function loadAddProduct(companyId) {
         <button
             class="search"
             style="margin-top:20px;"
-            onclick="loadProducts(${companyId})">
+            onclick="
+                loadProducts(
+                    ${companyId}
+                )
+            ">
 
             ← Back
 
@@ -142,51 +152,69 @@ function saveProduct(companyId) {
     }
 
 
+    /* =====================================
+       READ FORM
+    ===================================== */
+
     const name =
         document
-            .getElementById("productName")
+            .getElementById(
+                "productName"
+            )
             .value
             .trim();
 
 
     const sku =
         document
-            .getElementById("productSKU")
+            .getElementById(
+                "productSKU"
+            )
             .value
             .trim();
 
 
     const category =
         document
-            .getElementById("productCategory")
+            .getElementById(
+                "productCategory"
+            )
             .value
             .trim();
 
 
-    const quantity =
-        Number(
-            document
-                .getElementById("productQuantity")
-                .value
-        ) || 0;
+    const quantityRaw =
+        document
+            .getElementById(
+                "productQuantity"
+            )
+            .value
+            .trim();
 
 
-    const price =
-        Number(
-            document
-                .getElementById("productPrice")
-                .value
-        ) || 0;
+    const priceRaw =
+        document
+            .getElementById(
+                "productPrice"
+            )
+            .value
+            .trim();
 
 
     const description =
         document
-            .getElementById("productDescription")
+            .getElementById(
+                "productDescription"
+            )
             .value
             .trim();
 
 
-    if (name === "") {
+    /* =====================================
+       VALIDATION
+    ===================================== */
+
+    if (!name) {
 
         alert(
             "Product name is required."
@@ -197,24 +225,81 @@ function saveProduct(companyId) {
     }
 
 
+    const quantity =
+        quantityRaw === ""
+            ? 0
+            : Number(quantityRaw);
+
+
+    const price =
+        priceRaw === ""
+            ? 0
+            : Number(priceRaw);
+
+
+    if (
+        !Number.isFinite(quantity) ||
+        quantity < 0
+    ) {
+
+        alert(
+            "Quantity must be 0 or greater."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isFinite(price) ||
+        price < 0
+    ) {
+
+        alert(
+            "Unit price must be 0 or greater."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       PRODUCT OBJECT
+       
+       IMPORTANT:
+       No ID is generated here.
+
+       storage.js owns ID generation.
+    ===================================== */
+
     const product = {
 
-        id: Date.now(),
+        name:
+            name,
 
-        name,
+        sku:
+            sku,
 
-        sku,
+        category:
+            category,
 
-        category,
+        quantity:
+            quantity,
 
-        quantity,
+        price:
+            price,
 
-        price,
-
-        description
+        description:
+            description
 
     };
 
+
+    /* =====================================
+       SAVE THROUGH STORAGE
+    ===================================== */
 
     const saved =
         addProduct(
@@ -225,8 +310,8 @@ function saveProduct(companyId) {
 
     if (!saved) {
 
-        console.error(
-            "Save product failed"
+        alert(
+            "Could not save product."
         );
 
         return;
@@ -234,6 +319,12 @@ function saveProduct(companyId) {
     }
 
 
-    loadProducts(companyId);
+    /* =====================================
+       RETURN TO PRODUCTS
+    ===================================== */
+
+    loadProducts(
+        companyId
+    );
 
 }
