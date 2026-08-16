@@ -23,8 +23,14 @@ function loadEditTask(
     }
 
 
+    const tasks =
+        Array.isArray(company.tasks)
+            ? company.tasks
+            : [];
+
+
     const task =
-        (company.tasks || []).find(
+        tasks.find(
             t =>
                 String(t.id) ===
                 String(taskId)
@@ -45,6 +51,15 @@ function loadEditTask(
 
     const app =
         document.getElementById("app");
+
+
+    const completed =
+        String(
+            task.status || ""
+        )
+        .trim()
+        .toLowerCase()
+        === "completed";
 
 
     app.innerHTML = `
@@ -80,7 +95,9 @@ function loadEditTask(
             class="search"
             id="taskDueDate"
             type="date"
-            value="${task.dueDate || ""}">
+            value="${escapeTaskField(
+                task.dueDate || ""
+            )}">
 
 
         <select
@@ -135,7 +152,7 @@ function loadEditTask(
             <option
                 value="Pending"
                 ${
-                    task.status !== "Completed"
+                    !completed
                         ? "selected"
                         : ""
                 }>
@@ -148,7 +165,7 @@ function loadEditTask(
             <option
                 value="Completed"
                 ${
-                    task.status === "Completed"
+                    completed
                         ? "selected"
                         : ""
                 }>
@@ -190,8 +207,8 @@ function loadEditTask(
                         ">
 
                         This task is linked to a call.
-                        Changing the due date will
-                        update the call follow-up date.
+                        Its due date controls the
+                        active call follow-up.
 
                     </p>
 
@@ -270,8 +287,14 @@ function updateTask(
     }
 
 
+    const tasks =
+        Array.isArray(company.tasks)
+            ? company.tasks
+            : [];
+
+
     const task =
-        (company.tasks || []).find(
+        tasks.find(
             t =>
                 String(t.id) ===
                 String(taskId)
@@ -308,7 +331,8 @@ function updateTask(
             .getElementById(
                 "taskDueDate"
             )
-            .value;
+            .value
+            .trim();
 
 
     const priority =
@@ -351,6 +375,43 @@ function updateTask(
     }
 
 
+    if (
+        ![
+            "Low",
+            "Medium",
+            "High"
+        ].includes(
+            priority
+        )
+    ) {
+
+        alert(
+            "Invalid task priority."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        ![
+            "Pending",
+            "Completed"
+        ].includes(
+            status
+        )
+    ) {
+
+        alert(
+            "Invalid task status."
+        );
+
+        return;
+
+    }
+
+
     /* =====================================
        UPDATE TASK
     ===================================== */
@@ -360,7 +421,7 @@ function updateTask(
 
 
     task.dueDate =
-        dueDate || "";
+        dueDate;
 
 
     task.priority =
@@ -384,10 +445,20 @@ function updateTask(
         task.sourceCallId
     ) {
 
+        const calls =
+            Array.isArray(
+                company.calls
+            )
+                ? company.calls
+                : [];
+
+
         const linkedCall =
-            (company.calls || []).find(
+            calls.find(
                 call =>
-                    String(call.id) ===
+                    String(
+                        call.id
+                    ) ===
                     String(
                         task.sourceCallId
                     )
@@ -397,12 +468,26 @@ function updateTask(
         if (linkedCall) {
 
             /*
-               The task due date is the
-               call's follow-up date.
+               The task is the authoritative
+               source of active follow-up data.
+
+               Keep call.followUp only as a
+               compatibility mirror.
             */
 
-            linkedCall.followUp =
-                dueDate || "";
+            if (
+                status === "Completed"
+            ) {
+
+                linkedCall.followUp =
+                    "";
+
+            } else {
+
+                linkedCall.followUp =
+                    dueDate || "";
+
+            }
 
         }
 
@@ -449,22 +534,24 @@ function escapeTaskField(
     value
 ) {
 
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        );
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    );
 
-      }
+}
