@@ -1,73 +1,135 @@
 function router() {
 
-const hash = location.hash.replace("#","");
+    const hash =
+        location.hash.replace("#", "");
 
 
-if(hash.startsWith("edit-company-")){
+    /* =====================================
+       EDIT COMPANY
+    ===================================== */
 
-loadEditCompany(hash.replace("edit-company-",""));
+    if (
+        hash.startsWith(
+            "edit-company-"
+        )
+    ) {
 
-return;
+        loadEditCompany(
+            hash.replace(
+                "edit-company-",
+                ""
+            )
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       COMPANY
+    ===================================== */
+
+    if (
+        hash.startsWith(
+            "company-"
+        )
+    ) {
+
+        loadCompany(
+            hash.replace(
+                "company-",
+                ""
+            )
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       ROUTES
+    ===================================== */
+
+    switch (hash) {
+
+
+        case "companies":
+
+            loadCompanies();
+
+            break;
+
+
+        case "pipeline":
+
+            console.log(
+                "PIPELINE ROUTE WORKING"
+            );
+
+            loadPipeline();
+
+            break;
+
+
+        case "calendar":
+
+            loadCalendar();
+
+            break;
+
+
+        case "notifications":
+
+            loadNotifications();
+
+            break;
+
+
+        case "analytics":
+
+            loadAnalytics();
+
+            break;
+
+
+        case "settings":
+
+            loadSettings();
+
+            break;
+
+
+        case "add-company":
+
+            loadAddCompany();
+
+            break;
+
+
+        default:
+
+            loadDashboard();
+
+            break;
+
+    }
 
 }
 
-if(hash.startsWith("company-")){
 
-loadCompany(hash.replace("company-",""));
+/* =========================================
+   ROUTER EVENTS
+========================================= */
 
-return;
+window.addEventListener(
+    "hashchange",
+    router
+);
 
-}
 
-switch(hash){
-
-case "companies":
-
-loadCompanies();
-
-break;
-
-case "pipeline":
-
-    console.log("PIPELINE ROUTE WORKING");
-
-    loadPipeline();
-
-    break;
-case "calendar":
-
-loadCalendar();
-
-break;
-
-case "notifications":
-
-loadNotifications();
-
-break;
-
-case "analytics":
-
-loadAnalytics();
-
-break;
-
-case "add-company":
-
-loadAddCompany();
-
-break;
-
-default:
-
-loadDashboard();
-
-break;
-
-}
-
-}
-
-window.addEventListener("hashchange", router);
-
-window.addEventListener("load", router);
+window.addEventListener(
+    "load",
+    router
+);
