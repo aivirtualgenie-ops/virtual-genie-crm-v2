@@ -4,42 +4,57 @@
 
 function loadDashboard() {
 
-    const companies = getCompanies();
+    const companies =
+        getCompanies();
+
 
     const app =
         document.getElementById("app");
 
 
     /* =====================================
-       BASIC SALES METRICS
+       METRICS
     ===================================== */
 
     let totalProducts = 0;
+
     let totalPipeline = 0;
+
     let totalRevenue = 0;
 
     let totalCalls = 0;
 
+
     let pendingTasks = 0;
+
     let completedTasks = 0;
+
     let overdueTasks = 0;
 
+
     let overdueFollowUps = 0;
+
     let todayFollowUps = 0;
+
     let upcomingFollowUps = 0;
 
 
     /* =====================================
-       PIPELINE METRICS
-       NOW BASED ON DEALS
+       DEAL STAGE COUNTS
     ===================================== */
 
     let newLeads = 0;
+
     let contacted = 0;
+
     let meetings = 0;
+
     let proposals = 0;
+
     let negotiations = 0;
+
     let won = 0;
+
     let lost = 0;
 
 
@@ -47,7 +62,9 @@ function loadDashboard() {
        TODAY
     ===================================== */
 
-    const today = new Date();
+    const today =
+        new Date();
+
 
     today.setHours(
         0,
@@ -58,105 +75,197 @@ function loadDashboard() {
 
 
     /* =====================================
+       DATE HELPER
+    ===================================== */
+
+    function getDateOnly(
+        dateString
+    ) {
+
+        if (!dateString) {
+            return null;
+        }
+
+
+        const date =
+            new Date(dateString);
+
+
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return null;
+
+        }
+
+
+        date.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+
+        return date;
+
+    }
+
+
+    /* =====================================
        PROCESS COMPANIES
     ===================================== */
 
-    companies.forEach(company => {
+    companies.forEach(
+        company => {
 
 
         /* ================================
            PRODUCTS
         ================================= */
 
+        const products =
+            Array.isArray(
+                company.products
+            )
+                ? company.products
+                : [];
+
+
         totalProducts +=
-            (company.products || []).length;
+            products.length;
+
+
+        /* ================================
+           CALLS
+        ================================= */
+
+        const calls =
+            Array.isArray(
+                company.calls
+            )
+                ? company.calls
+                : [];
+
+
+        totalCalls +=
+            calls.length;
 
 
         /* ================================
            DEALS
         ================================= */
 
-        const companyDeals =
-            company.deals || [];
+        const deals =
+            Array.isArray(
+                company.deals
+            )
+                ? company.deals
+                : [];
 
 
-        companyDeals.forEach(deal => {
+        deals.forEach(
+            deal => {
 
             const value =
-                Number(deal.value || 0);
+                Number(
+                    deal.value || 0
+                );
 
-
-            /*
-               STATUS IS THE ONLY
-               FINANCIAL SOURCE OF TRUTH.
-
-               Open → Pipeline
-               Won  → Revenue
-               Lost → Neither
-            */
 
             const status =
                 String(
-                    deal.status || "Open"
+                    deal.status ||
+                    "Open"
                 )
                 .trim()
                 .toLowerCase();
 
 
-            /* ==============================
+            /* ============================
                FINANCIALS
-            ============================== */
+            ============================ */
 
-            if (status === "won") {
+            if (
+                status === "won"
+            ) {
 
-                totalRevenue += value;
+                totalRevenue +=
+                    value;
 
-            } else if (status !== "lost") {
+            } else if (
+                status !== "lost"
+            ) {
 
-                totalPipeline += value;
+                totalPipeline +=
+                    value;
 
             }
 
 
-            /* ==============================
-               DEAL STAGE COUNTS
-            ============================== */
+            /* ============================
+               STAGE
+            ============================ */
 
-            const dealStage =
+            const stage =
                 String(
-                    deal.stage || "New Lead"
+                    deal.stage ||
+                    "New Lead"
                 )
                 .trim();
 
 
-            switch (dealStage) {
+            switch (stage) {
 
                 case "New Lead":
+
                     newLeads++;
+
                     break;
+
 
                 case "Contacted":
+
                     contacted++;
+
                     break;
+
 
                 case "Meeting Scheduled":
+
                     meetings++;
+
                     break;
+
 
                 case "Proposal Sent":
+
                     proposals++;
+
                     break;
+
 
                 case "Negotiation":
+
                     negotiations++;
+
                     break;
+
 
                 case "Won":
+
                     won++;
+
                     break;
 
+
                 case "Lost":
+
                     lost++;
+
                     break;
 
             }
@@ -165,79 +274,37 @@ function loadDashboard() {
 
 
         /* ================================
-           COMPANY FOLLOW-UP
-        ================================= */
-
-        if (company.nextFollowUp) {
-
-            const followUpDate =
-                new Date(company.nextFollowUp);
-
-            followUpDate.setHours(
-                0,
-                0,
-                0,
-                0
-            );
-
-
-            if (followUpDate < today) {
-
-                overdueFollowUps++;
-
-            } else if (
-                followUpDate.getTime() ===
-                today.getTime()
-            ) {
-
-                todayFollowUps++;
-
-            } else {
-
-                upcomingFollowUps++;
-
-            }
-
-        }
-
-
-        /* ================================
-           CALLS
-        ================================= */
-
-        const companyCalls =
-            company.calls || [];
-
-
-        totalCalls +=
-            companyCalls.length;
-
-
-        /*
-           IMPORTANT:
-           Do NOT process call.followUp here.
-
-           Call follow-ups are now converted
-           into Tasks when the call is saved.
-
-           Tasks are the single source of truth
-           for actionable follow-ups.
-
-           This prevents a completed call-follow-up
-           task from remaining active on Dashboard.
-        */
-
-
-        /* ================================
            TASKS
+           
+           Tasks are the ONLY source of
+           actionable follow-up data.
         ================================= */
 
-        (company.tasks || []).forEach(task => {
+        const tasks =
+            Array.isArray(
+                company.tasks
+            )
+                ? company.tasks
+                : [];
 
-            if (
-                task.status ===
-                "Completed"
-            ) {
+
+        tasks.forEach(
+            task => {
+
+            const completed =
+                String(
+                    task.status || ""
+                )
+                .trim()
+                .toLowerCase()
+                === "completed";
+
+
+            /* ============================
+               COMPLETED
+            ============================ */
+
+            if (completed) {
 
                 completedTasks++;
 
@@ -249,64 +316,83 @@ function loadDashboard() {
             pendingTasks++;
 
 
-            if (task.dueDate) {
-
-                const dueDate =
-                    new Date(task.dueDate);
-
-                dueDate.setHours(
-                    0,
-                    0,
-                    0,
-                    0
+            const dueDate =
+                getDateOnly(
+                    task.dueDate
                 );
 
 
-                /* =============================
-                   FOLLOW-UP TASK
-                ============================= */
+            if (!dueDate) {
+
+                return;
+
+            }
+
+
+            /* ============================
+               FOLLOW-UP TASK
+            ============================ */
+
+            if (
+                task.source === "call"
+            ) {
 
                 if (
-                    task.source === "call"
+                    dueDate < today
                 ) {
 
-                    if (
-                        dueDate < today
-                    ) {
+                    overdueFollowUps++;
 
-                        overdueFollowUps++;
+                } else if (
+                    dueDate.getTime() ===
+                    today.getTime()
+                ) {
 
-                    } else if (
-                        dueDate.getTime() ===
-                        today.getTime()
-                    ) {
+                    todayFollowUps++;
 
-                        todayFollowUps++;
+                } else {
 
-                    } else {
-
-                        upcomingFollowUps++;
-
-                    }
+                    upcomingFollowUps++;
 
                 }
 
 
-                /* =============================
-                   NORMAL TASK
-                ============================= */
+                return;
 
-                else {
+            }
 
-                    if (
-                        dueDate < today
-                    ) {
 
-                        overdueTasks++;
+            /* ============================
+               NORMAL TASK
+            =================================
+               Normal tasks also participate
+               in the dashboard attention
+               system.
+            ================================= */
 
-                    }
+            if (
+                dueDate < today
+            ) {
 
-                }
+                overdueTasks++;
+
+            } else if (
+                dueDate.getTime() ===
+                today.getTime()
+            ) {
+
+                /*
+                   Today normal tasks are
+                   actionable attention items,
+                   but they are not counted
+                   as call follow-ups.
+                */
+
+                todayFollowUps++;
+
+            } else {
+
+                upcomingFollowUps++;
 
             }
 
@@ -413,7 +499,11 @@ function loadDashboard() {
                 class="search"
                 id="dashboardSearch"
                 placeholder="Search companies..."
-                oninput="dashboardSearchCompanies(this.value)">
+                oninput="
+                    dashboardSearchCompanies(
+                        this.value
+                    )
+                ">
 
         </div>
 
@@ -429,7 +519,9 @@ function loadDashboard() {
 
                 <button
                     class="primary-stat primary-stat-companies"
-                    onclick="location.hash='companies'">
+                    onclick="
+                        location.hash='companies'
+                    ">
 
                     <span class="primary-stat-icon">
                         🏢
@@ -458,7 +550,9 @@ function loadDashboard() {
 
                 <button
                     class="primary-stat primary-stat-pipeline"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     <span class="primary-stat-icon">
                         📈
@@ -487,7 +581,9 @@ function loadDashboard() {
 
                 <button
                     class="primary-stat primary-stat-revenue"
-                    onclick="location.hash='analytics'">
+                    onclick="
+                        location.hash='analytics'
+                    ">
 
                     <span class="primary-stat-icon">
                         💰
@@ -516,7 +612,9 @@ function loadDashboard() {
 
                 <button
                     class="primary-stat primary-stat-products"
-                    onclick="loadGlobalProducts()">
+                    onclick="
+                        loadGlobalProducts()
+                    ">
 
                     <span class="primary-stat-icon">
                         📦
@@ -719,10 +817,15 @@ function loadDashboard() {
 
                 <button
                     class="pipeline-view-button"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     View Pipeline
-                    <span>→</span>
+
+                    <span>
+                        →
+                    </span>
 
                 </button>
 
@@ -736,10 +839,15 @@ function loadDashboard() {
 
                 <button
                     class="pipeline-stage"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     <span
-                        class="pipeline-stage-icon pipeline-blue">
+                        class="
+                            pipeline-stage-icon
+                            pipeline-blue
+                        ">
 
                         ✦
 
@@ -772,10 +880,15 @@ function loadDashboard() {
 
                 <button
                     class="pipeline-stage"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     <span
-                        class="pipeline-stage-icon pipeline-cyan">
+                        class="
+                            pipeline-stage-icon
+                            pipeline-cyan
+                        ">
 
                         ☎
 
@@ -808,10 +921,15 @@ function loadDashboard() {
 
                 <button
                     class="pipeline-stage"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     <span
-                        class="pipeline-stage-icon pipeline-purple">
+                        class="
+                            pipeline-stage-icon
+                            pipeline-purple
+                        ">
 
                         ◷
 
@@ -844,14 +962,15 @@ function loadDashboard() {
 
                 <button
                     class="pipeline-stage"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     <span
-                        class="pipeline-stage"
-                        onclick="location.hash='pipeline'">
-
-                    <span
-                        class="pipeline-stage-icon pipeline-violet">
+                        class="
+                            pipeline-stage-icon
+                            pipeline-violet
+                        ">
 
                         ◈
 
@@ -884,10 +1003,15 @@ function loadDashboard() {
 
                 <button
                     class="pipeline-stage"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     <span
-                        class="pipeline-stage-icon pipeline-orange">
+                        class="
+                            pipeline-stage-icon
+                            pipeline-orange
+                        ">
 
                         ⇄
 
@@ -920,10 +1044,15 @@ function loadDashboard() {
 
                 <button
                     class="pipeline-stage"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     <span
-                        class="pipeline-stage-icon pipeline-green">
+                        class="
+                            pipeline-stage-icon
+                            pipeline-green
+                        ">
 
                         ✓
 
@@ -956,10 +1085,15 @@ function loadDashboard() {
 
                 <button
                     class="pipeline-stage"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     <span
-                        class="pipeline-stage-icon pipeline-red">
+                        class="
+                            pipeline-stage-icon
+                            pipeline-red
+                        ">
 
                         ×
 
@@ -1026,8 +1160,13 @@ function loadDashboard() {
                 <!-- OVERDUE TASKS -->
 
                 <button
-                    class="attention-item attention-danger"
-                    onclick="location.hash='notifications'">
+                    class="
+                        attention-item
+                        attention-danger
+                    "
+                    onclick="
+                        location.hash='notifications'
+                    ">
 
                     <span class="attention-icon">
                         ⏰
@@ -1059,8 +1198,13 @@ function loadDashboard() {
                 <!-- OVERDUE FOLLOW-UPS -->
 
                 <button
-                    class="attention-item attention-danger"
-                    onclick="location.hash='notifications'">
+                    class="
+                        attention-item
+                        attention-danger
+                    "
+                    onclick="
+                        location.hash='notifications'
+                    ">
 
                     <span class="attention-icon">
                         📞
@@ -1092,8 +1236,13 @@ function loadDashboard() {
                 <!-- TODAY -->
 
                 <button
-                    class="attention-item attention-success"
-                    onclick="location.hash='notifications'">
+                    class="
+                        attention-item
+                        attention-success
+                    "
+                    onclick="
+                        location.hash='notifications'
+                    ">
 
                     <span class="attention-icon">
                         ✓
@@ -1125,8 +1274,13 @@ function loadDashboard() {
                 <!-- UPCOMING -->
 
                 <button
-                    class="attention-item attention-warning"
-                    onclick="location.hash='calendar'">
+                    class="
+                        attention-item
+                        attention-warning
+                    "
+                    onclick="
+                        location.hash='calendar'
+                    ">
 
                     <span class="attention-icon">
                         🗓
@@ -1207,10 +1361,15 @@ function loadDashboard() {
 
                 <button
                     class="quick-action"
-                    onclick="location.hash='pipeline'">
+                    onclick="
+                        location.hash='pipeline'
+                    ">
 
                     <span
-                        class="quick-action-icon pipeline-icon">
+                        class="
+                            quick-action-icon
+                            pipeline-icon
+                        ">
 
                         📈
 
@@ -1239,10 +1398,15 @@ function loadDashboard() {
 
                 <button
                     class="quick-action"
-                    onclick="location.hash='calendar'">
+                    onclick="
+                        location.hash='calendar'
+                    ">
 
                     <span
-                        class="quick-action-icon calendar-icon">
+                        class="
+                            quick-action-icon
+                            calendar-icon
+                        ">
 
                         📅
 
@@ -1271,10 +1435,15 @@ function loadDashboard() {
 
                 <button
                     class="quick-action"
-                    onclick="location.hash='notifications'">
+                    onclick="
+                        location.hash='notifications'
+                    ">
 
                     <span
-                        class="quick-action-icon notification-icon">
+                        class="
+                            quick-action-icon
+                            notification-icon
+                        ">
 
                         🔔
 
@@ -1303,10 +1472,15 @@ function loadDashboard() {
 
                 <button
                     class="quick-action"
-                    onclick="location.hash='analytics'">
+                    onclick="
+                        location.hash='analytics'
+                    ">
 
                     <span
-                        class="quick-action-icon analytics-icon">
+                        class="
+                            quick-action-icon
+                            analytics-icon
+                        ">
 
                         📊
 
@@ -1343,7 +1517,9 @@ function loadDashboard() {
 
     <button
         class="fab"
-        onclick="location.hash='add-company'">
+        onclick="
+            location.hash='add-company'
+        ">
 
         +
 
@@ -1375,6 +1551,9 @@ function dashboardSearchCompanies(
 
     }
 
-    loadCompanies(searchText);
+
+    loadCompanies(
+        searchText
+    );
 
 }
