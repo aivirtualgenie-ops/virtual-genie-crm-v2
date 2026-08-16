@@ -16,26 +16,129 @@ function loadPipeline() {
         "Lost"
     ];
 
-    const app = document.getElementById("app");
+    const app =
+        document.getElementById("app");
 
 
     /* =====================================
-       PAGE HEADER
+       COLLECT ALL DEALS
+    ===================================== */
+
+    let deals = [];
+
+    companies.forEach(company => {
+
+        (company.deals || []).forEach(deal => {
+
+            deals.push({
+
+                ...deal,
+
+                companyId:
+                    company.id,
+
+                companyName:
+                    company.companyName ||
+                    "Unnamed Company"
+
+            });
+
+        });
+
+    });
+
+
+    /* =====================================
+       PIPELINE TOTAL
+    ===================================== */
+
+    let activePipelineValue = 0;
+
+    deals.forEach(deal => {
+
+        const status =
+            String(
+                deal.status || "Open"
+            )
+            .trim()
+            .toLowerCase();
+
+
+        if (status === "open") {
+
+            activePipelineValue +=
+                Number(deal.value || 0);
+
+        }
+
+    });
+
+
+    /* =====================================
+       HEADER
     ===================================== */
 
     let html = `
 
     <div class="dashboard">
 
-        <div class="header">
 
-            <h1>
-                Sales Pipeline
-            </h1>
+        <div class="pipeline-page-header">
 
-            <p class="subtitle">
-                Manage your sales process
-            </p>
+            <div class="pipeline-page-icon">
+                📈
+            </div>
+
+
+            <div>
+
+                <p class="pipeline-eyebrow">
+                    SALES
+                </p>
+
+                <h1>
+                    Sales Pipeline
+                </h1>
+
+                <p class="pipeline-subtitle">
+                    ${deals.length}
+                    ${deals.length === 1 ? "Deal" : "Deals"}
+                    · ₹${activePipelineValue} Active Pipeline
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- PIPELINE SUMMARY -->
+
+        <div class="pipeline-top-stats">
+
+            <div class="pipeline-top-stat">
+
+                <span>
+                    TOTAL DEALS
+                </span>
+
+                <strong>
+                    ${deals.length}
+                </strong>
+
+            </div>
+
+
+            <div class="pipeline-top-stat">
+
+                <span>
+                    ACTIVE PIPELINE
+                </span>
+
+                <strong>
+                    ₹${activePipelineValue}
+                </strong>
+
+            </div>
 
         </div>
 
@@ -43,36 +146,112 @@ function loadPipeline() {
 
 
     /* =====================================
-       PIPELINE STAGES
+       STAGES
     ===================================== */
 
     stages.forEach(stage => {
 
-        const stageCompanies =
-            companies.filter(company => {
 
-                const currentStage =
-                    company.pipelineStage || "New Lead";
+        /* =================================
+           DEALS IN THIS STAGE
+        ================================= */
 
-                return currentStage === stage;
+        const stageDeals =
+            deals.filter(deal => {
+
+                const dealStage =
+                    deal.stage ||
+                    "New Lead";
+
+                return dealStage === stage;
 
             });
+
+
+        /* =================================
+           STAGE VALUE
+        ================================= */
+
+        let stageValue = 0;
+
+        stageDeals.forEach(deal => {
+
+            const status =
+                String(
+                    deal.status || "Open"
+                )
+                .trim()
+                .toLowerCase();
+
+
+            /*
+               Only Open deals contribute
+               to active pipeline.
+            */
+
+            if (status === "open") {
+
+                stageValue +=
+                    Number(deal.value || 0);
+
+            }
+
+        });
 
 
         html += `
 
         <div
-            class="card"
-            style="margin-top:20px;">
+            class="pipeline-stage-card">
 
-            <h3>
-                ${stage}
-            </h3>
+            <div
+                class="pipeline-stage-card-header">
 
-            <p>
-                ${stageCompanies.length}
-                Company(s)
-            </p>
+                <div>
+
+                    <div
+                        class="pipeline-stage-title">
+
+                        <h2>
+                            ${stage}
+                        </h2>
+
+                        <span>
+                            ${stageDeals.length}
+                        </span>
+
+                    </div>
+
+
+                    <p>
+                        ${stageDeals.length === 0
+                            ? "No deals"
+                            : `${stageDeals.length} ${
+                                stageDeals.length === 1
+                                ? "deal"
+                                : "deals"
+                              }`
+                        }
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="pipeline-stage-value">
+
+                    <span>
+                        ACTIVE VALUE
+                    </span>
+
+                    <strong>
+                        ₹${stageValue}
+                    </strong>
+
+                </div>
+
+            </div>
+
 
         `;
 
@@ -81,13 +260,22 @@ function loadPipeline() {
            EMPTY STAGE
         ================================= */
 
-        if (stageCompanies.length === 0) {
+        if (stageDeals.length === 0) {
 
             html += `
 
-                <p>
-                    No companies
-                </p>
+                <div
+                    class="pipeline-empty-stage">
+
+                    <span>
+                        —
+                    </span>
+
+                    <p>
+                        No deals in this stage
+                    </p>
+
+                </div>
 
             `;
 
@@ -95,41 +283,163 @@ function loadPipeline() {
 
 
         /* =================================
-           COMPANIES IN STAGE
+           DEAL CARDS
         ================================= */
 
         else {
 
-            stageCompanies.forEach(company => {
+            stageDeals.forEach(deal => {
+
+                const value =
+                    Number(
+                        deal.value || 0
+                    );
+
+
+                const status =
+                    String(
+                        deal.status || "Open"
+                    );
+
+
+                const normalizedStatus =
+                    status
+                        .trim()
+                        .toLowerCase();
+
+
+                let statusClass =
+                    "pipeline-deal-open";
+
+
+                if (
+                    normalizedStatus ===
+                    "won"
+                ) {
+
+                    statusClass =
+                        "pipeline-deal-won";
+
+                } else if (
+                    normalizedStatus ===
+                    "lost"
+                ) {
+
+                    statusClass =
+                        "pipeline-deal-lost";
+
+                }
+
 
                 html += `
 
                 <div
-                    class="card"
-                    style="
-                        margin-top:15px;
-                        cursor:pointer;
-                    "
+                    class="pipeline-deal-card"
                     onclick="
-                        location.hash='company-${company.id}'
+                        location.hash='company-${deal.companyId}'
                     ">
 
-                    <h3>
-                        ${company.companyName || "Unnamed Company"}
-                    </h3>
 
-                    <p>
-                        ${company.contactPerson || "-"}
-                    </p>
+                    <div
+                        class="pipeline-deal-top">
 
-                    <p>
-                        ${company.phone || "-"}
-                    </p>
 
-                    <p>
-                        Pipeline:
-                        ${company.pipelineStage || "New Lead"}
-                    </p>
+                        <div>
+
+                            <span
+                                class="pipeline-deal-company">
+
+                                ${deal.companyName}
+
+                            </span>
+
+
+                            <h3>
+
+                                ${
+                                    deal.name ||
+                                    "Unnamed Deal"
+                                }
+
+                            </h3>
+
+                        </div>
+
+
+                        <span
+                            class="
+                                pipeline-deal-status
+                                ${statusClass}
+                            ">
+
+                            ${status}
+
+                        </span>
+
+
+                    </div>
+
+
+                    <div
+                        class="pipeline-deal-value">
+
+                        <span>
+                            DEAL VALUE
+                        </span>
+
+                        <strong>
+                            ₹${value}
+                        </strong>
+
+                    </div>
+
+
+                    <div
+                        class="pipeline-deal-meta">
+
+
+                        <div>
+
+                            <span>
+                                PRODUCT
+                            </span>
+
+                            <strong>
+                                ${deal.product || "-"}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                STAGE
+                            </span>
+
+                            <strong>
+                                ${deal.stage || "-"}
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div
+                        class="pipeline-deal-footer">
+
+                        <span>
+                            Open Company
+                        </span>
+
+                        <strong>
+                            →
+                        </strong>
+
+                    </div>
+
 
                 </div>
 
