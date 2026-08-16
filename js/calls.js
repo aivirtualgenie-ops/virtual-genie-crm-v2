@@ -477,53 +477,14 @@ function saveCall(companyId) {
 
 
     /* =====================================
-       AUTOMATIC FOLLOW-UP TASK
+       CREATE FOLLOW-UP TASK
     ===================================== */
 
     if (followUp) {
 
-        const followUpTask = {
-
-            id:
-                Date.now() + 1,
-
-            title:
-                `Follow up with ${company.companyName}`,
-
-            dueDate:
-                followUp,
-
-            priority:
-                "Medium",
-
-            status:
-                "Pending",
-
-            notes:
-                [
-                    outcome
-                        ? `Call outcome: ${outcome}`
-                        : "",
-
-                    notes
-                        ? `Call notes: ${notes}`
-                        : ""
-
-                ]
-                .filter(Boolean)
-                .join("\n\n"),
-
-            source:
-                "call",
-
-            sourceCallId:
-                callId
-
-        };
-
-
-        company.tasks.push(
-            followUpTask
+        createCallFollowUpTask(
+            company,
+            call
         );
 
     }
@@ -551,6 +512,437 @@ function saveCall(companyId) {
     /* =====================================
        RETURN TO CALL HISTORY
     ===================================== */
+
+    loadCalls(companyId);
+
+}
+
+
+/* =========================================
+   CREATE CALL FOLLOW-UP TASK
+========================================= */
+
+function createCallFollowUpTask(
+    company,
+    call
+) {
+
+    if (!company.tasks) {
+
+        company.tasks = [];
+
+    }
+
+
+    const followUpTask = {
+
+        id:
+            Date.now() + 1,
+
+        title:
+            `Follow up with ${company.companyName}`,
+
+        dueDate:
+            call.followUp,
+
+        priority:
+            "Medium",
+
+        status:
+            "Pending",
+
+        notes:
+            [
+                call.outcome
+                    ? `Call outcome: ${call.outcome}`
+                    : "",
+
+                call.notes
+                    ? `Call notes: ${call.notes}`
+                    : ""
+
+            ]
+            .filter(Boolean)
+            .join("\n\n"),
+
+        source:
+            "call",
+
+        sourceCallId:
+            call.id
+
+    };
+
+
+    company.tasks.push(
+        followUpTask
+    );
+
+}
+
+
+/* =========================================
+   EDIT CALL
+========================================= */
+
+function loadEditCall(
+    companyId,
+    callId
+) {
+
+    const company =
+        getCompany(companyId);
+
+
+    if (!company) {
+
+        console.error(
+            "Edit call failed: company not found"
+        );
+
+        return;
+
+    }
+
+
+    const call =
+        (company.calls || []).find(
+            item =>
+                String(item.id) ===
+                String(callId)
+        );
+
+
+    if (!call) {
+
+        console.error(
+            "Edit call failed: call not found"
+        );
+
+        return;
+
+    }
+
+
+    const app =
+        document.getElementById("app");
+
+
+    app.innerHTML = `
+
+    <div class="dashboard">
+
+        <div class="header">
+
+            <h1>
+                Edit Call
+            </h1>
+
+            <p class="subtitle">
+                Update your conversation record
+            </p>
+
+        </div>
+
+
+        <input
+            class="search"
+            id="callType"
+            placeholder="Call Type"
+            value="${escapeCallField(call.type || "")}">
+
+
+        <input
+            class="search"
+            id="callDuration"
+            type="number"
+            min="0"
+            placeholder="Duration (minutes)"
+            value="${Number(call.duration || 0)}">
+
+
+        <input
+            class="search"
+            id="callOutcome"
+            placeholder="Outcome"
+            value="${escapeCallField(call.outcome || "")}">
+
+
+        <input
+            class="search"
+            id="callFollowUp"
+            type="date"
+            value="${call.followUp || ""}">
+
+
+        <textarea
+            class="search"
+            id="callNotes"
+            placeholder="Notes"
+            style="height:150px;">${escapeCallField(call.notes || "")}</textarea>
+
+
+        <button
+            class="fab"
+            style="
+                position:static;
+                width:100%;
+                height:60px;
+                border-radius:18px;
+            "
+            onclick="
+                updateCall(
+                    ${companyId},
+                    ${callId}
+                )
+            ">
+
+            Save Changes
+
+        </button>
+
+
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="loadCalls(${companyId})">
+
+            ← Back to Call History
+
+        </button>
+
+
+        ${bottomNav("companies")}
+
+    </div>
+
+    `;
+
+}
+
+
+/* =========================================
+   UPDATE CALL
+========================================= */
+
+function updateCall(
+    companyId,
+    callId
+) {
+
+    const company =
+        getCompany(companyId);
+
+
+    if (!company) {
+
+        console.error(
+            "Update call failed: company not found"
+        );
+
+        return;
+
+    }
+
+
+    const call =
+        (company.calls || []).find(
+            item =>
+                String(item.id) ===
+                String(callId)
+        );
+
+
+    if (!call) {
+
+        console.error(
+            "Update call failed: call not found"
+        );
+
+        return;
+
+    }
+
+
+    if (!company.tasks) {
+
+        company.tasks = [];
+
+    }
+
+
+    /* =====================================
+       READ UPDATED FORM
+    ===================================== */
+
+    const type =
+        document
+            .getElementById("callType")
+            .value
+            .trim();
+
+
+    const durationValue =
+        document
+            .getElementById("callDuration")
+            .value;
+
+
+    const outcome =
+        document
+            .getElementById("callOutcome")
+            .value
+            .trim();
+
+
+    const followUp =
+        document
+            .getElementById("callFollowUp")
+            .value;
+
+
+    const notes =
+        document
+            .getElementById("callNotes")
+            .value
+            .trim();
+
+
+    /* =====================================
+       UPDATE CALL
+    ===================================== */
+
+    call.type =
+        type || "General Call";
+
+    call.duration =
+        Number(durationValue) || 0;
+
+    call.outcome =
+        outcome || "-";
+
+    call.followUp =
+        followUp || "";
+
+    call.notes =
+        notes || "";
+
+
+    /* =====================================
+       FIND LINKED TASK
+    ===================================== */
+
+    const linkedTask =
+        company.tasks.find(
+            task =>
+                task.source === "call" &&
+                String(task.sourceCallId) ===
+                String(callId)
+        );
+
+
+    /* =====================================
+       CASE 1:
+       FOLLOW-UP EXISTS
+    ===================================== */
+
+    if (followUp) {
+
+
+        /* ================================
+           NO TASK → CREATE ONE
+        ================================= */
+
+        if (!linkedTask) {
+
+            createCallFollowUpTask(
+                company,
+                call
+            );
+
+        }
+
+
+        /* ================================
+           TASK EXISTS → UPDATE IT
+        ================================= */
+
+        else {
+
+            linkedTask.title =
+                `Follow up with ${company.companyName}`;
+
+            linkedTask.dueDate =
+                followUp;
+
+            linkedTask.notes =
+                [
+                    outcome
+                        ? `Call outcome: ${outcome}`
+                        : "",
+
+                    notes
+                        ? `Call notes: ${notes}`
+                        : ""
+
+                ]
+                .filter(Boolean)
+                .join("\n\n");
+
+
+            /*
+               IMPORTANT:
+
+               We intentionally DO NOT change
+               linkedTask.status here.
+
+               If the task was already completed,
+               editing the call should not reopen it.
+            */
+
+        }
+
+    }
+
+
+    /* =====================================
+       CASE 2:
+       FOLLOW-UP REMOVED
+    ===================================== */
+
+    else {
+
+        company.tasks =
+            company.tasks.filter(
+                task =>
+                    !(
+                        task.source === "call" &&
+                        String(task.sourceCallId) ===
+                        String(callId)
+                    )
+            );
+
+    }
+
+
+    /* =====================================
+       SAVE COMPANY
+    ===================================== */
+
+    const saved =
+        updateCompany(company);
+
+
+    if (!saved) {
+
+        console.error(
+            "Update call failed"
+        );
+
+        return;
+
+    }
+
 
     loadCalls(companyId);
 
@@ -642,3 +1034,18 @@ function deleteCallConfirm(
     loadCalls(companyId);
 
 }
+
+
+/* =========================================
+   SAFE FORM VALUE
+========================================= */
+
+function escapeCallField(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+       }
