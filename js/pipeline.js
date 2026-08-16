@@ -49,7 +49,7 @@ function loadPipeline() {
 
 
     /* =====================================
-       PIPELINE TOTAL
+       ACTIVE PIPELINE VALUE
     ===================================== */
 
     let activePipelineValue = 0;
@@ -82,13 +82,11 @@ function loadPipeline() {
 
     <div class="dashboard">
 
-
         <div class="pipeline-page-header">
 
             <div class="pipeline-page-icon">
                 📈
             </div>
-
 
             <div>
 
@@ -151,26 +149,16 @@ function loadPipeline() {
 
     stages.forEach(stage => {
 
-
-        /* =================================
-           DEALS IN THIS STAGE
-        ================================= */
-
         const stageDeals =
             deals.filter(deal => {
 
                 const dealStage =
-                    deal.stage ||
-                    "New Lead";
+                    deal.stage || "New Lead";
 
                 return dealStage === stage;
 
             });
 
-
-        /* =================================
-           STAGE VALUE
-        ================================= */
 
         let stageValue = 0;
 
@@ -184,11 +172,6 @@ function loadPipeline() {
                 .toLowerCase();
 
 
-            /*
-               Only Open deals contribute
-               to active pipeline.
-            */
-
             if (status === "open") {
 
                 stageValue +=
@@ -201,16 +184,13 @@ function loadPipeline() {
 
         html += `
 
-        <div
-            class="pipeline-stage-card">
+        <div class="pipeline-stage-card">
 
-            <div
-                class="pipeline-stage-card-header">
+            <div class="pipeline-stage-card-header">
 
                 <div>
 
-                    <div
-                        class="pipeline-stage-title">
+                    <div class="pipeline-stage-title">
 
                         <h2>
                             ${stage}
@@ -221,7 +201,6 @@ function loadPipeline() {
                         </span>
 
                     </div>
-
 
                     <p>
                         ${stageDeals.length === 0
@@ -237,8 +216,7 @@ function loadPipeline() {
                 </div>
 
 
-                <div
-                    class="pipeline-stage-value">
+                <div class="pipeline-stage-value">
 
                     <span>
                         ACTIVE VALUE
@@ -252,7 +230,6 @@ function loadPipeline() {
 
             </div>
 
-
         `;
 
 
@@ -264,8 +241,7 @@ function loadPipeline() {
 
             html += `
 
-                <div
-                    class="pipeline-empty-stage">
+                <div class="pipeline-empty-stage">
 
                     <span>
                         —
@@ -334,10 +310,7 @@ function loadPipeline() {
                 html += `
 
                 <div
-                    class="pipeline-deal-card"
-                    onclick="
-                        location.hash='company-${deal.companyId}'
-                    ">
+                    class="pipeline-deal-card">
 
 
                     <div
@@ -414,11 +387,11 @@ function loadPipeline() {
                         <div>
 
                             <span>
-                                STAGE
+                                COMPANY
                             </span>
 
                             <strong>
-                                ${deal.stage || "-"}
+                                ${deal.companyName}
                             </strong>
 
                         </div>
@@ -427,16 +400,130 @@ function loadPipeline() {
                     </div>
 
 
+                    <!-- =========================
+                         CHANGE DEAL STAGE
+                    ========================== -->
+
+                    <div
+                        class="pipeline-deal-stage-editor">
+
+                        <label>
+                            DEAL STAGE
+                        </label>
+
+
+                        <select
+                            class="pipeline-stage-select"
+                            id="pipeline-stage-${deal.id}"
+                            onclick="event.stopPropagation()"
+                            onchange="
+                                savePipelineDealStage(
+                                    ${deal.companyId},
+                                    ${deal.id},
+                                    this.value
+                                )
+                            ">
+
+                            ${stages.map(
+                                option => `
+                                    <option
+                                        value="${option}"
+                                        ${
+                                            deal.stage === option
+                                                ? "selected"
+                                                : ""
+                                        }>
+
+                                        ${option}
+
+                                    </option>
+                                `
+                            ).join("")}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =========================
+                         STATUS
+                    ========================== -->
+
+                    <div
+                        class="pipeline-deal-stage-editor">
+
+                        <label>
+                            DEAL STATUS
+                        </label>
+
+
+                        <select
+                            class="pipeline-stage-select"
+                            onclick="event.stopPropagation()"
+                            onchange="
+                                savePipelineDealStatus(
+                                    ${deal.companyId},
+                                    ${deal.id},
+                                    this.value
+                                )
+                            ">
+
+                            <option
+                                value="Open"
+                                ${
+                                    normalizedStatus === "open"
+                                        ? "selected"
+                                        : ""
+                                }>
+
+                                Open
+
+                            </option>
+
+
+                            <option
+                                value="Won"
+                                ${
+                                    normalizedStatus === "won"
+                                        ? "selected"
+                                        : ""
+                                }>
+
+                                Won
+
+                            </option>
+
+
+                            <option
+                                value="Lost"
+                                ${
+                                    normalizedStatus === "lost"
+                                        ? "selected"
+                                        : ""
+                                }>
+
+                                Lost
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
                     <div
                         class="pipeline-deal-footer">
 
-                        <span>
-                            Open Company
-                        </span>
+                        <button
+                            class="pipeline-open-company"
+                            onclick="
+                                event.stopPropagation();
+                                location.hash='company-${deal.companyId}'
+                            ">
 
-                        <strong>
-                            →
-                        </strong>
+                            Open Company
+
+                        </button>
 
                     </div>
 
@@ -477,5 +564,152 @@ function loadPipeline() {
     ===================================== */
 
     app.innerHTML = html;
+
+}
+
+
+/* =========================================
+   SAVE DEAL STAGE
+========================================= */
+
+function savePipelineDealStage(
+    companyId,
+    dealId,
+    newStage
+) {
+
+    const company =
+        getCompany(companyId);
+
+
+    if (!company) {
+
+        alert("Company not found.");
+
+        return;
+
+    }
+
+
+    const deal =
+        (company.deals || []).find(
+            item =>
+                String(item.id) ===
+                String(dealId)
+        );
+
+
+    if (!deal) {
+
+        alert("Deal not found.");
+
+        return;
+
+    }
+
+
+    deal.stage =
+        newStage;
+
+
+    const saved =
+        updateDeal(
+            companyId,
+            deal
+        );
+
+
+    if (!saved) {
+
+        alert(
+            "Could not update deal stage."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Reload the entire Pipeline so:
+       - deal moves to new stage
+       - stage count updates
+       - stage value updates
+       - Dashboard will see the new stage
+    */
+
+    loadPipeline();
+
+}
+
+
+/* =========================================
+   SAVE DEAL STATUS
+========================================= */
+
+function savePipelineDealStatus(
+    companyId,
+    dealId,
+    newStatus
+) {
+
+    const company =
+        getCompany(companyId);
+
+
+    if (!company) {
+
+        alert("Company not found.");
+
+        return;
+
+    }
+
+
+    const deal =
+        (company.deals || []).find(
+            item =>
+                String(item.id) ===
+                String(dealId)
+        );
+
+
+    if (!deal) {
+
+        alert("Deal not found.");
+
+        return;
+
+    }
+
+
+    deal.status =
+        newStatus;
+
+
+    const saved =
+        updateDeal(
+            companyId,
+            deal
+        );
+
+
+    if (!saved) {
+
+        alert(
+            "Could not update deal status."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Reload so financial values
+       update immediately.
+    */
+
+    loadPipeline();
 
 }
