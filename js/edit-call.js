@@ -58,7 +58,9 @@ function loadEditCall(
             </h1>
 
             <p class="subtitle">
-                ${company.companyName}
+                ${escapeEditCallField(
+                    company.companyName
+                )}
             </p>
 
         </div>
@@ -68,7 +70,9 @@ function loadEditCall(
             class="search"
             id="callType"
             placeholder="Call Type"
-            value="${call.type || ""}">
+            value="${escapeEditCallField(
+                call.type || ""
+            )}">
 
 
         <input
@@ -77,14 +81,18 @@ function loadEditCall(
             type="number"
             min="0"
             placeholder="Duration (minutes)"
-            value="${call.duration || ""}">
+            value="${Number(
+                call.duration || 0
+            )}">
 
 
         <input
             class="search"
             id="callOutcome"
             placeholder="Outcome"
-            value="${call.outcome || ""}">
+            value="${escapeEditCallField(
+                call.outcome || ""
+            )}">
 
 
         <input
@@ -98,7 +106,9 @@ function loadEditCall(
             class="search"
             id="callNotes"
             placeholder="Notes"
-            style="height:150px;">${call.notes || ""}</textarea>
+            style="height:150px;">${escapeEditCallField(
+                call.notes || ""
+            )}</textarea>
 
 
         <button
@@ -109,10 +119,12 @@ function loadEditCall(
                 height:60px;
                 border-radius:18px;
             "
-            onclick="updateCall(
-                ${companyId},
-                ${callId}
-            )">
+            onclick="
+                updateCall(
+                    ${companyId},
+                    ${callId}
+                )
+            ">
 
             Update Call
 
@@ -184,18 +196,28 @@ function updateCall(
 
 
     /* =====================================
-       UPDATE FIELDS
+       INITIALIZE TASKS
     ===================================== */
 
-    call.type =
+    if (!company.tasks) {
+
+        company.tasks = [];
+
+    }
+
+
+    /* =====================================
+       READ FORM
+    ===================================== */
+
+    const type =
         document
             .getElementById("callType")
             .value
-            .trim() ||
-        "General Call";
+            .trim();
 
 
-    call.duration =
+    const duration =
         Number(
             document
                 .getElementById(
@@ -205,17 +227,16 @@ function updateCall(
         ) || 0;
 
 
-    call.outcome =
+    const outcome =
         document
             .getElementById(
                 "callOutcome"
             )
             .value
-            .trim() ||
-        "-";
+            .trim();
 
 
-    call.followUp =
+    const followUp =
         document
             .getElementById(
                 "callFollowUp"
@@ -223,7 +244,7 @@ function updateCall(
             .value;
 
 
-    call.notes =
+    const notes =
         document
             .getElementById(
                 "callNotes"
@@ -233,7 +254,167 @@ function updateCall(
 
 
     /* =====================================
-       SAVE
+       UPDATE CALL
+    ===================================== */
+
+    call.type =
+        type || "General Call";
+
+
+    call.duration =
+        duration;
+
+
+    call.outcome =
+        outcome || "-";
+
+
+    call.followUp =
+        followUp || "";
+
+
+    call.notes =
+        notes || "";
+
+
+    /* =====================================
+       FIND LINKED FOLLOW-UP TASK
+    ===================================== */
+
+    const linkedTask =
+        company.tasks.find(
+            task =>
+                task.source === "call" &&
+                String(
+                    task.sourceCallId
+                ) === String(callId)
+        );
+
+
+    /* =====================================
+       FOLLOW-UP EXISTS
+    ===================================== */
+
+    if (followUp) {
+
+
+        /* ================================
+           CREATE TASK IF MISSING
+        ================================= */
+
+        if (!linkedTask) {
+
+            const newTask = {
+
+                id:
+                    Date.now() + 1,
+
+                title:
+                    `Follow up with ${company.companyName}`,
+
+                dueDate:
+                    followUp,
+
+                priority:
+                    "Medium",
+
+                status:
+                    "Pending",
+
+                notes:
+                    [
+                        outcome
+                            ? `Call outcome: ${outcome}`
+                            : "",
+
+                        notes
+                            ? `Call notes: ${notes}`
+                            : ""
+
+                    ]
+                    .filter(Boolean)
+                    .join("\n\n"),
+
+                source:
+                    "call",
+
+                sourceCallId:
+                    callId
+
+            };
+
+
+            company.tasks.push(
+                newTask
+            );
+
+        }
+
+
+        /* ================================
+           UPDATE EXISTING TASK
+        ================================= */
+
+        else {
+
+            linkedTask.title =
+                `Follow up with ${company.companyName}`;
+
+
+            linkedTask.dueDate =
+                followUp;
+
+
+            linkedTask.notes =
+                [
+                    outcome
+                        ? `Call outcome: ${outcome}`
+                        : "",
+
+                    notes
+                        ? `Call notes: ${notes}`
+                        : ""
+
+                ]
+                .filter(Boolean)
+                .join("\n\n");
+
+
+            /*
+               DO NOT change status.
+
+               If the user already completed
+               this task, editing the call should
+               not reopen it.
+            */
+
+        }
+
+    }
+
+
+    /* =====================================
+       FOLLOW-UP REMOVED
+    ===================================== */
+
+    else {
+
+        company.tasks =
+            company.tasks.filter(
+                task =>
+                    !(
+                        task.source === "call" &&
+                        String(
+                            task.sourceCallId
+                        ) === String(callId)
+                    )
+            );
+
+    }
+
+
+    /* =====================================
+       SAVE COMPANY
     ===================================== */
 
     const saved =
@@ -251,6 +432,39 @@ function updateCall(
     }
 
 
+    /* =====================================
+       RETURN TO CALL HISTORY
+    ===================================== */
+
     loadCalls(companyId);
+
+}
+
+
+/* =========================================
+   SAFE FORM VALUE
+========================================= */
+
+function escapeEditCallField(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        );
 
 }
