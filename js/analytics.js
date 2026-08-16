@@ -16,33 +16,47 @@ function loadAnalytics() {
     ===================================== */
 
     let totalPipeline = 0;
+
     let totalRevenue = 0;
+
     let totalLostValue = 0;
 
+
     let totalProducts = 0;
+
     let totalCalls = 0;
 
+
     let totalTasks = 0;
+
     let completedTasks = 0;
 
+
     let wonDeals = 0;
+
     let lostDeals = 0;
+
     let openDeals = 0;
 
 
     /* =====================================
        PIPELINE STAGES
-       NOW BASED ON DEALS
     ===================================== */
 
     const stages = {
 
         "New Lead": 0,
+
         "Contacted": 0,
+
         "Meeting Scheduled": 0,
+
         "Proposal Sent": 0,
+
         "Negotiation": 0,
+
         "Won": 0,
+
         "Lost": 0
 
     };
@@ -52,54 +66,94 @@ function loadAnalytics() {
        PROCESS COMPANIES
     ===================================== */
 
-    companies.forEach(company => {
+    companies.forEach(
+        company => {
 
 
         /* ================================
            PRODUCTS
         ================================= */
 
+        const products =
+            Array.isArray(
+                company.products
+            )
+                ? company.products
+                : [];
+
+
         totalProducts +=
-            (company.products || []).length;
+            products.length;
 
 
         /* ================================
            CALLS
         ================================= */
 
+        const calls =
+            Array.isArray(
+                company.calls
+            )
+                ? company.calls
+                : [];
+
+
         totalCalls +=
-            (company.calls || []).length;
+            calls.length;
 
 
         /* ================================
            TASKS
         ================================= */
 
-        const companyTasks =
-            company.tasks || [];
+        const tasks =
+            Array.isArray(
+                company.tasks
+            )
+                ? company.tasks
+                : [];
 
 
         totalTasks +=
-            companyTasks.length;
+            tasks.length;
 
 
-        completedTasks +=
-            companyTasks.filter(
-                task =>
-                    task.status ===
-                    "Completed"
-            ).length;
+        tasks.forEach(
+            task => {
+
+            const status =
+                String(
+                    task.status || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            if (
+                status === "completed"
+            ) {
+
+                completedTasks++;
+
+            }
+
+        });
 
 
         /* ================================
            DEALS
         ================================= */
 
-        const companyDeals =
-            company.deals || [];
+        const deals =
+            Array.isArray(
+                company.deals
+            )
+                ? company.deals
+                : [];
 
 
-        companyDeals.forEach(deal => {
+        deals.forEach(
+            deal => {
 
             const value =
                 Number(
@@ -109,47 +163,81 @@ function loadAnalytics() {
 
             const status =
                 String(
-                    deal.status || "Open"
+                    deal.status ||
+                    "Open"
                 )
                 .trim()
                 .toLowerCase();
 
 
-            /* ==============================
+            /* ============================
                FINANCIAL METRICS
-            ============================== */
+            ================================= */
 
-            if (status === "won") {
+            if (
+                status === "won"
+            ) {
 
-                totalRevenue += value;
+                totalRevenue +=
+                    value;
 
                 wonDeals++;
 
-            } else if (status === "lost") {
 
-                totalLostValue += value;
+            } else if (
+                status === "lost"
+            ) {
+
+                totalLostValue +=
+                    value;
 
                 lostDeals++;
 
+
             } else {
 
-                totalPipeline += value;
+                totalPipeline +=
+                    value;
 
                 openDeals++;
 
             }
 
 
-            /* ==============================
-               STAGE
-            ============================== */
+            /* ============================
+               DISPLAY STAGE
+               
+               Status is authoritative for
+               terminal states.
+            ================================= */
 
-            const stage =
-                String(
-                    deal.stage ||
-                    "New Lead"
-                )
-                .trim();
+            let stage;
+
+
+            if (
+                status === "won"
+            ) {
+
+                stage =
+                    "Won";
+
+            } else if (
+                status === "lost"
+            ) {
+
+                stage =
+                    "Lost";
+
+            } else {
+
+                stage =
+                    String(
+                        deal.stage ||
+                        "New Lead"
+                    )
+                    .trim();
+
+            }
 
 
             if (
@@ -236,11 +324,13 @@ function loadAnalytics() {
             </h3>
 
             <p>
+
                 <strong>
                     Deals:
                 </strong>
 
                 ${stages[stage]}
+
             </p>
 
         </div>
@@ -259,6 +349,8 @@ function loadAnalytics() {
     <div class="dashboard">
 
 
+        <!-- HEADER -->
+
         <div class="header">
 
             <h1>
@@ -272,16 +364,12 @@ function loadAnalytics() {
         </div>
 
 
-        <!-- ==============================
-             SALES METRICS
-        =============================== -->
+        <!-- SALES METRICS -->
 
         <div class="stats">
 
             <div class="stats-grid">
 
-
-                <!-- COMPANIES -->
 
                 <div class="card">
 
@@ -296,8 +384,6 @@ function loadAnalytics() {
                 </div>
 
 
-                <!-- PIPELINE -->
-
                 <div class="card">
 
                     <p>
@@ -310,8 +396,6 @@ function loadAnalytics() {
 
                 </div>
 
-
-                <!-- REVENUE -->
 
                 <div class="card">
 
@@ -326,8 +410,6 @@ function loadAnalytics() {
                 </div>
 
 
-                <!-- CONVERSION -->
-
                 <div class="card">
 
                     <p>
@@ -340,14 +422,13 @@ function loadAnalytics() {
 
                 </div>
 
+
             </div>
 
         </div>
 
 
-        <!-- ==============================
-             DEAL PERFORMANCE
-        =============================== -->
+        <!-- DEAL PERFORMANCE -->
 
         <div
             class="card"
@@ -406,9 +487,7 @@ function loadAnalytics() {
         </div>
 
 
-        <!-- ==============================
-             SALES ACTIVITY
-        =============================== -->
+        <!-- SALES ACTIVITY -->
 
         <div
             class="card"
@@ -489,9 +568,7 @@ function loadAnalytics() {
         </div>
 
 
-        <!-- ==============================
-             PRODUCTS
-        =============================== -->
+        <!-- PRODUCTS -->
 
         <div
             class="card"
@@ -517,9 +594,7 @@ function loadAnalytics() {
         </div>
 
 
-        <!-- ==============================
-             PIPELINE BREAKDOWN
-        =============================== -->
+        <!-- PIPELINE BREAKDOWN -->
 
         <div
             class="card"
@@ -540,7 +615,9 @@ function loadAnalytics() {
         <button
             class="search"
             style="margin-top:20px;"
-            onclick="location.hash=''">
+            onclick="
+                location.hash=''
+            ">
 
             ← Back to Dashboard
 
@@ -554,4 +631,4 @@ function loadAnalytics() {
 
     `;
 
-}
+            }
