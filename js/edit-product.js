@@ -58,7 +58,9 @@ function loadEditProduct(
             </h1>
 
             <p class="subtitle">
-                ${company.companyName}
+                ${escapeProductField(
+                    company.companyName
+                )}
             </p>
 
         </div>
@@ -68,21 +70,27 @@ function loadEditProduct(
             class="search"
             id="productName"
             placeholder="Product Name"
-            value="${product.name || ""}">
+            value="${escapeProductField(
+                product.name || ""
+            )}">
 
 
         <input
             class="search"
             id="productSKU"
             placeholder="SKU"
-            value="${product.sku || ""}">
+            value="${escapeProductField(
+                product.sku || ""
+            )}">
 
 
         <input
             class="search"
             id="productCategory"
             placeholder="Category"
-            value="${product.category || ""}">
+            value="${escapeProductField(
+                product.category || ""
+            )}">
 
 
         <input
@@ -91,7 +99,9 @@ function loadEditProduct(
             type="number"
             min="0"
             placeholder="Quantity"
-            value="${product.quantity || 0}">
+            value="${Number(
+                product.quantity || 0
+            )}">
 
 
         <input
@@ -101,7 +111,9 @@ function loadEditProduct(
             min="0"
             step="0.01"
             placeholder="Unit Price"
-            value="${product.price || 0}">
+            value="${Number(
+                product.price || 0
+            )}">
 
 
         <textarea
@@ -111,7 +123,9 @@ function loadEditProduct(
             style="
                 height:120px;
                 resize:none;
-            ">${product.description || ""}</textarea>
+            ">${escapeProductField(
+                product.description || ""
+            )}</textarea>
 
 
         <button
@@ -122,11 +136,14 @@ function loadEditProduct(
                 height:60px;
                 border-radius:18px;
                 font-size:20px;
+                margin-top:20px;
             "
-            onclick="updateProduct(
-                ${companyId},
-                ${productId}
-            )">
+            onclick="
+                updateProduct(
+                    ${companyId},
+                    ${productId}
+                )
+            ">
 
             Update Product
 
@@ -136,7 +153,11 @@ function loadEditProduct(
         <button
             class="search"
             style="margin-top:20px;"
-            onclick="loadProducts(${companyId})">
+            onclick="
+                loadProducts(
+                    ${companyId}
+                )
+            ">
 
             ← Back
 
@@ -197,14 +218,71 @@ function updateProduct(
     }
 
 
-    product.name =
+    /* =====================================
+       READ FORM
+    ===================================== */
+
+    const name =
         document
-            .getElementById("productName")
+            .getElementById(
+                "productName"
+            )
             .value
             .trim();
 
 
-    if (product.name === "") {
+    const sku =
+        document
+            .getElementById(
+                "productSKU"
+            )
+            .value
+            .trim();
+
+
+    const category =
+        document
+            .getElementById(
+                "productCategory"
+            )
+            .value
+            .trim();
+
+
+    const quantity =
+        Number(
+            document
+                .getElementById(
+                    "productQuantity"
+                )
+                .value
+        );
+
+
+    const price =
+        Number(
+            document
+                .getElementById(
+                    "productPrice"
+                )
+                .value
+        );
+
+
+    const description =
+        document
+            .getElementById(
+                "productDescription"
+            )
+            .value
+            .trim();
+
+
+    /* =====================================
+       VALIDATION
+    ===================================== */
+
+    if (!name) {
 
         alert(
             "Product name is required."
@@ -215,51 +293,13 @@ function updateProduct(
     }
 
 
-    product.sku =
-        document
-            .getElementById("productSKU")
-            .value
-            .trim();
+    if (
+        !Number.isFinite(quantity) ||
+        quantity < 0
+    ) {
 
-
-    product.category =
-        document
-            .getElementById("productCategory")
-            .value
-            .trim();
-
-
-    product.quantity =
-        Number(
-            document
-                .getElementById("productQuantity")
-                .value
-        ) || 0;
-
-
-    product.price =
-        Number(
-            document
-                .getElementById("productPrice")
-                .value
-        ) || 0;
-
-
-    product.description =
-        document
-            .getElementById("productDescription")
-            .value
-            .trim();
-
-
-    const saved =
-        updateCompany(company);
-
-
-    if (!saved) {
-
-        console.error(
-            "Update product failed"
+        alert(
+            "Quantity must be 0 or greater."
         );
 
         return;
@@ -267,6 +307,104 @@ function updateProduct(
     }
 
 
-    loadProducts(companyId);
+    if (
+        !Number.isFinite(price) ||
+        price < 0
+    ) {
+
+        alert(
+            "Price must be 0 or greater."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       UPDATE PRODUCT
+    ===================================== */
+
+    product.name =
+        name;
+
+
+    product.sku =
+        sku;
+
+
+    product.category =
+        category;
+
+
+    product.quantity =
+        quantity;
+
+
+    product.price =
+        price;
+
+
+    product.description =
+        description;
+
+
+    /* =====================================
+       SAVE
+    ===================================== */
+
+    const saved =
+        updateCompany(
+            company
+        );
+
+
+    if (!saved) {
+
+        alert(
+            "Could not update product."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       RETURN
+    ===================================== */
+
+    loadProducts(
+        companyId
+    );
+
+}
+
+
+/* =========================================
+   ESCAPE PRODUCT FIELD
+========================================= */
+
+function escapeProductField(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        );
 
 }
