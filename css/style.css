@@ -4606,3 +4606,75 @@ button.search:active {
     }
 
 }
+/* =========================================================
+   PIPELINE DEAL EDITORS
+========================================================= */
+
+.pipeline-deal-stage-editor {
+    margin-top: 14px;
+}
+
+.pipeline-deal-stage-editor label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #5e7896;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+.pipeline-stage-select {
+    width: 100%;
+
+    min-height: 42px;
+
+    padding: 0 12px;
+
+    border-radius: 11px;
+
+    background: rgba(5,25,48,.9);
+
+    border: 1px solid
+        rgba(80,160,210,.15);
+
+    color: #dcecff;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    outline: none;
+}
+
+.pipeline-stage-select:focus {
+    border-color:
+        rgba(0,210,255,.4);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0,190,255,.06);
+}
+
+.pipeline-open-company {
+    width: 100%;
+
+    min-height: 40px;
+
+    border-radius: 11px;
+
+    background:
+        rgba(0,180,255,.06);
+
+    border: 1px solid
+        rgba(0,200,255,.14);
+
+    color: #64dfff;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
