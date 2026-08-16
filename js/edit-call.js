@@ -23,8 +23,14 @@ function loadEditCall(
     }
 
 
+    const calls =
+        Array.isArray(company.calls)
+            ? company.calls
+            : [];
+
+
     const call =
-        (company.calls || []).find(
+        calls.find(
             c =>
                 String(c.id) ===
                 String(callId)
@@ -45,6 +51,47 @@ function loadEditCall(
 
     const app =
         document.getElementById("app");
+
+
+    /*
+       The follow-up input is populated from
+       the linked task when one exists.
+
+       The task is now the authoritative
+       source for the active follow-up date.
+    */
+
+    const tasks =
+        Array.isArray(company.tasks)
+            ? company.tasks
+            : [];
+
+
+    const linkedTask =
+        tasks.find(
+            task =>
+                task.source === "call" &&
+                String(
+                    task.sourceCallId
+                ) === String(callId)
+        );
+
+
+    const followUp =
+        linkedTask &&
+        String(
+            linkedTask.status || ""
+        )
+        .trim()
+        .toLowerCase() !== "completed"
+
+            ?
+
+        linkedTask.dueDate || ""
+
+            :
+
+        "";
 
 
     app.innerHTML = `
@@ -99,7 +146,9 @@ function loadEditCall(
             class="search"
             id="callFollowUp"
             type="date"
-            value="${call.followUp || ""}">
+            value="${escapeEditCallField(
+                followUp
+            )}">
 
 
         <textarea
@@ -134,7 +183,11 @@ function loadEditCall(
         <button
             class="search"
             style="margin-top:20px;"
-            onclick="loadCalls(${companyId})">
+            onclick="
+                loadCalls(
+                    ${companyId}
+                )
+            ">
 
             ← Back
 
@@ -175,8 +228,14 @@ function updateCall(
     }
 
 
+    const calls =
+        Array.isArray(company.calls)
+            ? company.calls
+            : [];
+
+
     const call =
-        (company.calls || []).find(
+        calls.find(
             c =>
                 String(c.id) ===
                 String(callId)
@@ -196,10 +255,14 @@ function updateCall(
 
 
     /* =====================================
-       INITIALIZE TASKS
+       INITIALIZE COLLECTIONS
     ===================================== */
 
-    if (!company.tasks) {
+    if (
+        !Array.isArray(
+            company.tasks
+        )
+    ) {
 
         company.tasks = [];
 
@@ -212,19 +275,20 @@ function updateCall(
 
     const type =
         document
-            .getElementById("callType")
+            .getElementById(
+                "callType"
+            )
             .value
             .trim();
 
 
-    const duration =
-        Number(
-            document
-                .getElementById(
-                    "callDuration"
-                )
-                .value
-        ) || 0;
+    const durationRaw =
+        document
+            .getElementById(
+                "callDuration"
+            )
+            .value
+            .trim();
 
 
     const outcome =
@@ -241,7 +305,8 @@ function updateCall(
             .getElementById(
                 "callFollowUp"
             )
-            .value;
+            .value
+            .trim();
 
 
     const notes =
@@ -254,7 +319,35 @@ function updateCall(
 
 
     /* =====================================
-       UPDATE CALL
+       VALIDATE DURATION
+    ===================================== */
+
+    const duration =
+        durationRaw === ""
+            ? 0
+            : Number(
+                durationRaw
+            );
+
+
+    if (
+        !Number.isFinite(
+            duration
+        ) ||
+        duration < 0
+    ) {
+
+        alert(
+            "Duration must be 0 or greater."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       UPDATE CALL FIELDS
     ===================================== */
 
     call.type =
@@ -269,19 +362,27 @@ function updateCall(
         outcome || "-";
 
 
-    call.followUp =
-        followUp || "";
-
-
     call.notes =
         notes || "";
 
 
+    /*
+       Keep call.followUp as a compatibility
+       mirror for existing call records.
+
+       Active CRM systems should read the
+       linked task as the source of truth.
+    */
+
+    call.followUp =
+        followUp || "";
+
+
     /* =====================================
-       FIND LINKED FOLLOW-UP TASK
+       FIND LINKED TASK
     ===================================== */
 
-    const linkedTask =
+    let linkedTask =
         company.tasks.find(
             task =>
                 task.source === "call" &&
@@ -299,18 +400,26 @@ function updateCall(
 
 
         /* ================================
-           CREATE TASK IF MISSING
+           CREATE LINKED TASK
         ================================= */
 
         if (!linkedTask) {
 
+            /*
+               IMPORTANT:
+
+               Do not create the ID here.
+
+               addTask() / storage.js owns
+               task ID generation.
+            */
+
             const newTask = {
 
-                id:
-                    Date.now() + 1,
-
                 title:
-                    `Follow up with ${company.companyName}`,
+                    `Follow up with ${
+                        company.companyName
+                    }`,
 
                 dueDate:
                     followUp,
@@ -322,18 +431,10 @@ function updateCall(
                     "Pending",
 
                 notes:
-                    [
-                        outcome
-                            ? `Call outcome: ${outcome}`
-                            : "",
-
+                    buildCallFollowUpNotes(
+                        outcome,
                         notes
-                            ? `Call notes: ${notes}`
-                            : ""
-
-                    ]
-                    .filter(Boolean)
-                    .join("\n\n"),
+                    ),
 
                 source:
                     "call",
@@ -344,9 +445,26 @@ function updateCall(
             };
 
 
-            company.tasks.push(
-                newTask
-            );
+            const savedTask =
+                addTask(
+                    companyId,
+                    newTask
+                );
+
+
+            if (!savedTask) {
+
+                console.error(
+                    "Could not create call follow-up task."
+                );
+
+                return;
+
+            }
+
+
+            linkedTask =
+                savedTask;
 
         }
 
@@ -358,7 +476,9 @@ function updateCall(
         else {
 
             linkedTask.title =
-                `Follow up with ${company.companyName}`;
+                `Follow up with ${
+                    company.companyName
+                }`;
 
 
             linkedTask.dueDate =
@@ -366,27 +486,26 @@ function updateCall(
 
 
             linkedTask.notes =
-                [
-                    outcome
-                        ? `Call outcome: ${outcome}`
-                        : "",
-
+                buildCallFollowUpNotes(
+                    outcome,
                     notes
-                        ? `Call notes: ${notes}`
-                        : ""
-
-                ]
-                .filter(Boolean)
-                .join("\n\n");
+                );
 
 
             /*
-               DO NOT change status.
+               IMPORTANT:
 
-               If the user already completed
-               this task, editing the call should
-               not reopen it.
+               Do not automatically reopen a
+               completed task.
+
+               If the task is currently
+               completed, leave its status
+               unchanged.
             */
+
+            updateCompany(
+                company
+            );
 
         }
 
@@ -398,6 +517,15 @@ function updateCall(
     ===================================== */
 
     else {
+
+        /*
+           Remove the active linked task.
+
+           Since the user explicitly removed
+           the follow-up from the call, there
+           should no longer be an active
+           call-follow-up task.
+        */
 
         company.tasks =
             company.tasks.filter(
@@ -415,10 +543,16 @@ function updateCall(
 
     /* =====================================
        SAVE COMPANY
+       
+       For an existing linked task,
+       addTask() was already persisted above.
+       We still save the call changes here.
     ===================================== */
 
     const saved =
-        updateCompany(company);
+        updateCompany(
+            company
+        );
 
 
     if (!saved) {
@@ -436,7 +570,35 @@ function updateCall(
        RETURN TO CALL HISTORY
     ===================================== */
 
-    loadCalls(companyId);
+    loadCalls(
+        companyId
+    );
+
+}
+
+
+/* =========================================
+   BUILD FOLLOW-UP NOTES
+========================================= */
+
+function buildCallFollowUpNotes(
+    outcome,
+    notes
+) {
+
+    return [
+
+        outcome
+            ? `Call outcome: ${outcome}`
+            : "",
+
+        notes
+            ? `Call notes: ${notes}`
+            : ""
+
+    ]
+    .filter(Boolean)
+    .join("\n\n");
 
 }
 
@@ -449,22 +611,24 @@ function escapeEditCallField(
     value
 ) {
 
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        );
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    );
 
 }
