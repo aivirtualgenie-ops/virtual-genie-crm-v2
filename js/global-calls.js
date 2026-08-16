@@ -1,42 +1,64 @@
-function loadGlobalCalls(){
+/* =========================================
+   GLOBAL CALLS
+========================================= */
 
-    const companies = getCompanies();
+function loadGlobalCalls() {
 
-    const app = document.getElementById("app");
+    const companies =
+        getCompanies();
+
+    const app =
+        document.getElementById("app");
+
 
     let calls = [];
 
 
-    /* =========================================================
+    /* =====================================
        DATE FORMATTER
-       Converts:
-       2026-08-15T19:01:17.687Z
-       → 15 Aug 2026
+    ===================================== */
 
-       Also converts:
-       2026-08-21
-       → 21 Aug 2026
-    ========================================================= */
+    function formatDate(
+        value
+    ) {
 
-    function formatDate(value){
+        if (!value) {
 
-        if(!value){
             return "-";
+
         }
 
-        const dateString = String(value).split("T")[0];
 
-        const parts = dateString.split("-");
+        const dateString =
+            String(value)
+                .split("T")[0];
 
-        if(parts.length !== 3){
-            return value;
+
+        const parts =
+            dateString.split("-");
+
+
+        if (
+            parts.length !== 3
+        ) {
+
+            return String(value);
+
         }
 
-        const year = parts[0];
-        const month = Number(parts[1]);
-        const day = Number(parts[2]);
+
+        const year =
+            parts[0];
+
+        const month =
+            Number(parts[1]);
+
+        const day =
+            Number(parts[2]);
+
 
         const months = [
+
             "Jan",
             "Feb",
             "Mar",
@@ -49,38 +71,198 @@ function loadGlobalCalls(){
             "Oct",
             "Nov",
             "Dec"
+
         ];
 
-        if(
+
+        if (
             !year ||
             !month ||
             !day ||
             month < 1 ||
             month > 12
-        ){
-            return value;
+        ) {
+
+            return String(value);
+
         }
 
-        return `${day} ${months[month - 1]} ${year}`;
+
+        return `
+            ${day}
+            ${months[month - 1]}
+            ${year}
+        `;
 
     }
 
 
-    /* =========================================================
+    /* =====================================
+       DATE HELPER
+    ===================================== */
+
+    function getDateOnly(
+        value
+    ) {
+
+        if (!value) {
+
+            return null;
+
+        }
+
+
+        const date =
+            new Date(value);
+
+
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return null;
+
+        }
+
+
+        date.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+
+        return date;
+
+    }
+
+
+    /* =====================================
+       ESCAPE HTML
+    ===================================== */
+
+    function escapeCallText(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+    }
+
+
+    /* =====================================
+       TODAY
+    ===================================== */
+
+    const today =
+        new Date();
+
+
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    /* =====================================
        COLLECT CALLS
-    ========================================================= */
+    ===================================== */
 
-    companies.forEach(company => {
+    companies.forEach(
+        company => {
 
-        (company.calls || []).forEach(call => {
+        const companyCalls =
+            Array.isArray(
+                company.calls
+            )
+                ? company.calls
+                : [];
+
+
+        const companyTasks =
+            Array.isArray(
+                company.tasks
+            )
+                ? company.tasks
+                : [];
+
+
+        companyCalls.forEach(
+            call => {
+
+
+            /*
+               Find the task generated from
+               this call.
+
+               The task is now the source
+               of truth for the active
+               follow-up date.
+            */
+
+            const followUpTask =
+                companyTasks.find(
+                    task =>
+
+                        task.source ===
+                        "call"
+
+                        &&
+
+                        String(
+                            task.sourceCallId
+                        ) ===
+                        String(
+                            call.id
+                        )
+                );
+
 
             calls.push({
 
-                companyId: company.id,
+                companyId:
+                    company.id,
 
-                companyName: company.companyName,
+                companyName:
+                    company.companyName,
 
-                ...call
+                ...call,
+
+
+                /*
+                   Attach the authoritative
+                   follow-up task for display.
+                */
+
+                followUpTask:
+                    followUpTask || null
 
             });
 
@@ -89,17 +271,53 @@ function loadGlobalCalls(){
     });
 
 
-    calls.sort((a,b) => b.id - a.id);
+    /* =====================================
+       SORT
+    ===================================== */
+
+    calls.sort(
+        (
+            a,
+            b
+        ) => {
+
+            const dateA =
+                new Date(
+                    a.date ||
+                    a.createdAt ||
+                    0
+                ).getTime();
 
 
-    let callCards = "";
+            const dateB =
+                new Date(
+                    b.date ||
+                    b.createdAt ||
+                    0
+                ).getTime();
 
 
-    /* =========================================================
+            return dateB - dateA;
+
+        }
+    );
+
+
+    /* =====================================
+       CALL CARDS
+    ===================================== */
+
+    let callCards =
+        "";
+
+
+    /* =====================================
        EMPTY STATE
-    ========================================================= */
+    ===================================== */
 
-    if(calls.length === 0){
+    if (
+        calls.length === 0
+    ) {
 
         callCards = `
 
@@ -114,14 +332,20 @@ function loadGlobalCalls(){
             </h2>
 
             <p>
-                Calls from all your companies will appear here.
+                Calls from all your companies
+                will appear here.
             </p>
 
             <button
                 class="global-call-empty-button"
-                onclick="loadCompanies()">
+                onclick="
+                    loadCompanies()
+                ">
 
-                <span>+</span>
+                <span>
+                    +
+                </span>
+
                 Log a Call
 
             </button>
@@ -130,38 +354,235 @@ function loadGlobalCalls(){
 
         `;
 
-    }else{
+    } else {
 
 
-        /* =====================================================
-           CALL CARDS
-        ===================================================== */
+        /* =================================
+           BUILD CALL CARDS
+        ================================= */
 
-        calls.forEach(call => {
+        calls.forEach(
+            call => {
+
+
+            /* =============================
+               AUTHORITATIVE FOLLOW-UP
+            ============================= */
+
+            const followUpTask =
+                call.followUpTask;
+
+
+            const followUpDate =
+                followUpTask &&
+                followUpTask.status !==
+                "Completed"
+
+                    ?
+
+                followUpTask.dueDate
+
+                    :
+
+                null;
+
+
+            let followUpHTML = "";
+
+
+            if (
+                followUpDate
+            ) {
+
+                const date =
+                    getDateOnly(
+                        followUpDate
+                    );
+
+
+                if (!date) {
+
+                    followUpHTML = `
+
+                    <strong
+                        class="followup-status none">
+
+                        <i></i>
+
+                        Invalid follow-up date
+
+                    </strong>
+
+                    `;
+
+                } else if (
+                    date < today
+                ) {
+
+                    followUpHTML = `
+
+                    <strong
+                        class="
+                            followup-status
+                            overdue
+                        ">
+
+                        <i></i>
+
+                        Overdue ·
+                        ${formatDate(
+                            followUpDate
+                        )}
+
+                    </strong>
+
+                    `;
+
+                } else if (
+                    date.getTime() ===
+                    today.getTime()
+                ) {
+
+                    followUpHTML = `
+
+                    <strong
+                        class="
+                            followup-status
+                            today
+                        ">
+
+                        <i></i>
+
+                        Due Today
+
+                    </strong>
+
+                    `;
+
+                } else {
+
+                    followUpHTML = `
+
+                    <strong
+                        class="
+                            followup-status
+                            scheduled
+                        ">
+
+                        <i></i>
+
+                        Scheduled ·
+                        ${formatDate(
+                            followUpDate
+                        )}
+
+                    </strong>
+
+                    `;
+
+                }
+
+            } else {
+
+                followUpHTML = `
+
+                <strong
+                    class="
+                        followup-status
+                        none
+                    ">
+
+                    <i></i>
+
+                    No follow-up
+
+                </strong>
+
+                `;
+
+            }
+
+
+            /* =============================
+               CALL DETAILS
+            ============================= */
+
+            const companyName =
+                escapeCallText(
+                    call.companyName ||
+                    "Unnamed Company"
+                );
+
+
+            const callType =
+                escapeCallText(
+                    call.type ||
+                    "Call"
+                );
+
+
+            const outcome =
+                escapeCallText(
+                    call.outcome ||
+                    "-"
+                );
+
+
+            const notes =
+                escapeCallText(
+                    call.notes ||
+                    "No notes added."
+                );
+
+
+            /* =============================
+               CARD
+            ============================= */
 
             callCards += `
 
-            <div class="global-call-card">
+            <div
+                class="global-call-card">
 
 
                 <!-- TOP -->
 
-                <div class="global-call-card-top">
+                <div
+                    class="
+                        global-call-card-top
+                    ">
 
-                    <div class="global-call-company">
 
-                        <div class="global-call-company-icon">
+                    <div
+                        class="
+                            global-call-company
+                        ">
+
+
+                        <div
+                            class="
+                                global-call-company-icon
+                            ">
+
                             ☎
+
                         </div>
+
 
                         <div>
 
                             <h3>
-                                ${call.companyName}
+                                ${companyName}
                             </h3>
 
-                            <span class="global-call-type">
-                                ${call.type}
+
+                            <span
+                                class="
+                                    global-call-type
+                                ">
+
+                                ${callType}
+
                             </span>
 
                         </div>
@@ -169,8 +590,13 @@ function loadGlobalCalls(){
                     </div>
 
 
-                    <div class="global-call-outcome">
-                        ${call.outcome}
+                    <div
+                        class="
+                            global-call-outcome
+                        ">
+
+                        ${outcome}
+
                     </div>
 
                 </div>
@@ -178,61 +604,87 @@ function loadGlobalCalls(){
 
                 <!-- DETAILS -->
 
-                <div class="global-call-details">
+                <div
+                    class="
+                        global-call-details
+                    ">
 
 
-                    <div class="global-call-detail">
+                    <div
+                        class="
+                            global-call-detail
+                        ">
 
                         <span>
                             DATE
                         </span>
 
                         <strong>
-                            ${formatDate(call.date)}
+                            ${formatDate(
+                                call.date
+                            )}
                         </strong>
 
                     </div>
 
 
-                    <div class="global-call-detail">
+                    <div
+                        class="
+                            global-call-detail
+                        ">
 
                         <span>
                             TIME
                         </span>
 
                         <strong>
-                            ${call.time || "-"}
+                            ${
+                                escapeCallText(
+                                    call.time ||
+                                    "-"
+                                )
+                            }
                         </strong>
 
                     </div>
 
 
-                    <div class="global-call-detail">
+                    <div
+                        class="
+                            global-call-detail
+                        ">
 
                         <span>
                             DURATION
                         </span>
 
                         <strong>
-                            ${call.duration || 0} min
+                            ${
+                                Number(
+                                    call.duration || 0
+                                )
+                            }
+                            min
                         </strong>
 
                     </div>
-
 
                 </div>
 
 
                 <!-- NOTES -->
 
-                <div class="global-call-notes">
+                <div
+                    class="
+                        global-call-notes
+                    ">
 
                     <span>
                         NOTES
                     </span>
 
                     <p>
-                        ${call.notes || "No notes added."}
+                        ${notes}
                     </p>
 
                 </div>
@@ -240,69 +692,35 @@ function loadGlobalCalls(){
 
                 <!-- FOOTER -->
 
-                <div class="global-call-footer">
+                <div
+                    class="
+                        global-call-footer
+                    ">
 
 
-                    <div class="global-call-followup">
+                    <div
+                        class="
+                            global-call-followup
+                        ">
 
-    <span>
-        FOLLOW-UP
-    </span>
+                        <span>
+                            FOLLOW-UP
+                        </span>
 
-    ${
-        call.followUp
-        ? (() => {
+                        ${followUpHTML}
 
-            const followUpDate = new Date(call.followUp);
-            const today = new Date();
-
-            followUpDate.setHours(0,0,0,0);
-            today.setHours(0,0,0,0);
-
-            if(followUpDate < today){
-
-                return `
-                    <strong class="followup-status overdue">
-                        <i></i>
-                        Overdue · ${formatDate(call.followUp)}
-                    </strong>
-                `;
-
-            }
-
-            if(followUpDate.getTime() === today.getTime()){
-
-                return `
-                    <strong class="followup-status today">
-                        <i></i>
-                        Due Today
-                    </strong>
-                `;
-
-            }
-
-            return `
-                <strong class="followup-status scheduled">
-                    <i></i>
-                    Scheduled · ${formatDate(call.followUp)}
-                </strong>
-            `;
-
-        })()
-        : `
-            <strong class="followup-status none">
-                <i></i>
-                No follow-up
-            </strong>
-        `
-    }
-
-</div>
+                    </div>
 
 
                     <button
-                        class="global-call-open"
-                        onclick="loadCompany(${call.companyId})">
+                        class="
+                            global-call-open
+                        "
+                        onclick="
+                            loadCompany(
+                                ${call.companyId}
+                            )
+                        ">
 
                         Open Company
 
@@ -325,28 +743,40 @@ function loadGlobalCalls(){
     }
 
 
-    /* =========================================================
+    /* =====================================
        PAGE
-    ========================================================= */
+    ===================================== */
 
     app.innerHTML = `
 
     <div class="dashboard">
 
 
-        <!-- GLOBAL CALLS HEADER -->
+        <div
+            class="
+                global-calls-header
+            ">
 
-        <div class="global-calls-header">
 
-            <div class="global-calls-icon">
+            <div
+                class="
+                    global-calls-icon
+                ">
+
                 ☎
+
             </div>
 
 
             <div>
 
-                <p class="global-calls-label">
+                <p
+                    class="
+                        global-calls-label
+                    ">
+
                     COMMUNICATION
+
                 </p>
 
 
@@ -355,11 +785,18 @@ function loadGlobalCalls(){
                 </h1>
 
 
-                <p class="global-calls-count">
+                <p
+                    class="
+                        global-calls-count
+                    ">
 
                     ${calls.length}
 
-                    ${calls.length === 1 ? "Call" : "Calls"}
+                    ${
+                        calls.length === 1
+                            ? "Call"
+                            : "Calls"
+                    }
 
                     Logged
 
@@ -370,12 +807,8 @@ function loadGlobalCalls(){
         </div>
 
 
-        <!-- CALL CONTENT -->
-
         ${callCards}
 
-
-        <!-- NAVIGATION -->
 
         ${bottomNav("calls")}
 
