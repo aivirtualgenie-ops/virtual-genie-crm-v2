@@ -213,48 +213,19 @@ function loadDashboard() {
             companyCalls.length;
 
 
-        /* ================================
-           CALL FOLLOW-UPS
-        ================================= */
+        /*
+           IMPORTANT:
+           Do NOT process call.followUp here.
 
-        companyCalls.forEach(call => {
+           Call follow-ups are now converted
+           into Tasks when the call is saved.
 
-            if (!call.followUp) {
+           Tasks are the single source of truth
+           for actionable follow-ups.
 
-                return;
-
-            }
-
-
-            const callFollowUpDate =
-                new Date(call.followUp);
-
-            callFollowUpDate.setHours(
-                0,
-                0,
-                0,
-                0
-            );
-
-
-            if (callFollowUpDate < today) {
-
-                overdueFollowUps++;
-
-            } else if (
-                callFollowUpDate.getTime() ===
-                today.getTime()
-            ) {
-
-                todayFollowUps++;
-
-            } else {
-
-                upcomingFollowUps++;
-
-            }
-
-        });
+           This prevents a completed call-follow-up
+           task from remaining active on Dashboard.
+        */
 
 
         /* ================================
@@ -291,9 +262,49 @@ function loadDashboard() {
                 );
 
 
-                if (dueDate < today) {
+                /* =============================
+                   FOLLOW-UP TASK
+                ============================= */
 
-                    overdueTasks++;
+                if (
+                    task.source === "call"
+                ) {
+
+                    if (
+                        dueDate < today
+                    ) {
+
+                        overdueFollowUps++;
+
+                    } else if (
+                        dueDate.getTime() ===
+                        today.getTime()
+                    ) {
+
+                        todayFollowUps++;
+
+                    } else {
+
+                        upcomingFollowUps++;
+
+                    }
+
+                }
+
+
+                /* =============================
+                   NORMAL TASK
+                ============================= */
+
+                else {
+
+                    if (
+                        dueDate < today
+                    ) {
+
+                        overdueTasks++;
+
+                    }
 
                 }
 
@@ -834,6 +845,10 @@ function loadDashboard() {
                 <button
                     class="pipeline-stage"
                     onclick="location.hash='pipeline'">
+
+                    <span
+                        class="pipeline-stage"
+                        onclick="location.hash='pipeline'">
 
                     <span
                         class="pipeline-stage-icon pipeline-violet">
