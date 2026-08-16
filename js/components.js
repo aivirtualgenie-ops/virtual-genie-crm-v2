@@ -45,7 +45,7 @@ class="${active==="products"?"active":""}">
 </button>
 
 <button
-onclick="alert('Settings page coming soon')"
+onclick="location.hash='settings'"
 class="${active==="settings"?"active":""}">
 
 ⚙️
