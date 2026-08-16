@@ -2,14 +2,157 @@
    COMPANIES PAGE
 ========================================= */
 
-function loadCompanies(searchText = "") {
+function loadCompanies(
+    searchText = ""
+) {
 
-    const app = document.getElementById("app");
+    const app =
+        document.getElementById("app");
 
-    const companies = getCompanies();
+
+    const companies =
+        getCompanies();
+
 
     const search =
-        searchText.toLowerCase().trim();
+        String(searchText)
+            .toLowerCase()
+            .trim();
+
+
+    /* =====================================
+       GET COMPANY SALES SUMMARY
+    ===================================== */
+
+    function getSalesSummary(
+        company
+    ) {
+
+        const deals =
+            Array.isArray(company.deals)
+                ? company.deals
+                : [];
+
+
+        if (deals.length === 0) {
+
+            return {
+                stages: [],
+                label: "No Deals"
+            };
+
+        }
+
+
+        const openDeals =
+            deals.filter(
+                deal =>
+                    String(
+                        deal.status ||
+                        "Open"
+                    )
+                    .trim()
+                    .toLowerCase()
+                    === "open"
+            );
+
+
+        const wonDeals =
+            deals.filter(
+                deal =>
+                    String(
+                        deal.status || ""
+                    )
+                    .trim()
+                    .toLowerCase()
+                    === "won"
+            );
+
+
+        const lostDeals =
+            deals.filter(
+                deal =>
+                    String(
+                        deal.status || ""
+                    )
+                    .trim()
+                    .toLowerCase()
+                    === "lost"
+            );
+
+
+        /* =================================
+           ACTIVE DEAL STAGES
+        ================================= */
+
+        if (openDeals.length > 0) {
+
+            const stages = [
+                ...new Set(
+                    openDeals.map(
+                        deal =>
+                            deal.stage ||
+                            "New Lead"
+                    )
+                )
+            ];
+
+
+            return {
+
+                stages,
+
+                label:
+                    stages.join(", ")
+
+            };
+
+        }
+
+
+        /* =================================
+           NO OPEN DEALS → WON
+        ================================= */
+
+        if (wonDeals.length > 0) {
+
+            return {
+
+                stages: ["Won"],
+
+                label: "Won"
+
+            };
+
+        }
+
+
+        /* =================================
+           ONLY LOST
+        ================================= */
+
+        if (lostDeals.length > 0) {
+
+            return {
+
+                stages: ["Lost"],
+
+                label: "Lost"
+
+            };
+
+        }
+
+
+        return {
+
+            stages: [],
+
+            label: "No Deals"
+
+        };
+
+    }
 
 
     /* =====================================
@@ -17,44 +160,41 @@ function loadCompanies(searchText = "") {
     ===================================== */
 
     const filteredCompanies =
-        companies.filter(company => {
+        companies.filter(
+            company => {
 
-            return (
+            const sales =
+                getSalesSummary(
+                    company
+                );
 
-                (company.companyName || "")
-                    .toLowerCase()
-                    .includes(search)
 
-                ||
+            const searchableText = [
 
-                (company.contactPerson || "")
-                    .toLowerCase()
-                    .includes(search)
+                company.companyName,
 
-                ||
+                company.contactPerson,
 
-                (company.phone || "")
-                    .toLowerCase()
-                    .includes(search)
+                company.phone,
 
-                ||
+                company.email,
 
-                (company.email || "")
-                    .toLowerCase()
-                    .includes(search)
+                company.industry,
 
-                ||
+                company.status,
 
-                (company.industry || "")
-                    .toLowerCase()
-                    .includes(search)
+                company.source,
 
-                ||
+                ...sales.stages
 
-                (company.pipelineStage || "")
-                    .toLowerCase()
-                    .includes(search)
+            ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
 
+
+            return searchableText.includes(
+                search
             );
 
         });
@@ -67,18 +207,32 @@ function loadCompanies(searchText = "") {
     let companyCards = "";
 
 
-    if (filteredCompanies.length === 0) {
+    if (
+        filteredCompanies.length === 0
+    ) {
 
         companyCards = `
 
         <div class="card">
 
-            <h3>No Companies Found</h3>
+            <h3>
+                ${
+                    companies.length === 0
+                        ? "No Companies Yet"
+                        : "No Companies Found"
+                }
+            </h3>
 
             <br>
 
             <p>
-                Try another search.
+
+                ${
+                    companies.length === 0
+                        ? "Create your first company to get started."
+                        : "Try another search."
+                }
+
             </p>
 
         </div>
@@ -87,38 +241,95 @@ function loadCompanies(searchText = "") {
 
     } else {
 
-        filteredCompanies.forEach(company => {
+        filteredCompanies.forEach(
+            company => {
 
-            const pipelineStage =
-                company.pipelineStage || "New Lead";
+            const sales =
+                getSalesSummary(
+                    company
+                );
+
+
+            const dealCount =
+                Array.isArray(
+                    company.deals
+                )
+                    ? company.deals.length
+                    : 0;
 
 
             companyCards += `
 
             <div
                 class="card"
-                style="cursor:pointer;"
-                onclick="location.hash='company-${company.id}'">
+                style="
+                    cursor:pointer;
+                "
+                onclick="
+                    location.hash=
+                    'company-${company.id}'
+                ">
+
 
                 <h3>
-                    ${company.companyName || "Unnamed Company"}
+
+                    ${
+                        company.companyName ||
+                        "Unnamed Company"
+                    }
+
                 </h3>
 
-                <p>
-                    ${company.contactPerson || "-"}
-                </p>
 
                 <p>
-                    ${company.phone || "-"}
+                    ${
+                        company.contactPerson ||
+                        "-"
+                    }
                 </p>
 
-                <p>
-                    ${company.email || "-"}
-                </p>
 
                 <p>
-                    Pipeline: ${pipelineStage}
+                    ${
+                        company.phone ||
+                        "-"
+                    }
                 </p>
+
+
+                <p>
+                    ${
+                        company.email ||
+                        "-"
+                    }
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Sales:
+                    </strong>
+
+                    ${
+                        sales.label
+                    }
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Deals:
+                    </strong>
+
+                    ${
+                        dealCount
+                    }
+
+                </p>
+
 
             </div>
 
@@ -137,11 +348,13 @@ function loadCompanies(searchText = "") {
 
     <div class="dashboard">
 
+
         <div class="header">
 
             <h1>
                 Companies
             </h1>
+
 
             <p class="subtitle">
 
@@ -154,8 +367,14 @@ function loadCompanies(searchText = "") {
                 class="search"
                 id="companySearch"
                 placeholder="Search companies..."
-                value="${searchText}"
-                oninput="loadCompanies(this.value)">
+                value="${escapeCompanySearch(
+                    searchText
+                )}"
+                oninput="
+                    loadCompanies(
+                        this.value
+                    )
+                ">
 
         </div>
 
@@ -165,7 +384,10 @@ function loadCompanies(searchText = "") {
 
         <button
             class="fab"
-            onclick="location.hash='add-company'">
+            onclick="
+                location.hash=
+                'add-company'
+            ">
 
             +
 
@@ -179,3 +401,32 @@ function loadCompanies(searchText = "") {
     `;
 
 }
+
+
+/* =========================================
+   ESCAPE SEARCH VALUE
+========================================= */
+
+function escapeCompanySearch(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        );
+
+                   }
