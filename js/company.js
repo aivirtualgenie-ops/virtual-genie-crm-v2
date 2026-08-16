@@ -111,7 +111,9 @@ function loadCompany(id) {
     ===================================== */
 
     const deals =
-        company.deals || [];
+        Array.isArray(company.deals)
+            ? company.deals
+            : [];
 
 
     let dealCards = "";
@@ -151,6 +153,87 @@ function loadCompany(id) {
         }
 
     });
+
+
+    /* =====================================
+       NEXT FOLLOW-UP
+       TASKS ARE THE SOURCE OF TRUTH
+    ===================================== */
+
+    const companyTasks =
+        Array.isArray(company.tasks)
+            ? company.tasks
+            : [];
+
+
+    const activeFollowUpTasks =
+        companyTasks
+            .filter(task => {
+
+                const status =
+                    String(
+                        task.status || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                return (
+                    status !== "completed" &&
+                    task.dueDate
+                );
+
+            })
+            .map(task => {
+
+                const date =
+                    new Date(
+                        task.dueDate
+                    );
+
+
+                if (
+                    isNaN(
+                        date.getTime()
+                    )
+                ) {
+
+                    return null;
+
+                }
+
+
+                return {
+                    task,
+                    date
+                };
+
+            })
+            .filter(Boolean)
+            .sort(
+                (a, b) =>
+                    a.date.getTime() -
+                    b.date.getTime()
+            );
+
+
+    const nextFollowUp =
+        activeFollowUpTasks.length > 0
+            ? activeFollowUpTasks[0].date
+            : null;
+
+
+    const nextFollowUpDisplay =
+        nextFollowUp
+            ? nextFollowUp.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            )
+            : "-";
 
 
     /* =====================================
@@ -540,7 +623,7 @@ function loadCompany(id) {
                     Next Follow-up:
                 </strong>
 
-                ${company.nextFollowUp || "-"}
+                ${nextFollowUpDisplay}
 
             </p>
 
