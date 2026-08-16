@@ -2,7 +2,30 @@
    STORAGE
 ========================================= */
 
-const STORAGE_KEY = "virtual_genie_crm";
+const STORAGE_KEY =
+    "virtual_genie_crm";
+
+
+/* =========================================
+   ID GENERATOR
+========================================= */
+
+function generateId() {
+
+    /*
+       Keep IDs numeric because the existing
+       UI passes them directly into JavaScript
+       onclick handlers.
+    */
+
+    return (
+        Date.now() * 1000 +
+        Math.floor(
+            Math.random() * 1000
+        )
+    );
+
+}
 
 
 /* =========================================
@@ -12,7 +35,10 @@ const STORAGE_KEY = "virtual_genie_crm";
 function getCompanies() {
 
     const data =
-        localStorage.getItem(STORAGE_KEY);
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
 
     if (!data) {
 
@@ -20,9 +46,25 @@ function getCompanies() {
 
     }
 
+
     try {
 
-        return JSON.parse(data);
+        const parsed =
+            JSON.parse(data);
+
+
+        if (!Array.isArray(parsed)) {
+
+            console.error(
+                "CRM storage is not an array."
+            );
+
+            return [];
+
+        }
+
+
+        return parsed;
 
     } catch (error) {
 
@@ -42,7 +84,20 @@ function getCompanies() {
    SAVE ALL COMPANIES
 ========================================= */
 
-function saveCompanies(companies) {
+function saveCompanies(
+    companies
+) {
+
+    if (!Array.isArray(companies)) {
+
+        console.error(
+            "saveCompanies: expected array."
+        );
+
+        return false;
+
+    }
+
 
     try {
 
@@ -68,42 +123,123 @@ function saveCompanies(companies) {
 
 
 /* =========================================
+   NORMALIZE COMPANY
+========================================= */
+
+function normalizeCompany(
+    company
+) {
+
+    if (!company) {
+
+        return null;
+
+    }
+
+
+    /*
+       Preserve existing company structure,
+       but guarantee the collections used
+       throughout the CRM.
+    */
+
+    if (!Array.isArray(company.tasks)) {
+
+        company.tasks = [];
+
+    }
+
+
+    if (!Array.isArray(company.products)) {
+
+        company.products = [];
+
+    }
+
+
+    if (!Array.isArray(company.calls)) {
+
+        company.calls = [];
+
+    }
+
+
+    if (!Array.isArray(company.deals)) {
+
+        company.deals = [];
+
+    }
+
+
+    /*
+       Keep legacy field for compatibility
+       with older records/modules.
+
+       It is NOT used as the financial source
+       of truth anymore.
+    */
+
+    if (!company.pipelineStage) {
+
+        company.pipelineStage =
+            "New Lead";
+
+    }
+
+
+    return company;
+
+}
+
+
+/* =========================================
    ADD COMPANY
 ========================================= */
 
-function addCompany(company) {
+function addCompany(
+    company
+) {
+
+    if (!company) {
+
+        console.error(
+            "addCompany: no company provided"
+        );
+
+        return false;
+
+    }
+
 
     const companies =
         getCompanies();
 
-    company.id = Date.now();
+
+    company.id =
+        generateId();
+
 
     company.createdAt =
         new Date().toISOString();
 
+
     company.updatedAt =
         new Date().toISOString();
 
-    company.pipelineStage =
-        company.pipelineStage || "New Lead";
 
-    company.tasks =
-        company.tasks || [];
+    normalizeCompany(
+        company
+    );
 
-    company.products =
-        company.products || [];
 
-    company.calls =
-        company.calls || [];
+    companies.push(
+        company
+    );
 
-    /* NEW: DEALS */
 
-    company.deals =
-        company.deals || [];
-
-    companies.push(company);
-
-    return saveCompanies(companies);
+    return saveCompanies(
+        companies
+    );
 
 }
 
@@ -112,10 +248,13 @@ function addCompany(company) {
    GET SINGLE COMPANY
 ========================================= */
 
-function getCompany(id) {
+function getCompany(
+    id
+) {
 
     const companies =
         getCompanies();
+
 
     return companies.find(
         company =>
@@ -130,7 +269,9 @@ function getCompany(id) {
    UPDATE COMPANY
 ========================================= */
 
-function updateCompany(updatedCompany) {
+function updateCompany(
+    updatedCompany
+) {
 
     if (!updatedCompany) {
 
@@ -167,47 +308,52 @@ function updateCompany(updatedCompany) {
     }
 
 
-    /* ================================
-       UPDATE TIMESTAMP
-    ================================= */
+    /*
+       Always refresh modification timestamp.
+    */
 
     updatedCompany.updatedAt =
         new Date().toISOString();
 
 
-    /* ================================
-       PRESERVE ARRAYS
-    ================================= */
+    /*
+       Guarantee nested collections.
+    */
 
-    updatedCompany.tasks =
-        updatedCompany.tasks || [];
-
-    updatedCompany.products =
-        updatedCompany.products || [];
-
-    updatedCompany.calls =
-        updatedCompany.calls || [];
-
-    /* NEW: DEALS */
-
-    updatedCompany.deals =
-        updatedCompany.deals || [];
+    normalizeCompany(
+        updatedCompany
+    );
 
 
-    /* ================================
-       REPLACE COMPANY
-    ================================= */
+    /*
+       Preserve original creation date
+       if an update accidentally omitted it.
+    */
+
+    if (
+        !updatedCompany.createdAt &&
+        companies[index].createdAt
+    ) {
+
+        updatedCompany.createdAt =
+            companies[index].createdAt;
+
+    }
+
+
+    /*
+       Replace only the targeted company.
+       Other companies remain untouched.
+    */
 
     companies[index] =
         updatedCompany;
 
 
-    /* ================================
-       SAVE
-    ================================= */
-
     const saved =
-        saveCompanies(companies);
+        saveCompanies(
+            companies
+        );
 
 
     if (!saved) {
@@ -221,14 +367,6 @@ function updateCompany(updatedCompany) {
     }
 
 
-    console.log(
-        "Company successfully updated:",
-        updatedCompany.companyName,
-        "Pipeline:",
-        updatedCompany.pipelineStage
-    );
-
-
     return true;
 
 }
@@ -238,22 +376,23 @@ function updateCompany(updatedCompany) {
    DELETE COMPANY
 ========================================= */
 
-function deleteCompany(id) {
+function deleteCompany(
+    id
+) {
 
     const companies =
         getCompanies();
 
-    const filtered =
-        companies.filter(
+
+    const index =
+        companies.findIndex(
             company =>
-                String(company.id) !==
+                String(company.id) ===
                 String(id)
         );
 
-    if (
-        filtered.length ===
-        companies.length
-    ) {
+
+    if (index === -1) {
 
         console.error(
             "deleteCompany: company not found",
@@ -264,7 +403,16 @@ function deleteCompany(id) {
 
     }
 
-    return saveCompanies(filtered);
+
+    companies.splice(
+        index,
+        1
+    );
+
+
+    return saveCompanies(
+        companies
+    );
 
 }
 
@@ -273,10 +421,13 @@ function deleteCompany(id) {
    PRODUCTS
 ========================================= */
 
-function getProducts(companyId) {
+function getProducts(
+    companyId
+) {
 
     const company =
         getCompany(companyId);
+
 
     if (!company) {
 
@@ -289,21 +440,25 @@ function getProducts(companyId) {
 
     }
 
-    if (!company.products) {
 
-        company.products = [];
+    normalizeCompany(
+        company
+    );
 
-    }
 
     return company.products;
 
 }
 
 
-function addProduct(companyId, product) {
+function addProduct(
+    companyId,
+    product
+) {
 
     const company =
         getCompany(companyId);
+
 
     if (!company) {
 
@@ -316,15 +471,40 @@ function addProduct(companyId, product) {
 
     }
 
-    if (!company.products) {
 
-        company.products = [];
+    normalizeCompany(
+        company
+    );
+
+
+    if (!product) {
+
+        console.error(
+            "addProduct: no product provided"
+        );
+
+        return false;
 
     }
 
-    company.products.push(product);
 
-    return updateCompany(company);
+    /*
+       Assign an ID if the caller didn't.
+    */
+
+    product.id =
+        product.id ||
+        generateId();
+
+
+    company.products.push(
+        product
+    );
+
+
+    return updateCompany(
+        company
+    );
 
 }
 
@@ -337,6 +517,7 @@ function deleteProduct(
     const company =
         getCompany(companyId);
 
+
     if (!company) {
 
         console.error(
@@ -348,14 +529,42 @@ function deleteProduct(
 
     }
 
+
+    normalizeCompany(
+        company
+    );
+
+
+    const originalLength =
+        company.products.length;
+
+
     company.products =
-        (company.products || []).filter(
+        company.products.filter(
             product =>
                 String(product.id) !==
                 String(productId)
         );
 
-    return updateCompany(company);
+
+    if (
+        company.products.length ===
+        originalLength
+    ) {
+
+        console.error(
+            "deleteProduct: product not found",
+            productId
+        );
+
+        return false;
+
+    }
+
+
+    return updateCompany(
+        company
+    );
 
 }
 
@@ -364,31 +573,18 @@ function deleteProduct(
    DEALS / SALES OPPORTUNITIES
 ========================================= */
 
-/*
-   Phase 1 only:
-   Adds safe CRUD for deals.
-
-   This does NOT change:
-   - pipelineValue
-   - revenue
-   - products
-   - calls
-   - tasks
-   - pipelineStage
-
-   Deals are simply stored alongside
-   the existing company data.
-*/
-
 
 /* =========================================
    GET DEALS
 ========================================= */
 
-function getDeals(companyId) {
+function getDeals(
+    companyId
+) {
 
     const company =
         getCompany(companyId);
+
 
     if (!company) {
 
@@ -401,11 +597,11 @@ function getDeals(companyId) {
 
     }
 
-    if (!company.deals) {
 
-        company.deals = [];
+    normalizeCompany(
+        company
+    );
 
-    }
 
     return company.deals;
 
@@ -424,6 +620,7 @@ function addDeal(
     const company =
         getCompany(companyId);
 
+
     if (!company) {
 
         console.error(
@@ -435,34 +632,61 @@ function addDeal(
 
     }
 
-    if (!company.deals) {
 
-        company.deals = [];
+    if (!deal) {
+
+        console.error(
+            "addDeal: no deal provided"
+        );
+
+        return false;
 
     }
 
+
+    normalizeCompany(
+        company
+    );
+
+
     deal.id =
-        deal.id || Date.now();
+        deal.id ||
+        generateId();
+
 
     deal.createdAt =
         deal.createdAt ||
         new Date().toISOString();
 
+
     deal.updatedAt =
         new Date().toISOString();
 
+
     deal.value =
-        Number(deal.value || 0);
+        Number(
+            deal.value || 0
+        );
+
 
     deal.stage =
-        deal.stage || "New Lead";
+        deal.stage ||
+        "New Lead";
+
 
     deal.status =
-        deal.status || "Open";
+        deal.status ||
+        "Open";
 
-    company.deals.push(deal);
 
-    return updateCompany(company);
+    company.deals.push(
+        deal
+    );
+
+
+    return updateCompany(
+        company
+    );
 
 }
 
@@ -479,6 +703,7 @@ function updateDeal(
     const company =
         getCompany(companyId);
 
+
     if (!company) {
 
         console.error(
@@ -490,11 +715,21 @@ function updateDeal(
 
     }
 
-    if (!company.deals) {
 
-        company.deals = [];
+    if (!updatedDeal) {
+
+        console.error(
+            "updateDeal: no deal provided"
+        );
+
+        return false;
 
     }
+
+
+    normalizeCompany(
+        company
+    );
 
 
     const index =
@@ -517,24 +752,49 @@ function updateDeal(
     }
 
 
+    /*
+       Preserve creation date.
+    */
+
+    if (
+        !updatedDeal.createdAt
+    ) {
+
+        updatedDeal.createdAt =
+            company.deals[index]
+                .createdAt ||
+            new Date().toISOString();
+
+    }
+
+
     updatedDeal.updatedAt =
         new Date().toISOString();
 
+
     updatedDeal.value =
-        Number(updatedDeal.value || 0);
+        Number(
+            updatedDeal.value || 0
+        );
+
 
     updatedDeal.stage =
-        updatedDeal.stage || "New Lead";
+        updatedDeal.stage ||
+        "New Lead";
+
 
     updatedDeal.status =
-        updatedDeal.status || "Open";
+        updatedDeal.status ||
+        "Open";
 
 
     company.deals[index] =
         updatedDeal;
 
 
-    return updateCompany(company);
+    return updateCompany(
+        company
+    );
 
 }
 
@@ -551,6 +811,7 @@ function deleteDeal(
     const company =
         getCompany(companyId);
 
+
     if (!company) {
 
         console.error(
@@ -562,15 +823,42 @@ function deleteDeal(
 
     }
 
+
+    normalizeCompany(
+        company
+    );
+
+
+    const originalLength =
+        company.deals.length;
+
+
     company.deals =
-        (company.deals || []).filter(
+        company.deals.filter(
             deal =>
                 String(deal.id) !==
                 String(dealId)
         );
 
 
-    return updateCompany(company);
+    if (
+        company.deals.length ===
+        originalLength
+    ) {
+
+        console.error(
+            "deleteDeal: deal not found",
+            dealId
+        );
+
+        return false;
+
+    }
+
+
+    return updateCompany(
+        company
+    );
 
 }
 
@@ -579,10 +867,13 @@ function deleteDeal(
    TASKS
 ========================================= */
 
-function getTasks(companyId) {
+function getTasks(
+    companyId
+) {
 
     const company =
         getCompany(companyId);
+
 
     if (!company) {
 
@@ -595,11 +886,11 @@ function getTasks(companyId) {
 
     }
 
-    if (!company.tasks) {
 
-        company.tasks = [];
+    normalizeCompany(
+        company
+    );
 
-    }
 
     return company.tasks;
 
@@ -614,6 +905,7 @@ function addTask(
     const company =
         getCompany(companyId);
 
+
     if (!company) {
 
         console.error(
@@ -625,15 +917,41 @@ function addTask(
 
     }
 
-    if (!company.tasks) {
 
-        company.tasks = [];
+    if (!task) {
+
+        console.error(
+            "addTask: no task provided"
+        );
+
+        return false;
 
     }
 
-    company.tasks.push(task);
 
-    return updateCompany(company);
+    normalizeCompany(
+        company
+    );
+
+
+    /*
+       Give every task a stable ID if the
+       caller didn't provide one.
+    */
+
+    task.id =
+        task.id ||
+        generateId();
+
+
+    company.tasks.push(
+        task
+    );
+
+
+    return updateCompany(
+        company
+    );
 
 }
 
@@ -646,6 +964,7 @@ function deleteTask(
     const company =
         getCompany(companyId);
 
+
     if (!company) {
 
         console.error(
@@ -657,13 +976,41 @@ function deleteTask(
 
     }
 
+
+    normalizeCompany(
+        company
+    );
+
+
+    const originalLength =
+        company.tasks.length;
+
+
     company.tasks =
-        (company.tasks || []).filter(
+        company.tasks.filter(
             task =>
                 String(task.id) !==
                 String(taskId)
         );
 
-    return updateCompany(company);
+
+    if (
+        company.tasks.length ===
+        originalLength
+    ) {
+
+        console.error(
+            "deleteTask: task not found",
+            taskId
+        );
+
+        return false;
+
+    }
+
+
+    return updateCompany(
+        company
+    );
 
 }
