@@ -7,6 +7,7 @@ function loadTasks(companyId) {
     const company =
         getCompany(companyId);
 
+
     const app =
         document.getElementById("app");
 
@@ -31,7 +32,9 @@ function loadTasks(companyId) {
 
                 <button
                     class="search"
-                    onclick="location.hash='companies'">
+                    onclick="
+                        location.hash='companies'
+                    ">
 
                     ← Back
 
@@ -51,25 +54,30 @@ function loadTasks(companyId) {
 
 
     /* =====================================
-       INITIALIZE
+       READ TASKS
+       
+       Do not mutate storage just because
+       the page is opened.
     ===================================== */
 
-    if (!Array.isArray(company.tasks)) {
-
-        company.tasks = [];
-
-        updateCompany(company);
-
-    }
+    const tasks =
+        Array.isArray(
+            company.tasks
+        )
+            ? company.tasks
+            : [];
 
 
     let completed = 0;
+
     let pending = 0;
+
     let overdue = 0;
 
 
     const today =
         new Date();
+
 
     today.setHours(
         0,
@@ -88,11 +96,17 @@ function loadTasks(companyId) {
     ) {
 
         if (!dateString) {
+
             return null;
+
         }
 
+
         const date =
-            new Date(dateString);
+            new Date(
+                dateString
+            );
+
 
         if (
             isNaN(
@@ -104,12 +118,14 @@ function loadTasks(companyId) {
 
         }
 
+
         date.setHours(
             0,
             0,
             0,
             0
         );
+
 
         return date;
 
@@ -125,11 +141,17 @@ function loadTasks(companyId) {
     ) {
 
         if (!dateString) {
+
             return "-";
+
         }
 
+
         const date =
-            new Date(dateString);
+            new Date(
+                dateString
+            );
+
 
         if (
             isNaN(
@@ -137,17 +159,80 @@ function loadTasks(companyId) {
             )
         ) {
 
-            return dateString;
+            return "-";
 
         }
+
 
         return date.toLocaleDateString(
             "en-IN",
             {
-                day: "numeric",
-                month: "short",
-                year: "numeric"
+                day:
+                    "numeric",
+
+                month:
+                    "short",
+
+                year:
+                    "numeric"
+
             }
+        );
+
+    }
+
+
+    /* =====================================
+       ESCAPE HTML
+    ===================================== */
+
+    function escapeTaskText(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+    }
+
+
+    /* =====================================
+       STATUS HELPER
+    ===================================== */
+
+    function isCompleted(
+        task
+    ) {
+
+        return (
+            String(
+                task.status ||
+                ""
+            )
+            .trim()
+            .toLowerCase()
+            === "completed"
         );
 
     }
@@ -157,12 +242,13 @@ function loadTasks(companyId) {
        COUNT TASKS
     ===================================== */
 
-    company.tasks.forEach(
+    tasks.forEach(
         task => {
 
         if (
-            task.status ===
-            "Completed"
+            isCompleted(
+                task
+            )
         ) {
 
             completed++;
@@ -175,22 +261,27 @@ function loadTasks(companyId) {
         pending++;
 
 
-        if (task.dueDate) {
+        if (
+            !task.dueDate
+        ) {
 
-            const dueDate =
-                getTaskDate(
-                    task.dueDate
-                );
+            return;
+
+        }
 
 
-            if (
-                dueDate &&
-                dueDate < today
-            ) {
+        const dueDate =
+            getTaskDate(
+                task.dueDate
+            );
 
-                overdue++;
 
-            }
+        if (
+            dueDate &&
+            dueDate < today
+        ) {
+
+            overdue++;
 
         }
 
@@ -201,11 +292,12 @@ function loadTasks(companyId) {
        BUILD TASK CARDS
     ===================================== */
 
-    let taskCards = "";
+    let taskCards =
+        "";
 
 
     if (
-        company.tasks.length === 0
+        tasks.length === 0
     ) {
 
         taskCards = `
@@ -226,15 +318,22 @@ function loadTasks(companyId) {
 
     } else {
 
-        company.tasks.forEach(
+        tasks.forEach(
             task => {
+
+            const completedTask =
+                isCompleted(
+                    task
+                );
+
 
             let statusIcon =
                 "🟡";
 
+
             let statusText =
-                task.status ||
                 "Pending";
+
 
             let statusClass =
                 "upcoming";
@@ -245,8 +344,7 @@ function loadTasks(companyId) {
             ============================= */
 
             if (
-                task.status ===
-                "Completed"
+                completedTask
             ) {
 
                 statusIcon =
@@ -324,29 +422,31 @@ function loadTasks(companyId) {
                PRIORITY
             ============================= */
 
+            const priority =
+                task.priority ||
+                "Medium";
+
+
             let priorityIcon =
                 "⚪";
 
 
             if (
-                task.priority ===
-                "High"
+                priority === "High"
             ) {
 
                 priorityIcon =
                     "🔴";
 
             } else if (
-                task.priority ===
-                "Medium"
+                priority === "Medium"
             ) {
 
                 priorityIcon =
                     "🟡";
 
             } else if (
-                task.priority ===
-                "Low"
+                priority === "Low"
             ) {
 
                 priorityIcon =
@@ -359,18 +459,56 @@ function loadTasks(companyId) {
                CALL LINK
             ============================= */
 
-            const callLabel =
-                task.source === "call"
-                    ? `
-                        <p>
-                            <strong>
-                                Source:
-                            </strong>
+            const isCallTask =
+                task.source === "call";
 
-                            📞 Call Follow-up
-                        </p>
-                      `
+
+            const callLabel =
+                isCallTask
+                    ? `
+
+                    <p>
+
+                        <strong>
+                            Source:
+                        </strong>
+
+                        📞 Call Follow-up
+
+                    </p>
+
+                    `
                     : "";
+
+
+            /* =============================
+               SAFE VALUES
+            ============================= */
+
+            const title =
+                escapeTaskText(
+                    task.title ||
+                    "Untitled Task"
+                );
+
+
+            const safeStatus =
+                escapeTaskText(
+                    statusText
+                );
+
+
+            const safePriority =
+                escapeTaskText(
+                    priority
+                );
+
+
+            const notes =
+                escapeTaskText(
+                    task.notes ||
+                    "No notes."
+                );
 
 
             /* =============================
@@ -392,10 +530,7 @@ function loadTasks(companyId) {
 
                     ${statusIcon}
 
-                    ${
-                        task.title ||
-                        "Untitled Task"
-                    }
+                    ${title}
 
                 </h3>
 
@@ -406,7 +541,7 @@ function loadTasks(companyId) {
                         Status:
                     </strong>
 
-                    ${statusText}
+                    ${safeStatus}
 
                 </p>
 
@@ -432,10 +567,7 @@ function loadTasks(companyId) {
 
                     ${priorityIcon}
 
-                    ${
-                        task.priority ||
-                        "Medium"
-                    }
+                    ${safePriority}
 
                 </p>
 
@@ -447,10 +579,7 @@ function loadTasks(companyId) {
 
 
                 <p>
-                    ${
-                        task.notes ||
-                        "No notes."
-                    }
+                    ${notes}
                 </p>
 
 
@@ -512,7 +641,9 @@ function loadTasks(companyId) {
             </h1>
 
             <p class="subtitle">
-                ${company.companyName}
+                ${escapeTaskText(
+                    company.companyName
+                )}
             </p>
 
         </div>
@@ -523,16 +654,18 @@ function loadTasks(companyId) {
         <div class="card">
 
             <p>
+
                 <strong>
                     Total Tasks:
                 </strong>
 
-                ${company.tasks.length}
+                ${tasks.length}
 
             </p>
 
 
             <p>
+
                 <strong>
                     Pending:
                 </strong>
@@ -543,6 +676,7 @@ function loadTasks(companyId) {
 
 
             <p>
+
                 <strong>
                     Completed:
                 </strong>
@@ -553,6 +687,7 @@ function loadTasks(companyId) {
 
 
             <p>
+
                 <strong>
                     Overdue:
                 </strong>
@@ -630,7 +765,9 @@ function deleteTaskConfirm(
 
 
     const company =
-        getCompany(companyId);
+        getCompany(
+            companyId
+        );
 
 
     if (!company) {
@@ -644,11 +781,23 @@ function deleteTaskConfirm(
     }
 
 
+    const tasks =
+        Array.isArray(
+            company.tasks
+        )
+            ? company.tasks
+            : [];
+
+
     const task =
-        (company.tasks || []).find(
+        tasks.find(
             item =>
-                String(item.id) ===
-                String(taskId)
+                String(
+                    item.id
+                ) ===
+                String(
+                    taskId
+                )
         );
 
 
@@ -665,7 +814,10 @@ function deleteTaskConfirm(
 
     /* =====================================
        CALL-GENERATED TASK
-       CLEAR LINKED CALL FOLLOW-UP
+       
+       Clear the legacy mirror on the call,
+       but the task itself remains the
+       authoritative follow-up record.
     ===================================== */
 
     if (
@@ -673,10 +825,20 @@ function deleteTaskConfirm(
         task.sourceCallId
     ) {
 
+        const calls =
+            Array.isArray(
+                company.calls
+            )
+                ? company.calls
+                : [];
+
+
         const linkedCall =
-            (company.calls || []).find(
+            calls.find(
                 call =>
-                    String(call.id) ===
+                    String(
+                        call.id
+                    ) ===
                     String(
                         task.sourceCallId
                     )
@@ -694,7 +856,7 @@ function deleteTaskConfirm(
 
 
     /* =====================================
-       DELETE TASK
+       DELETE THROUGH STORAGE
     ===================================== */
 
     const deleted =
@@ -723,4 +885,4 @@ function deleteTaskConfirm(
         companyId
     );
 
-                  }
+            }
