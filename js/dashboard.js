@@ -85,26 +85,28 @@ function loadDashboard() {
                 Number(deal.value || 0);
 
 
+            /*
+               STATUS IS THE ONLY
+               FINANCIAL SOURCE OF TRUTH.
+
+               Open → Pipeline
+               Won  → Revenue
+               Lost → Neither
+            */
+
             const status =
                 String(
                     deal.status || "Open"
-                ).toLowerCase();
-
-
-            const stage =
-                String(
-                    deal.stage || ""
-                ).toLowerCase();
+                )
+                .trim()
+                .toLowerCase();
 
 
             /* ==============================
                WON → REVENUE
             ============================== */
 
-            if (
-                status === "won" ||
-                stage === "won"
-            ) {
+            if (status === "won") {
 
                 totalRevenue += value;
 
@@ -117,10 +119,7 @@ function loadDashboard() {
                LOST → NOTHING
             ============================== */
 
-            if (
-                status === "lost" ||
-                stage === "lost"
-            ) {
+            if (status === "lost") {
 
                 return;
 
@@ -1375,4 +1374,4 @@ function dashboardSearchCompanies(
 
     loadCompanies(searchText);
 
-               }
+}
