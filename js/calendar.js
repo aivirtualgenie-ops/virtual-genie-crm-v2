@@ -4,19 +4,23 @@
 
 function loadCalendar() {
 
-    const companies = getCompanies();
+    const companies =
+        getCompanies();
 
     const app =
         document.getElementById("app");
+
 
     let events = [];
 
 
     /* =====================================
-       TODAY AS LOCAL DATE
+       TODAY
     ===================================== */
 
-    const today = new Date();
+    const today =
+        new Date();
+
 
     today.setHours(
         0,
@@ -30,10 +34,33 @@ function loadCalendar() {
        DATE HELPER
     ===================================== */
 
-    function getEventDate(dateString) {
+    function getEventDate(
+        dateString
+    ) {
+
+        if (!dateString) {
+
+            return null;
+
+        }
+
 
         const date =
-            new Date(dateString);
+            new Date(
+                dateString
+            );
+
+
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return null;
+
+        }
+
 
         date.setHours(
             0,
@@ -41,6 +68,7 @@ function loadCalendar() {
             0,
             0
         );
+
 
         return date;
 
@@ -51,10 +79,22 @@ function loadCalendar() {
        FORMAT DATE
     ===================================== */
 
-    function formatDate(dateString) {
+    function formatDate(
+        dateString
+    ) {
 
         const date =
-            new Date(dateString);
+            getEventDate(
+                dateString
+            );
+
+
+        if (!date) {
+
+            return "-";
+
+        }
+
 
         return date.toLocaleDateString(
             "en-IN",
@@ -70,67 +110,41 @@ function loadCalendar() {
 
     /* =====================================
        PROCESS COMPANIES
+       
+       TASKS ARE THE ONLY SOURCE OF
+       ACTIVE CALENDAR EVENTS.
     ===================================== */
 
     companies.forEach(
-        (company, companyIndex) => {
+        company => {
 
         const companyId =
-            company.id ||
-            company.companyId ||
-            companyIndex;
+            company.id;
 
 
-        /* =================================
-           COMPANY FOLLOW-UP
-        ================================= */
-
-        if (company.nextFollowUp) {
-
-            events.push({
-
-                type:
-                    "Company Follow-up",
-
-                date:
-                    company.nextFollowUp,
-
-                company:
-                    company.companyName,
-
-                description:
-                    "Company follow-up",
-
-                priority:
-                    company.priority ||
-                    "Medium",
-
-                companyId:
-                    companyId,
-
-                source:
-                    "company-followup"
-
-            });
-
-        }
+        const tasks =
+            Array.isArray(
+                company.tasks
+            )
+                ? company.tasks
+                : [];
 
 
-        /* =================================
-           TASKS
-        ================================= */
-
-        (company.tasks || []).forEach(
+        tasks.forEach(
             task => {
 
-            /*
-               Completed tasks are not active
-               calendar events.
-            */
+
+            /* =============================
+               COMPLETED TASKS
+            ============================= */
 
             if (
-                task.status ===
-                "Completed"
+                String(
+                    task.status || ""
+                )
+                .trim()
+                .toLowerCase()
+                === "completed"
             ) {
 
                 return;
@@ -138,12 +152,39 @@ function loadCalendar() {
             }
 
 
-            if (!task.dueDate) {
+            /* =============================
+               NO DATE
+            ============================= */
+
+            if (
+                !task.dueDate
+            ) {
 
                 return;
 
             }
 
+
+            /* =============================
+               INVALID DATE
+            ============================= */
+
+            const eventDate =
+                getEventDate(
+                    task.dueDate
+                );
+
+
+            if (!eventDate) {
+
+                return;
+
+            }
+
+
+            /* =============================
+               CALL FOLLOW-UP
+            ============================= */
 
             const isCallFollowUp =
                 task.source === "call";
@@ -160,10 +201,16 @@ function loadCalendar() {
                     task.dueDate,
 
                 company:
-                    company.companyName,
+                    company.companyName ||
+                    "Unnamed Company",
 
                 description:
-                    task.title,
+                    task.title ||
+                    (
+                        isCallFollowUp
+                            ? "Follow up after call"
+                            : "Untitled Task"
+                    ),
 
                 priority:
                     task.priority ||
@@ -190,30 +237,63 @@ function loadCalendar() {
 
            Do NOT process:
 
+               company.nextFollowUp
+
+           Do NOT process:
+
                company.calls[].followUp
 
-           here.
+           Call follow-ups are represented by
+           their linked task.
 
-           Call follow-ups are converted
-           into tasks when the call is saved.
-
-           Processing them again would create
-           duplicate calendar events.
+           This prevents duplicate calendar
+           events and stale legacy dates.
         */
 
     });
 
 
     /* =====================================
-       SORT BY DATE
+       SORT
+       
+       Earliest first.
     ===================================== */
 
     events.sort(
-        (a, b) => {
+        (
+            a,
+            b
+        ) => {
+
+            const dateA =
+                getEventDate(
+                    a.date
+                );
+
+
+            const dateB =
+                getEventDate(
+                    b.date
+                );
+
+
+            if (!dateA) {
+
+                return 1;
+
+            }
+
+
+            if (!dateB) {
+
+                return -1;
+
+            }
+
 
             return (
-                getEventDate(a.date) -
-                getEventDate(b.date)
+                dateA.getTime() -
+                dateB.getTime()
             );
 
         }
@@ -224,7 +304,8 @@ function loadCalendar() {
        BUILD EVENT CARDS
     ===================================== */
 
-    let eventCards = "";
+    let eventCards =
+        "";
 
 
     if (
@@ -250,7 +331,7 @@ function loadCalendar() {
     } else {
 
         events.forEach(
-            (event, index) => {
+            event => {
 
             const eventDate =
                 getEventDate(
@@ -258,19 +339,26 @@ function loadCalendar() {
                 );
 
 
-            let status =
-                "";
+            if (!eventDate) {
 
-            let statusText =
-                "";
+                return;
 
-            let statusIcon =
-                "📅";
+            }
 
 
             /* =============================
                STATUS
             ============================= */
+
+            let status =
+                "upcoming";
+
+            let statusText =
+                "Upcoming";
+
+            let statusIcon =
+                "🟡";
+
 
             if (
                 eventDate < today
@@ -285,6 +373,7 @@ function loadCalendar() {
                 statusIcon =
                     "🔴";
 
+
             } else if (
                 eventDate.getTime() ===
                 today.getTime()
@@ -298,17 +387,6 @@ function loadCalendar() {
 
                 statusIcon =
                     "🟢";
-
-            } else {
-
-                status =
-                    "upcoming";
-
-                statusText =
-                    "Upcoming";
-
-                statusIcon =
-                    "🟡";
 
             }
 
@@ -329,6 +407,7 @@ function loadCalendar() {
                 priorityIcon =
                     "🔴";
 
+
             } else if (
                 event.priority ===
                 "Medium"
@@ -336,6 +415,7 @@ function loadCalendar() {
 
                 priorityIcon =
                     "🟡";
+
 
             } else if (
                 event.priority ===
@@ -352,35 +432,23 @@ function loadCalendar() {
                SOURCE ICON
             ============================= */
 
-            let sourceIcon =
-                "📋";
-
-
-            if (
+            const sourceIcon =
                 event.source ===
                 "call-followup"
-            ) {
-
-                sourceIcon =
-                    "📞";
-
-            } else if (
-                event.source ===
-                "company-followup"
-            ) {
-
-                sourceIcon =
-                    "📅";
-
-            }
+                    ? "📞"
+                    : "📋";
 
 
             /* =============================
-               CLICK EVENT
+               CLICK ACTION
+               
+               Go directly to Tasks because
+               the calendar event originates
+               from a task.
             ============================= */
 
             const clickAction =
-                `location.hash='company-${event.companyId}'`;
+                `loadTasks(${event.companyId})`;
 
 
             /* =============================
@@ -399,13 +467,18 @@ function loadCalendar() {
                     margin-top:20px;
                     cursor:pointer;
                 "
-                onclick="${clickAction}">
+                onclick="
+                    ${clickAction}
+                ">
 
 
                 <h3>
 
                     ${sourceIcon}
-                    ${event.type}
+
+                    ${escapeCalendarText(
+                        event.type
+                    )}
 
                 </h3>
 
@@ -415,6 +488,8 @@ function loadCalendar() {
                     <strong>
                         Status:
                     </strong>
+
+                    ${statusIcon}
 
                     ${statusText}
 
@@ -440,7 +515,9 @@ function loadCalendar() {
                         Company:
                     </strong>
 
-                    ${event.company}
+                    ${escapeCalendarText(
+                        event.company
+                    )}
 
                 </p>
 
@@ -451,7 +528,9 @@ function loadCalendar() {
                         Details:
                     </strong>
 
-                    ${event.description}
+                    ${escapeCalendarText(
+                        event.description
+                    )}
 
                 </p>
 
@@ -463,7 +542,10 @@ function loadCalendar() {
                     </strong>
 
                     ${priorityIcon}
-                    ${event.priority}
+
+                    ${escapeCalendarText(
+                        event.priority
+                    )}
 
                 </p>
 
@@ -475,7 +557,7 @@ function loadCalendar() {
                         opacity:0.7;
                     ">
 
-                    Tap to open company
+                    Tap to open tasks
 
                 </p>
 
@@ -535,5 +617,40 @@ function loadCalendar() {
     </div>
 
     `;
+
+}
+
+
+/* =========================================
+   ESCAPE CALENDAR TEXT
+========================================= */
+
+function escapeCalendarText(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
