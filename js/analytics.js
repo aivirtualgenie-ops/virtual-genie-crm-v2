@@ -1,251 +1,557 @@
-function loadAnalytics(){
+/* =========================================
+   ANALYTICS
+========================================= */
 
-const companies = getCompanies();
+function loadAnalytics() {
 
-const app = document.getElementById("app");
+    const companies =
+        getCompanies();
 
-let totalPipeline = 0;
-let totalRevenue = 0;
-let totalProducts = 0;
-let totalCalls = 0;
-let totalTasks = 0;
-let completedTasks = 0;
+    const app =
+        document.getElementById("app");
 
-let wonDeals = 0;
-let lostDeals = 0;
 
-const stages = {
+    /* =====================================
+       CORE METRICS
+    ===================================== */
 
-"New Lead": 0,
-"Contacted": 0,
-"Meeting Scheduled": 0,
-"Proposal Sent": 0,
-"Negotiation": 0,
-"Won": 0,
-"Lost": 0
+    let totalPipeline = 0;
+    let totalRevenue = 0;
+    let totalLostValue = 0;
 
-};
+    let totalProducts = 0;
+    let totalCalls = 0;
 
-companies.forEach(company => {
+    let totalTasks = 0;
+    let completedTasks = 0;
 
-totalPipeline += Number(company.pipelineValue || 0);
+    let wonDeals = 0;
+    let lostDeals = 0;
+    let openDeals = 0;
 
-totalRevenue += Number(company.revenue || 0);
 
-totalProducts += (company.products || []).length;
+    /* =====================================
+       PIPELINE STAGES
+       NOW BASED ON DEALS
+    ===================================== */
 
-totalCalls += (company.calls || []).length;
+    const stages = {
 
-totalTasks += (company.tasks || []).length;
+        "New Lead": 0,
+        "Contacted": 0,
+        "Meeting Scheduled": 0,
+        "Proposal Sent": 0,
+        "Negotiation": 0,
+        "Won": 0,
+        "Lost": 0
 
-completedTasks +=
-(company.tasks || []).filter(
-task => task.status === "Completed"
-).length;
+    };
 
-const stage = company.pipelineStage || "New Lead";
 
-if(stages[stage] !== undefined){
+    /* =====================================
+       PROCESS COMPANIES
+    ===================================== */
 
-stages[stage]++;
+    companies.forEach(company => {
 
-}
 
-if(stage === "Won"){
+        /* ================================
+           PRODUCTS
+        ================================= */
 
-wonDeals++;
+        totalProducts +=
+            (company.products || []).length;
 
-}
 
-if(stage === "Lost"){
+        /* ================================
+           CALLS
+        ================================= */
 
-lostDeals++;
+        totalCalls +=
+            (company.calls || []).length;
 
-}
 
-});
+        /* ================================
+           TASKS
+        ================================= */
 
-/* CONVERSION RATE */
+        const companyTasks =
+            company.tasks || [];
 
-const totalClosed = wonDeals + lostDeals;
 
-const conversionRate =
-totalClosed > 0
-?
-((wonDeals / totalClosed) * 100).toFixed(1)
-:
-"0.0";
+        totalTasks +=
+            companyTasks.length;
 
-/* TASK COMPLETION */
 
-const taskCompletion =
-totalTasks > 0
-?
-((completedTasks / totalTasks) * 100).toFixed(1)
-:
-"0.0";
+        completedTasks +=
+            companyTasks.filter(
+                task =>
+                    task.status ===
+                    "Completed"
+            ).length;
 
-/* STAGE CARDS */
 
-let stageCards = "";
+        /* ================================
+           DEALS
+        ================================= */
 
-Object.keys(stages).forEach(stage => {
+        const companyDeals =
+            company.deals || [];
 
-stageCards += `
 
-<div
-class="card"
-style="margin-top:15px;">
+        companyDeals.forEach(deal => {
 
-<h3>${stage}</h3>
+            const value =
+                Number(
+                    deal.value || 0
+                );
 
-<p>
-<strong>Companies:</strong>
-${stages[stage]}
-</p>
 
-</div>
+            const status =
+                String(
+                    deal.status || "Open"
+                )
+                .trim()
+                .toLowerCase();
 
-`;
 
-});
+            /* ==============================
+               FINANCIAL METRICS
+            ============================== */
 
-/* PAGE */
+            if (status === "won") {
 
-app.innerHTML = `
+                totalRevenue += value;
 
-<div class="dashboard">
+                wonDeals++;
 
-<div class="header">
+            } else if (status === "lost") {
 
-<h1>Analytics Dashboard</h1>
+                totalLostValue += value;
 
-<p class="subtitle">
+                lostDeals++;
 
-CRM performance overview
+            } else {
 
-</p>
+                totalPipeline += value;
 
-</div>
+                openDeals++;
 
-<div class="stats">
+            }
 
-<div class="stats-grid">
 
-<div class="card">
+            /* ==============================
+               STAGE
+            ============================== */
 
-<p>Total Companies</p>
+            const stage =
+                String(
+                    deal.stage ||
+                    "New Lead"
+                )
+                .trim();
 
-<h2>${companies.length}</h2>
 
-</div>
+            if (
+                stages[stage] !==
+                undefined
+            ) {
 
-<div class="card">
+                stages[stage]++;
 
-<p>Total Pipeline</p>
+            }
 
-<h2>₹${totalPipeline}</h2>
+        });
 
-</div>
+    });
 
-<div class="card">
 
-<p>Total Revenue</p>
+    /* =====================================
+       CONVERSION RATE
+    ===================================== */
 
-<h2>₹${totalRevenue}</h2>
+    const totalClosed =
+        wonDeals +
+        lostDeals;
 
-</div>
 
-<div class="card">
+    const conversionRate =
+        totalClosed > 0
 
-<p>Conversion Rate</p>
+            ?
 
-<h2>${conversionRate}%</h2>
+        (
+            (
+                wonDeals /
+                totalClosed
+            ) *
+            100
+        ).toFixed(1)
 
-</div>
+            :
 
-</div>
+        "0.0";
 
-</div>
 
-<div
-class="card"
-style="margin-top:20px;">
+    /* =====================================
+       TASK COMPLETION
+    ===================================== */
 
-<h2>Sales Activity</h2>
+    const taskCompletion =
+        totalTasks > 0
 
-<br>
+            ?
 
-<p>
-<strong>Total Calls:</strong>
-${totalCalls}
-</p>
+        (
+            (
+                completedTasks /
+                totalTasks
+            ) *
+            100
+        ).toFixed(1)
 
-<p>
-<strong>Total Tasks:</strong>
-${totalTasks}
-</p>
+            :
 
-<p>
-<strong>Completed Tasks:</strong>
-${completedTasks}
-</p>
+        "0.0";
 
-<p>
-<strong>Task Completion:</strong>
-${taskCompletion}%
-</p>
 
-<p>
-<strong>Won Deals:</strong>
-${wonDeals}
-</p>
+    /* =====================================
+       STAGE CARDS
+    ===================================== */
 
-<p>
-<strong>Lost Deals:</strong>
-${lostDeals}
-</p>
+    let stageCards = "";
 
-</div>
 
-<div
-class="card"
-style="margin-top:20px;">
+    Object.keys(stages).forEach(
+        stage => {
 
-<h2>Products</h2>
+        stageCards += `
 
-<br>
+        <div
+            class="card"
+            style="margin-top:15px;">
 
-<p>
-<strong>Total Products:</strong>
-${totalProducts}
-</p>
+            <h3>
+                ${stage}
+            </h3>
 
-</div>
+            <p>
+                <strong>
+                    Deals:
+                </strong>
 
-<div
-class="card"
-style="margin-top:20px;">
+                ${stages[stage]}
+            </p>
 
-<h2>Pipeline Breakdown</h2>
+        </div>
 
-${stageCards}
+        `;
 
-</div>
+    });
 
-<button
-class="search"
-style="margin-top:20px;"
-onclick="location.hash=''">
 
-← Back to Dashboard
+    /* =====================================
+       PAGE
+    ===================================== */
 
-</button>
+    app.innerHTML = `
 
-${bottomNav("dashboard")}
+    <div class="dashboard">
 
-</div>
 
-`;
+        <div class="header">
+
+            <h1>
+                Analytics Dashboard
+            </h1>
+
+            <p class="subtitle">
+                CRM performance overview
+            </p>
+
+        </div>
+
+
+        <!-- ==============================
+             SALES METRICS
+        =============================== -->
+
+        <div class="stats">
+
+            <div class="stats-grid">
+
+
+                <!-- COMPANIES -->
+
+                <div class="card">
+
+                    <p>
+                        Total Companies
+                    </p>
+
+                    <h2>
+                        ${companies.length}
+                    </h2>
+
+                </div>
+
+
+                <!-- PIPELINE -->
+
+                <div class="card">
+
+                    <p>
+                        Total Pipeline
+                    </p>
+
+                    <h2>
+                        ₹${totalPipeline}
+                    </h2>
+
+                </div>
+
+
+                <!-- REVENUE -->
+
+                <div class="card">
+
+                    <p>
+                        Total Revenue
+                    </p>
+
+                    <h2>
+                        ₹${totalRevenue}
+                    </h2>
+
+                </div>
+
+
+                <!-- CONVERSION -->
+
+                <div class="card">
+
+                    <p>
+                        Conversion Rate
+                    </p>
+
+                    <h2>
+                        ${conversionRate}%
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==============================
+             DEAL PERFORMANCE
+        =============================== -->
+
+        <div
+            class="card"
+            style="margin-top:20px;">
+
+            <h2>
+                Deal Performance
+            </h2>
+
+            <br>
+
+
+            <p>
+
+                <strong>
+                    Open Deals:
+                </strong>
+
+                ${openDeals}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Won Deals:
+                </strong>
+
+                ${wonDeals}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Lost Deals:
+                </strong>
+
+                ${lostDeals}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Lost Deal Value:
+                </strong>
+
+                ₹${totalLostValue}
+
+            </p>
+
+        </div>
+
+
+        <!-- ==============================
+             SALES ACTIVITY
+        =============================== -->
+
+        <div
+            class="card"
+            style="margin-top:20px;">
+
+            <h2>
+                Sales Activity
+            </h2>
+
+            <br>
+
+
+            <p>
+
+                <strong>
+                    Total Calls:
+                </strong>
+
+                ${totalCalls}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Total Tasks:
+                </strong>
+
+                ${totalTasks}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Completed Tasks:
+                </strong>
+
+                ${completedTasks}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Task Completion:
+                </strong>
+
+                ${taskCompletion}%
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Won Deals:
+                </strong>
+
+                ${wonDeals}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Lost Deals:
+                </strong>
+
+                ${lostDeals}
+
+            </p>
+
+        </div>
+
+
+        <!-- ==============================
+             PRODUCTS
+        =============================== -->
+
+        <div
+            class="card"
+            style="margin-top:20px;">
+
+            <h2>
+                Products
+            </h2>
+
+            <br>
+
+
+            <p>
+
+                <strong>
+                    Total Products:
+                </strong>
+
+                ${totalProducts}
+
+            </p>
+
+        </div>
+
+
+        <!-- ==============================
+             PIPELINE BREAKDOWN
+        =============================== -->
+
+        <div
+            class="card"
+            style="margin-top:20px;">
+
+            <h2>
+                Pipeline Breakdown
+            </h2>
+
+
+            ${stageCards}
+
+        </div>
+
+
+        <!-- BACK -->
+
+        <button
+            class="search"
+            style="margin-top:20px;"
+            onclick="location.hash=''">
+
+            ← Back to Dashboard
+
+        </button>
+
+
+        ${bottomNav("dashboard")}
+
+
+    </div>
+
+    `;
 
 }
