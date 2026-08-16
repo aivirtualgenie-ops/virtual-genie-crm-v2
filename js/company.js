@@ -66,6 +66,11 @@ function loadCompany(id) {
 
     const app = document.getElementById("app");
 
+
+    /* =====================================
+       COMPANY CHECK
+    ===================================== */
+
     if (!company) {
 
         app.innerHTML = `
@@ -74,7 +79,9 @@ function loadCompany(id) {
 
             <div class="card">
 
-                <h2>Company not found</h2>
+                <h2>
+                    Company not found
+                </h2>
 
                 <br>
 
@@ -99,10 +106,6 @@ function loadCompany(id) {
     }
 
 
-    const pipelineStage =
-        company.pipelineStage || "New Lead";
-
-
     /* =====================================
        DEALS
     ===================================== */
@@ -113,6 +116,46 @@ function loadCompany(id) {
 
     let dealCards = "";
 
+
+    /* =====================================
+       COMPANY FINANCIALS
+       DEALS ARE THE SOURCE OF TRUTH
+    ===================================== */
+
+    let companyPipeline = 0;
+    let companyRevenue = 0;
+
+
+    deals.forEach(deal => {
+
+        const value =
+            Number(deal.value || 0);
+
+
+        const status =
+            String(
+                deal.status || "Open"
+            )
+            .trim()
+            .toLowerCase();
+
+
+        if (status === "won") {
+
+            companyRevenue += value;
+
+        } else if (status !== "lost") {
+
+            companyPipeline += value;
+
+        }
+
+    });
+
+
+    /* =====================================
+       DEAL CARDS
+    ===================================== */
 
     if (deals.length === 0) {
 
@@ -259,7 +302,9 @@ function loadCompany(id) {
                         </span>
 
                         <strong>
-                            ${formatDealDate(deal.createdAt)}
+                            ${formatDealDate(
+                                deal.createdAt
+                            )}
                         </strong>
 
                     </div>
@@ -351,22 +396,34 @@ function loadCompany(id) {
             <br>
 
             <p>
-                <strong>Contact:</strong>
+                <strong>
+                    Contact:
+                </strong>
+
                 ${company.contactPerson || "-"}
             </p>
 
             <p>
-                <strong>Phone:</strong>
+                <strong>
+                    Phone:
+                </strong>
+
                 ${company.phone || "-"}
             </p>
 
             <p>
-                <strong>Email:</strong>
+                <strong>
+                    Email:
+                </strong>
+
                 ${company.email || "-"}
             </p>
 
             <p>
-                <strong>Website:</strong>
+                <strong>
+                    Website:
+                </strong>
+
                 ${company.website || "-"}
             </p>
 
@@ -386,18 +443,28 @@ function loadCompany(id) {
             <br>
 
             <p>
-                <strong>Industry:</strong>
+                <strong>
+                    Industry:
+                </strong>
+
                 ${company.industry || "-"}
             </p>
 
             <p>
-                <strong>Address:</strong>
+                <strong>
+                    Address:
+                </strong>
+
                 ${company.address || "-"}
             </p>
 
             <p>
-                <strong>Priority:</strong>
+                <strong>
+                    Priority:
+                </strong>
+
                 ${company.priority || "-"}
+
             </p>
 
         </div>
@@ -415,102 +482,67 @@ function loadCompany(id) {
 
             <br>
 
-            <p>
-                <strong>Pipeline Value:</strong>
-                ₹${company.pipelineValue || 0}
-            </p>
 
             <p>
-                <strong>Revenue:</strong>
-                ₹${company.revenue || 0}
-            </p>
-
-            <p>
-                <strong>Next Follow-up:</strong>
-                ${company.nextFollowUp || "-"}
-            </p>
-
-
-            <br>
-
-
-            <label>
                 <strong>
-                    Pipeline Stage
+                    Pipeline Value:
                 </strong>
-            </label>
+
+                ₹${companyPipeline}
+            </p>
 
 
-            <select
-                class="search"
-                id="pipelineStage"
-                style="margin-top:10px;">
+            <p>
+                <strong>
+                    Revenue:
+                </strong>
 
-                <option
-                    value="New Lead"
-                    ${pipelineStage === "New Lead" ? "selected" : ""}>
-                    New Lead
-                </option>
-
-                <option
-                    value="Contacted"
-                    ${pipelineStage === "Contacted" ? "selected" : ""}>
-                    Contacted
-                </option>
-
-                <option
-                    value="Meeting Scheduled"
-                    ${pipelineStage === "Meeting Scheduled" ? "selected" : ""}>
-                    Meeting Scheduled
-                </option>
-
-                <option
-                    value="Proposal Sent"
-                    ${pipelineStage === "Proposal Sent" ? "selected" : ""}>
-                    Proposal Sent
-                </option>
-
-                <option
-                    value="Negotiation"
-                    ${pipelineStage === "Negotiation" ? "selected" : ""}>
-                    Negotiation
-                </option>
-
-                <option
-                    value="Won"
-                    ${pipelineStage === "Won" ? "selected" : ""}>
-                    Won
-                </option>
-
-                <option
-                    value="Lost"
-                    ${pipelineStage === "Lost" ? "selected" : ""}>
-                    Lost
-                </option>
-
-            </select>
+                ₹${companyRevenue}
+            </p>
 
 
-            <button
-                class="fab"
-                style="
-                    position:static;
-                    width:100%;
-                    height:60px;
-                    border-radius:18px;
-                    margin-top:15px;
-                    font-size:20px;
-                    white-space:nowrap;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    line-height:1;
-                "
-                onclick="savePipelineStage(${company.id})">
+            <p>
+                <strong>
+                    Active Deals:
+                </strong>
 
-                Save Pipeline Stage
+                ${
+                    deals.filter(deal => {
 
-            </button>
+                        const status =
+                            String(
+                                deal.status || "Open"
+                            )
+                            .trim()
+                            .toLowerCase();
+
+                        return status !== "won" &&
+                               status !== "lost";
+
+                    }).length
+                }
+
+            </p>
+
+
+            <p>
+                <strong>
+                    Total Deals:
+                </strong>
+
+                ${deals.length}
+
+            </p>
+
+
+            <p>
+                <strong>
+                    Next Follow-up:
+                </strong>
+
+                ${company.nextFollowUp || "-"}
+
+            </p>
 
         </div>
 
@@ -586,13 +618,25 @@ function loadCompany(id) {
             <br>
 
             <p>
-                <strong>Created:</strong>
-                ${formatDateTime(company.createdAt)}
+                <strong>
+                    Created:
+                </strong>
+
+                ${formatDateTime(
+                    company.createdAt
+                )}
+
             </p>
 
             <p>
-                <strong>Last Updated:</strong>
-                ${formatDateTime(company.updatedAt)}
+                <strong>
+                    Last Updated:
+                </strong>
+
+                ${formatDateTime(
+                    company.updatedAt
+                )}
+
             </p>
 
         </div>
@@ -680,7 +724,9 @@ function loadCompany(id) {
                         min-height:52px;
                         margin:0;
                     "
-                    onclick="deleteCompanyConfirm(${company.id})">
+                    onclick="deleteCompanyConfirm(
+                        ${company.id}
+                    )">
 
                     🗑 Delete Company
 
@@ -720,6 +766,7 @@ function showAddDealForm(companyId) {
 
     const company =
         getCompany(companyId);
+
 
     if (!company) {
         return;
@@ -922,7 +969,9 @@ function showAddDealForm(companyId) {
                     margin-top:25px;
                     font-size:19px;
                 "
-                onclick="saveNewDeal(${companyId})">
+                onclick="saveNewDeal(
+                    ${companyId}
+                )">
 
                 Save Deal
 
@@ -935,7 +984,9 @@ function showAddDealForm(companyId) {
                     width:100%;
                     margin-top:15px;
                 "
-                onclick="loadCompany(${companyId})">
+                onclick="loadCompany(
+                    ${companyId}
+                )">
 
                 ← Cancel
 
@@ -995,7 +1046,9 @@ function saveNewDeal(companyId) {
 
     if (!name) {
 
-        alert("Deal Name is required.");
+        alert(
+            "Deal Name is required."
+        );
 
         return;
 
@@ -1004,7 +1057,9 @@ function saveNewDeal(companyId) {
 
     if (value < 0) {
 
-        alert("Deal Value cannot be negative.");
+        alert(
+            "Deal Value cannot be negative."
+        );
 
         return;
 
@@ -1013,15 +1068,20 @@ function saveNewDeal(companyId) {
 
     const deal = {
 
-        name: name,
+        name:
+            name,
 
-        product: product,
+        product:
+            product,
 
-        value: value,
+        value:
+            value,
 
-        stage: stage,
+        stage:
+            stage,
 
-        status: status,
+        status:
+            status,
 
         createdAt:
             new Date().toISOString(),
@@ -1067,6 +1127,7 @@ function showEditDealForm(
     const company =
         getCompany(companyId);
 
+
     if (!company) {
         return;
     }
@@ -1082,7 +1143,9 @@ function showEditDealForm(
 
     if (!deal) {
 
-        alert("Deal not found.");
+        alert(
+            "Deal not found."
+        );
 
         return;
 
@@ -1103,14 +1166,19 @@ function showEditDealForm(
     products.forEach(product => {
 
         const productName =
-            product.name || "Unnamed Product";
+            product.name ||
+            "Unnamed Product";
 
 
         productOptions += `
 
         <option
             value="${productName}"
-            ${deal.product === productName ? "selected" : ""}>
+            ${
+                deal.product === productName
+                    ? "selected"
+                    : ""
+            }>
 
             ${productName}
 
@@ -1198,7 +1266,9 @@ function showEditDealForm(
                 id="dealValue"
                 type="number"
                 min="0"
-                value="${Number(deal.value || 0)}"
+                value="${Number(
+                    deal.value || 0
+                )}"
                 style="margin-top:8px;">
 
 
@@ -1220,38 +1290,81 @@ function showEditDealForm(
                 style="margin-top:8px;">
 
                 <option
-                    ${deal.stage === "New Lead" ? "selected" : ""}>
+                    ${
+                        deal.stage === "New Lead"
+                            ? "selected"
+                            : ""
+                    }>
+
                     New Lead
+
                 </option>
 
                 <option
-                    ${deal.stage === "Contacted" ? "selected" : ""}>
+                    ${
+                        deal.stage === "Contacted"
+                            ? "selected"
+                            : ""
+                    }>
+
                     Contacted
+
                 </option>
 
                 <option
-                    ${deal.stage === "Meeting Scheduled" ? "selected" : ""}>
+                    ${
+                        deal.stage ===
+                        "Meeting Scheduled"
+                            ? "selected"
+                            : ""
+                    }>
+
                     Meeting Scheduled
+
                 </option>
 
                 <option
-                    ${deal.stage === "Proposal Sent" ? "selected" : ""}>
+                    ${
+                        deal.stage === "Proposal Sent"
+                            ? "selected"
+                            : ""
+                    }>
+
                     Proposal Sent
+
                 </option>
 
                 <option
-                    ${deal.stage === "Negotiation" ? "selected" : ""}>
+                    ${
+                        deal.stage === "Negotiation"
+                            ? "selected"
+                            : ""
+                    }>
+
                     Negotiation
+
                 </option>
 
                 <option
-                    ${deal.stage === "Won" ? "selected" : ""}>
+                    ${
+                        deal.stage === "Won"
+                            ? "selected"
+                            : ""
+                    }>
+
                     Won
+
                 </option>
 
                 <option
-                    ${deal.stage === "Lost" ? "selected" : ""}>
+                    ${
+                        deal.stage === "Lost"
+                            ? "selected"
+                            : ""
+                    }>
+
                     Lost
+
                 </option>
 
             </select>
@@ -1275,18 +1388,36 @@ function showEditDealForm(
                 style="margin-top:8px;">
 
                 <option
-                    ${deal.status === "Open" ? "selected" : ""}>
+                    ${
+                        deal.status === "Open"
+                            ? "selected"
+                            : ""
+                    }>
+
                     Open
+
                 </option>
 
                 <option
-                    ${deal.status === "Won" ? "selected" : ""}>
+                    ${
+                        deal.status === "Won"
+                            ? "selected"
+                            : ""
+                    }>
+
                     Won
+
                 </option>
 
                 <option
-                    ${deal.status === "Lost" ? "selected" : ""}>
+                    ${
+                        deal.status === "Lost"
+                            ? "selected"
+                            : ""
+                    }>
+
                     Lost
+
                 </option>
 
             </select>
@@ -1320,7 +1451,11 @@ function showEditDealForm(
                     width:100%;
                     margin-top:15px;
                 "
-                onclick="loadCompany(${companyId})">
+                onclick="
+                    loadCompany(
+                        ${companyId}
+                    )
+                ">
 
                 ← Cancel
 
@@ -1367,7 +1502,9 @@ function saveEditedDeal(
 
     if (!existingDeal) {
 
-        alert("Deal not found.");
+        alert(
+            "Deal not found."
+        );
 
         return;
 
@@ -1409,7 +1546,9 @@ function saveEditedDeal(
 
     if (!name) {
 
-        alert("Deal Name is required.");
+        alert(
+            "Deal Name is required."
+        );
 
         return;
 
@@ -1418,7 +1557,9 @@ function saveEditedDeal(
 
     if (value < 0) {
 
-        alert("Deal Value cannot be negative.");
+        alert(
+            "Deal Value cannot be negative."
+        );
 
         return;
 
@@ -1429,15 +1570,23 @@ function saveEditedDeal(
 
         ...existingDeal,
 
-        name: name,
+        name:
+            name,
 
-        product: product,
+        product:
+            product,
 
-        value: value,
+        value:
+            value,
 
-        stage: stage,
+        stage:
+            stage,
 
-        status: status
+        status:
+            status,
+
+        updatedAt:
+            new Date().toISOString()
 
     };
 
@@ -1509,84 +1658,6 @@ function deleteDealConfirm(
 
 
 /* =========================================
-   SAVE PIPELINE STAGE
-========================================= */
-
-function savePipelineStage(companyId) {
-
-    const company =
-        getCompany(companyId);
-
-
-    if (!company) {
-
-        console.error(
-            "Pipeline save failed: company not found",
-            companyId
-        );
-
-        return;
-
-    }
-
-
-    const select =
-        document.getElementById(
-            "pipelineStage"
-        );
-
-
-    if (!select) {
-
-        console.error(
-            "Pipeline save failed: selector not found"
-        );
-
-        return;
-
-    }
-
-
-    const selectedStage =
-        select.value;
-
-
-    if (!selectedStage) {
-
-        console.error(
-            "Pipeline save failed: no stage selected"
-        );
-
-        return;
-
-    }
-
-
-    company.pipelineStage =
-        selectedStage;
-
-
-    const saved =
-        updateCompany(company);
-
-
-    if (!saved) {
-
-        console.error(
-            "Pipeline save failed"
-        );
-
-        return;
-
-    }
-
-
-    loadCompany(companyId);
-
-}
-
-
-/* =========================================
    DELETE COMPANY
 ========================================= */
 
@@ -1599,14 +1670,13 @@ function deleteCompanyConfirm(id) {
 
 
     if (!confirmDelete) {
-
         return;
-
     }
 
 
     deleteCompany(id);
 
-    location.hash = "companies";
+    location.hash =
+        "companies";
 
 }
