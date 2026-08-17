@@ -2,70 +2,35 @@
    COMPANY CALL HISTORY
 ========================================= */
 
-
-/* =========================================
-   LOAD CALLS
-========================================= */
-
 function loadCalls(companyId) {
 
-    const company =
-        getCompany(companyId);
-
-    const app =
-        document.getElementById("app");
-
-
-    /* =====================================
-       COMPANY CHECK
-    ===================================== */
+    const company = getCompany(companyId);
+    const app = document.getElementById("app");
 
     if (!company) {
 
         app.innerHTML = `
-
         <div class="dashboard">
-
             <div class="card">
-
-                <h2>
-                    Company not found
-                </h2>
-
+                <h2>Company not found</h2>
                 <br>
-
                 <button
                     class="search"
-                    onclick="
-                        location.hash='companies'
-                    ">
-
+                    onclick="location.hash='companies'">
                     ← Back
-
                 </button>
-
             </div>
-
             ${bottomNav("companies")}
-
         </div>
-
         `;
 
         return;
-
     }
-
-
-    /* =====================================
-       READ CALLS
-    ===================================== */
 
     const calls =
         Array.isArray(company.calls)
             ? company.calls
             : [];
-
 
     let callCards = "";
 
@@ -74,9 +39,7 @@ function loadCalls(companyId) {
        NO CALLS
     ===================================== */
 
-    if (
-        calls.length === 0
-    ) {
+    if (calls.length === 0) {
 
         callCards = `
 
@@ -106,9 +69,7 @@ function loadCalls(companyId) {
                     )
                 ">
 
-                <span>
-                    +
-                </span>
+                <span>+</span>
 
                 Log First Call
 
@@ -130,196 +91,151 @@ function loadCalls(companyId) {
         calls.forEach(
             call => {
 
-            const tasks =
-                Array.isArray(
-                    company.tasks
-                )
-                    ? company.tasks
-                    : [];
+                const tasks =
+                    Array.isArray(company.tasks)
+                        ? company.tasks
+                        : [];
 
 
-            const linkedTasks =
-                tasks.filter(
-                    task =>
+                const activeFollowUpTask =
+                    tasks
+                        .filter(
+                            task => {
 
-                        task.source ===
-                        "call"
+                                const status =
+                                    String(
+                                        task.status || ""
+                                    )
+                                    .trim()
+                                    .toLowerCase();
 
-                        &&
+                                return (
+                                    task.source === "call" &&
+                                    String(
+                                        task.sourceCallId
+                                    ) ===
+                                    String(call.id) &&
+                                    status !== "completed" &&
+                                    task.dueDate
+                                );
 
-                        String(
-                            task.sourceCallId
-                        ) ===
-                        String(
-                            call.id
+                            }
                         )
-                );
+                        .sort(
+                            (a, b) => {
+
+                                return (
+                                    new Date(
+                                        a.dueDate
+                                    ).getTime()
+
+                                    -
+
+                                    new Date(
+                                        b.dueDate
+                                    ).getTime()
+                                );
+
+                            }
+                        )[0];
 
 
-            /*
-               Active follow-up is the earliest
-               non-completed linked task.
+                const activeFollowUp =
+                    activeFollowUpTask
+                        ? activeFollowUpTask.dueDate
+                        : "";
 
-               Completed tasks remain historical
-               and are ignored here.
-            */
 
-            const activeFollowUpTask =
-                linkedTasks
-                    .filter(
-                        task =>
+                callCards += `
 
-                            String(
-                                task.status ||
-                                ""
+                <div class="card">
+
+                    <h3>
+                        ${escapeCallField(
+                            call.type ||
+                            "Call"
+                        )}
+                    </h3>
+
+                    <p>
+                        <strong>Date:</strong>
+                        ${escapeCallField(
+                            call.date || "-"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Time:</strong>
+                        ${escapeCallField(
+                            call.time || "-"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Duration:</strong>
+                        ${Number(
+                            call.duration || 0
+                        )} min
+                    </p>
+
+                    <p>
+                        <strong>Outcome:</strong>
+                        ${escapeCallField(
+                            call.outcome || "-"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Next Follow-up:</strong>
+                        ${activeFollowUp || "-"}
+                    </p>
+
+                    <br>
+
+                    <p>
+                        ${escapeCallField(
+                            call.notes ||
+                            "No notes."
+                        )}
+                    </p>
+
+                    <br>
+
+                    <button
+                        class="search"
+                        onclick="
+                            loadEditCall(
+                                ${companyId},
+                                ${call.id}
                             )
-                            .trim()
-                            .toLowerCase()
-                            !==
-                            "completed"
+                        ">
 
-                            &&
+                        ✏️ Edit
 
-                            task.dueDate
-                    )
-                    .sort(
-                        (a, b) => {
+                    </button>
 
-                            const dateA =
-                                new Date(
-                                    a.dueDate
-                                ).getTime();
+                    <br>
+                    <br>
 
+                    <button
+                        class="search"
+                        onclick="
+                            deleteCallConfirm(
+                                ${companyId},
+                                ${call.id}
+                            )
+                        ">
 
-                            const dateB =
-                                new Date(
-                                    b.dueDate
-                                ).getTime();
+                        🗑 Delete
 
+                    </button>
 
-                            return dateA - dateB;
+                </div>
 
-                        }
-                    )[0];
+                `;
 
-
-            const activeFollowUp =
-                activeFollowUpTask
-                    ? activeFollowUpTask.dueDate
-                    : "";
-
-
-            callCards += `
-
-            <div class="card">
-
-                <h3>
-                    ${escapeCallField(
-                        call.type ||
-                        "Call"
-                    )}
-                </h3>
-
-                <p>
-                    <strong>
-                        Date:
-                    </strong>
-
-                    ${escapeCallField(
-                        call.date ||
-                        "-"
-                    )}
-                </p>
-
-                <p>
-                    <strong>
-                        Time:
-                    </strong>
-
-                    ${escapeCallField(
-                        call.time ||
-                        "-"
-                    )}
-                </p>
-
-                <p>
-                    <strong>
-                        Duration:
-                    </strong>
-
-                    ${Number(
-                        call.duration ||
-                        0
-                    )} min
-                </p>
-
-                <p>
-                    <strong>
-                        Outcome:
-                    </strong>
-
-                    ${escapeCallField(
-                        call.outcome ||
-                        "-"
-                    )}
-                </p>
-
-                <p>
-                    <strong>
-                        Next Follow-up:
-                    </strong>
-
-                    ${
-                        activeFollowUp ||
-                        "-"
-                    }
-                </p>
-
-                <br>
-
-                <p>
-                    ${escapeCallField(
-                        call.notes ||
-                        "No notes."
-                    )}
-                </p>
-
-                <br>
-
-                <button
-                    class="search"
-                    onclick="
-                        loadEditCall(
-                            ${companyId},
-                            ${call.id}
-                        )
-                    ">
-
-                    ✏️ Edit
-
-                </button>
-
-                <br>
-                <br>
-
-                <button
-                    class="search"
-                    onclick="
-                        deleteCallConfirm(
-                            ${companyId},
-                            ${call.id}
-                        )
-                    ">
-
-                    🗑 Delete
-
-                </button>
-
-            </div>
-
-            `;
-
-        });
+            }
+        );
 
     }
 
@@ -360,7 +276,6 @@ function loadCalls(companyId) {
 
         ${callCards}
 
-
         <button
             class="search"
             style="margin-top:20px;"
@@ -374,7 +289,6 @@ function loadCalls(companyId) {
 
         </button>
 
-
         <button
             class="fab"
             onclick="
@@ -386,7 +300,6 @@ function loadCalls(companyId) {
             +
 
         </button>
-
 
         ${bottomNav("companies")}
 
@@ -401,13 +314,10 @@ function loadCalls(companyId) {
    ADD CALL
 ========================================= */
 
-function loadAddCall(
-    companyId
-) {
+function loadAddCall(companyId) {
 
     const app =
         document.getElementById("app");
-
 
     app.innerHTML = `
 
@@ -425,12 +335,10 @@ function loadAddCall(
 
         </div>
 
-
         <input
             class="search"
             id="callType"
             placeholder="Call Type">
-
 
         <input
             class="search"
@@ -439,25 +347,21 @@ function loadAddCall(
             min="0"
             placeholder="Duration (minutes)">
 
-
         <input
             class="search"
             id="callOutcome"
             placeholder="Outcome">
-
 
         <input
             class="search"
             id="callFollowUp"
             type="date">
 
-
         <textarea
             class="search"
             id="callNotes"
             placeholder="Notes"
             style="height:150px;"></textarea>
-
 
         <button
             class="fab"
@@ -477,7 +381,6 @@ function loadAddCall(
 
         </button>
 
-
         <button
             class="search"
             style="margin-top:20px;"
@@ -490,7 +393,6 @@ function loadAddCall(
             ← Back to Call History
 
         </button>
-
 
         ${bottomNav("companies")}
 
@@ -505,13 +407,10 @@ function loadAddCall(
    SAVE CALL
 ========================================= */
 
-function saveCall(
-    companyId
-) {
+function saveCall(companyId) {
 
     const company =
         getCompany(companyId);
-
 
     if (!company) {
 
@@ -524,26 +423,14 @@ function saveCall(
     }
 
 
-    /* =====================================
-       INITIALIZE COLLECTIONS
-    ===================================== */
-
-    if (
-        !Array.isArray(
-            company.calls
-        )
-    ) {
+    if (!Array.isArray(company.calls)) {
 
         company.calls = [];
 
     }
 
 
-    if (
-        !Array.isArray(
-            company.tasks
-        )
-    ) {
+    if (!Array.isArray(company.tasks)) {
 
         company.tasks = [];
 
@@ -556,68 +443,64 @@ function saveCall(
 
     const type =
         document
-            .getElementById(
-                "callType"
-            )
+            .getElementById("callType")
             .value
             .trim();
 
 
     const durationValue =
         document
-            .getElementById(
-                "callDuration"
-            )
+            .getElementById("callDuration")
             .value;
 
 
     const outcome =
         document
-            .getElementById(
-                "callOutcome"
-            )
+            .getElementById("callOutcome")
             .value
             .trim();
 
 
     const followUp =
         document
-            .getElementById(
-                "callFollowUp"
-            )
+            .getElementById("callFollowUp")
             .value
             .trim();
 
 
     const notes =
         document
-            .getElementById(
-                "callNotes"
-            )
+            .getElementById("callNotes")
             .value
             .trim();
 
 
     /* =====================================
        CREATE CALL
-       Storage owns the call ID through
-       addCall().
+
+       storage.js does not provide addCall().
+       Generate the ID here and persist the
+       complete company once.
     ===================================== */
+
+    const now =
+        new Date();
+
 
     const call = {
 
+        id:
+            generateId(),
+
         date:
-            new Date().toISOString(),
+            now.toISOString(),
 
         time:
-            new Date().toLocaleTimeString(
+            now.toLocaleTimeString(
                 "en-IN",
                 {
-                    hour:
-                        "2-digit",
-
-                    minute:
-                        "2-digit"
+                    hour: "2-digit",
+                    minute: "2-digit"
                 }
             ),
 
@@ -645,18 +528,67 @@ function saveCall(
     };
 
 
+    company.calls.push(
+        call
+    );
+
+
     /* =====================================
-       SAVE CALL
+       CREATE FOLLOW-UP TASK
+
+       Add directly to the same company
+       object so we save call + task
+       atomically.
     ===================================== */
 
-    const savedCall =
-        addCall(
-            companyId,
-            call
+    if (followUp) {
+
+        company.tasks.push({
+
+            id:
+                generateId(),
+
+            title:
+                `Follow up with ${
+                    company.companyName
+                }`,
+
+            dueDate:
+                followUp,
+
+            priority:
+                "Medium",
+
+            status:
+                "Pending",
+
+            notes:
+                buildCallTaskNotes(
+                    call
+                ),
+
+            source:
+                "call",
+
+            sourceCallId:
+                call.id
+
+        });
+
+    }
+
+
+    /* =====================================
+       SAVE ONCE
+    ===================================== */
+
+    const saved =
+        updateCompany(
+            company
         );
 
 
-    if (!savedCall) {
+    if (!saved) {
 
         console.error(
             "Save call failed"
@@ -667,70 +599,6 @@ function saveCall(
     }
 
 
-    /*
-       addCall() may return the saved
-       call with its storage-owned ID.
-
-       Re-read the company so the task
-       relationship uses the persisted ID.
-    */
-
-    const updatedCompany =
-        getCompany(
-            companyId
-        );
-
-
-    if (!updatedCompany) {
-
-        console.error(
-            "Could not reload company after call."
-        );
-
-        return;
-
-    }
-
-
-    const persistedCall =
-        (
-            updatedCompany.calls ||
-            []
-        ).find(
-            item =>
-                String(item.id) ===
-                String(
-                    savedCall.id
-                )
-        );
-
-
-    /* =====================================
-       CREATE FOLLOW-UP TASK
-    ===================================== */
-
-    if (
-        followUp &&
-        persistedCall
-    ) {
-
-        createCallFollowUpTask(
-            updatedCompany,
-            persistedCall
-        );
-
-
-        updateCompany(
-            updatedCompany
-        );
-
-    }
-
-
-    /* =====================================
-       RETURN
-    ===================================== */
-
     loadCalls(
         companyId
     );
@@ -739,153 +607,10 @@ function saveCall(
 
 
 /* =========================================
-   CREATE CALL FOLLOW-UP TASK
-========================================= */
-
-function createCallFollowUpTask(
-    company,
-    call
-) {
-
-    if (
-        !Array.isArray(
-            company.tasks
-        )
-    ) {
-
-        company.tasks = [];
-
-    }
-
-
-    /*
-       Do not create a task if an active
-       follow-up already exists for this call.
-    */
-
-    const existingActiveTask =
-        company.tasks.find(
-            task => {
-
-                const status =
-                    String(
-                        task.status ||
-                        ""
-                    )
-                    .trim()
-                    .toLowerCase();
-
-
-                return (
-                    task.source ===
-                    "call"
-
-                    &&
-
-                    String(
-                        task.sourceCallId
-                    ) ===
-                    String(
-                        call.id
-                    )
-
-                    &&
-
-                    status !==
-                    "completed"
-                );
-
-            }
-        );
-
-
-    if (
-        existingActiveTask
-    ) {
-
-        existingActiveTask.dueDate =
-            call.followUp;
-
-
-        existingActiveTask.title =
-            `Follow up with ${
-                company.companyName
-            }`;
-
-
-        existingActiveTask.notes =
-            buildCallTaskNotes(
-                call
-            );
-
-
-        return existingActiveTask;
-
-    }
-
-
-    /*
-       Storage owns task ID generation.
-       addTask() is responsible for
-       persistence.
-    */
-
-    const task = {
-
-        title:
-            `Follow up with ${
-                company.companyName
-            }`,
-
-        dueDate:
-            call.followUp,
-
-        priority:
-            "Medium",
-
-        status:
-            "Pending",
-
-        notes:
-            buildCallTaskNotes(
-                call
-            ),
-
-        source:
-            "call",
-
-        sourceCallId:
-            call.id
-
-    };
-
-
-    /*
-       addTask() persists the task.
-
-       We pass the company ID because the
-       storage layer owns task persistence.
-    */
-
-    const savedTask =
-        addTask(
-            company.id,
-            task
-        );
-
-
-    return savedTask || null;
-
-}
-
-
-/* =========================================
    BUILD CALL TASK NOTES
 ========================================= */
 
-function buildCallTaskNotes(
-    call
-) {
+function buildCallTaskNotes(call) {
 
     return [
 
@@ -900,591 +625,6 @@ function buildCallTaskNotes(
     ]
     .filter(Boolean)
     .join("\n\n");
-
-}
-
-
-/* =========================================
-   EDIT CALL
-========================================= */
-
-function loadEditCall(
-    companyId,
-    callId
-) {
-
-    const company =
-        getCompany(companyId);
-
-
-    if (!company) {
-
-        console.error(
-            "Edit call failed: company not found"
-        );
-
-        return;
-
-    }
-
-
-    const call =
-        (
-            company.calls ||
-            []
-        ).find(
-            item =>
-                String(item.id) ===
-                String(callId)
-        );
-
-
-    if (!call) {
-
-        console.error(
-            "Edit call failed: call not found"
-        );
-
-        return;
-
-    }
-
-
-    const tasks =
-        Array.isArray(
-            company.tasks
-        )
-            ? company.tasks
-            : [];
-
-
-    /*
-       Only an ACTIVE linked task should
-       populate the follow-up field.
-
-       A completed historical task should
-       not resurrect its date.
-    */
-
-    const activeTask =
-        tasks.find(
-            task => {
-
-                const status =
-                    String(
-                        task.status ||
-                        ""
-                    )
-                    .trim()
-                    .toLowerCase();
-
-
-                return (
-                    task.source ===
-                    "call"
-
-                    &&
-
-                    String(
-                        task.sourceCallId
-                    ) ===
-                    String(
-                        callId
-                    )
-
-                    &&
-
-                    status !==
-                    "completed"
-
-                    &&
-
-                    task.dueDate
-                );
-
-            }
-        );
-
-
-    const activeFollowUp =
-        activeTask
-            ? activeTask.dueDate
-            : "";
-
-
-    const app =
-        document.getElementById(
-            "app"
-        );
-
-
-    app.innerHTML = `
-
-    <div class="dashboard">
-
-        <div class="header">
-
-            <h1>
-                Edit Call
-            </h1>
-
-            <p class="subtitle">
-                Update your conversation record
-            </p>
-
-        </div>
-
-
-        <input
-            class="search"
-            id="callType"
-            placeholder="Call Type"
-            value="${escapeCallField(
-                call.type ||
-                ""
-            )}">
-
-
-        <input
-            class="search"
-            id="callDuration"
-            type="number"
-            min="0"
-            placeholder="Duration (minutes)"
-            value="${Number(
-                call.duration ||
-                0
-            )}">
-
-
-        <input
-            class="search"
-            id="callOutcome"
-            placeholder="Outcome"
-            value="${escapeCallField(
-                call.outcome ||
-                ""
-            )}">
-
-
-        <input
-            class="search"
-            id="callFollowUp"
-            type="date"
-            value="${escapeCallField(
-                activeFollowUp
-            )}">
-
-
-        <textarea
-            class="search"
-            id="callNotes"
-            placeholder="Notes"
-            style="height:150px;">${escapeCallField(
-                call.notes ||
-                ""
-            )}</textarea>
-
-
-        <button
-            class="fab"
-            style="
-                position:static;
-                width:100%;
-                height:60px;
-                border-radius:18px;
-            "
-            onclick="
-                updateCall(
-                    ${companyId},
-                    ${callId}
-                )
-            ">
-
-            Save Changes
-
-        </button>
-
-
-        <button
-            class="search"
-            style="margin-top:20px;"
-            onclick="
-                loadCalls(
-                    ${companyId}
-                )
-            ">
-
-            ← Back to Call History
-
-        </button>
-
-
-        ${bottomNav("companies")}
-
-    </div>
-
-    `;
-
-}
-
-
-/* =========================================
-   UPDATE CALL
-========================================= */
-
-function updateCall(
-    companyId,
-    callId
-) {
-
-    const company =
-        getCompany(
-            companyId
-        );
-
-
-    if (!company) {
-
-        console.error(
-            "Update call failed: company not found"
-        );
-
-        return;
-
-    }
-
-
-    const call =
-        (
-            company.calls ||
-            []
-        ).find(
-            item =>
-                String(item.id) ===
-                String(callId)
-        );
-
-
-    if (!call) {
-
-        console.error(
-            "Update call failed: call not found"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !Array.isArray(
-            company.tasks
-        )
-    ) {
-
-        company.tasks = [];
-
-    }
-
-
-    /* =====================================
-       READ FORM
-    ===================================== */
-
-    const type =
-        document
-            .getElementById(
-                "callType"
-            )
-            .value
-            .trim();
-
-
-    const durationValue =
-        document
-            .getElementById(
-                "callDuration"
-            )
-            .value;
-
-
-    const outcome =
-        document
-            .getElementById(
-                "callOutcome"
-            )
-            .value
-            .trim();
-
-
-    const followUp =
-        document
-            .getElementById(
-                "callFollowUp"
-            )
-            .value
-            .trim();
-
-
-    const notes =
-        document
-            .getElementById(
-                "callNotes"
-            )
-            .value
-            .trim();
-
-
-    /* =====================================
-       FIND LINKED TASKS
-    ===================================== */
-
-    const linkedTasks =
-        company.tasks.filter(
-            task =>
-
-                task.source ===
-                "call"
-
-                &&
-
-                String(
-                    task.sourceCallId
-                ) ===
-                String(callId)
-        );
-
-
-    const activeTask =
-        linkedTasks.find(
-            task => {
-
-                const status =
-                    String(
-                        task.status ||
-                        ""
-                    )
-                    .trim()
-                    .toLowerCase();
-
-
-                return (
-                    status !==
-                    "completed"
-                );
-
-            }
-        );
-
-
-    /* =====================================
-       UPDATE CALL FIELDS
-    ===================================== */
-
-    call.type =
-        type ||
-        "General Call";
-
-
-    call.duration =
-        Number(
-            durationValue
-        ) || 0;
-
-
-    call.outcome =
-        outcome ||
-        "-";
-
-
-    call.notes =
-        notes ||
-        "";
-
-
-    /*
-       Compatibility mirror only.
-
-       Active follow-up truth is the Task.
-    */
-
-    call.followUp =
-        followUp ||
-        "";
-
-
-    /* =====================================
-       FOLLOW-UP PROVIDED
-    ===================================== */
-
-    if (followUp) {
-
-
-        /* ================================
-           ACTIVE TASK EXISTS
-        ================================= */
-
-        if (activeTask) {
-
-            activeTask.title =
-                `Follow up with ${
-                    company.companyName
-                }`;
-
-
-            activeTask.dueDate =
-                followUp;
-
-
-            activeTask.notes =
-                buildCallTaskNotes(
-                    call
-                );
-
-        }
-
-
-        /* ================================
-           NO ACTIVE TASK
-           
-           This includes the situation where
-           an older task was completed.
-           
-           Create a NEW task rather than
-           reopening historical data.
-        ================================= */
-
-        else {
-
-            /*
-               addTask() owns the task ID and
-               persistence.
-            */
-
-            const newTask = {
-
-                title:
-                    `Follow up with ${
-                        company.companyName
-                    }`,
-
-                dueDate:
-                    followUp,
-
-                priority:
-                    "Medium",
-
-                status:
-                    "Pending",
-
-                notes:
-                    buildCallTaskNotes(
-                        call
-                    ),
-
-                source:
-                    "call",
-
-                sourceCallId:
-                    call.id
-
-            };
-
-
-            addTask(
-                company.id,
-                newTask
-            );
-
-        }
-
-    }
-
-
-    /* =====================================
-       FOLLOW-UP REMOVED
-    ===================================== */
-
-    else {
-
-        /*
-           Remove ONLY active call-follow-up
-           tasks.
-
-           Completed historical tasks remain.
-        */
-
-        company.tasks =
-            company.tasks.filter(
-                task => {
-
-                    if (
-                        task.source !==
-                        "call"
-                    ) {
-
-                        return true;
-
-                    }
-
-
-                    if (
-                        String(
-                            task.sourceCallId
-                        ) !==
-                        String(callId)
-                    ) {
-
-                        return true;
-
-                    }
-
-
-                    const status =
-                        String(
-                            task.status ||
-                            ""
-                        )
-                        .trim()
-                        .toLowerCase();
-
-
-                    return (
-                        status ===
-                        "completed"
-                    );
-
-                }
-            );
-
-    }
-
-
-    /* =====================================
-       SAVE COMPANY
-    ===================================== */
-
-    const saved =
-        updateCompany(
-            company
-        );
-
-
-    if (!saved) {
-
-        console.error(
-            "Update call failed"
-        );
-
-        return;
-
-    }
-
-
-    loadCalls(
-        companyId
-    );
 
 }
 
@@ -1512,9 +652,7 @@ function deleteCallConfirm(
 
 
     const company =
-        getCompany(
-            companyId
-        );
+        getCompany(companyId);
 
 
     if (!company) {
@@ -1528,10 +666,6 @@ function deleteCallConfirm(
     }
 
 
-    /* =====================================
-       DELETE CALL
-    ===================================== */
-
     company.calls =
         (
             company.calls ||
@@ -1541,18 +675,13 @@ function deleteCallConfirm(
                 String(
                     call.id
                 ) !==
-                String(
-                    callId
-                )
+                String(callId)
         );
 
 
-    /* =====================================
-       DELETE LINKED TASKS
-       
-       Deleting the call deletes its
-       associated follow-up history too.
-    ===================================== */
+    /*
+       Delete all tasks linked to this call.
+    */
 
     company.tasks =
         (
@@ -1561,24 +690,14 @@ function deleteCallConfirm(
         ).filter(
             task =>
                 !(
-                    task.source ===
-                    "call"
-
-                    &&
-
+                    task.source === "call" &&
                     String(
                         task.sourceCallId
                     ) ===
-                    String(
-                        callId
-                    )
+                    String(callId)
                 )
         );
 
-
-    /* =====================================
-       SAVE
-    ===================================== */
 
     const saved =
         updateCompany(
@@ -1605,32 +724,17 @@ function deleteCallConfirm(
 
 
 /* =========================================
-   SAFE FORM VALUE
+   ESCAPE
 ========================================= */
 
-function escapeCallField(
-    value
-) {
+function escapeCallField(value) {
 
     return String(
-        value ??
-        ""
+        value ?? ""
     )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    );
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
-                   }
+}
