@@ -54,13 +54,9 @@ function loadEditCall(
     }
 
 
-    /*
-       Only an ACTIVE task should populate
-       the follow-up field.
-
-       Completed tasks are historical and
-       must not resurrect their old date.
-    */
+    /* =====================================
+       FIND ACTIVE FOLLOW-UP
+    ===================================== */
 
     const activeTask =
         company.tasks.find(
@@ -68,8 +64,7 @@ function loadEditCall(
 
                 const status =
                     String(
-                        task.status ||
-                        ""
+                        task.status || ""
                     )
                     .trim()
                     .toLowerCase();
@@ -77,14 +72,11 @@ function loadEditCall(
 
                 return (
                     task.source === "call" &&
-
                     String(
                         task.sourceCallId
                     ) ===
                     String(callId) &&
-
                     status !== "completed" &&
-
                     task.dueDate
                 );
 
@@ -156,7 +148,9 @@ function loadEditCall(
             class="search"
             id="callFollowUp"
             type="date"
-            value="${activeFollowUp}">
+            value="${escapeEditCallField(
+                activeFollowUp
+            )}">
 
 
         <textarea
@@ -273,9 +267,7 @@ function updateCall(
 
     const type =
         document
-            .getElementById(
-                "callType"
-            )
+            .getElementById("callType")
             .value
             .trim();
 
@@ -283,36 +275,28 @@ function updateCall(
     const duration =
         Number(
             document
-                .getElementById(
-                    "callDuration"
-                )
+                .getElementById("callDuration")
                 .value
         ) || 0;
 
 
     const outcome =
         document
-            .getElementById(
-                "callOutcome"
-            )
+            .getElementById("callOutcome")
             .value
             .trim();
 
 
     const followUp =
         document
-            .getElementById(
-                "callFollowUp"
-            )
+            .getElementById("callFollowUp")
             .value
             .trim();
 
 
     const notes =
         document
-            .getElementById(
-                "callNotes"
-            )
+            .getElementById("callNotes")
             .value
             .trim();
 
@@ -335,9 +319,14 @@ function updateCall(
         "-";
 
 
+    call.notes =
+        notes ||
+        "";
+
+
     /*
        Compatibility mirror only.
-       Active follow-up truth is the task.
+       Active follow-up truth is the Task.
     */
 
     call.followUp =
@@ -345,47 +334,29 @@ function updateCall(
         "";
 
 
-    call.notes =
-        notes ||
-        "";
-
-
     /* =====================================
-       FIND LINKED TASKS
+       FIND ACTIVE TASK
     ===================================== */
 
-    const linkedTasks =
-        company.tasks.filter(
-            task =>
-
-                task.source ===
-                "call"
-
-                &&
-
-                String(
-                    task.sourceCallId
-                ) ===
-                String(callId)
-        );
-
-
     const activeTask =
-        linkedTasks.find(
+        company.tasks.find(
             task => {
 
                 const status =
                     String(
-                        task.status ||
-                        ""
+                        task.status || ""
                     )
                     .trim()
                     .toLowerCase();
 
 
                 return (
-                    status !==
-                    "completed"
+                    task.source === "call" &&
+                    String(
+                        task.sourceCallId
+                    ) ===
+                    String(callId) &&
+                    status !== "completed"
                 );
 
             }
@@ -393,16 +364,16 @@ function updateCall(
 
 
     /* =====================================
-       NEW / UPDATED FOLLOW-UP
+       FOLLOW-UP PROVIDED
     ===================================== */
 
     if (followUp) {
 
-        /*
-           ACTIVE TASK EXISTS
-        */
-
         if (activeTask) {
+
+            /*
+               Update existing active task.
+            */
 
             activeTask.title =
                 `Follow up with ${
@@ -419,20 +390,22 @@ function updateCall(
                     call
                 );
 
-        }
+        } else {
 
+            /*
+               Previous task may be completed.
 
-        /*
-           NO ACTIVE TASK
-           
-           This includes a previous completed
-           task. Never reopen completed history.
-           Create a NEW pending task.
-        */
+               Create a NEW pending task.
 
-        else {
+               IMPORTANT:
+               Push directly into this same
+               company object and save once.
+            */
 
-            const newTask = {
+            company.tasks.push({
+
+                id:
+                    generateId(),
 
                 title:
                     `Follow up with ${
@@ -459,25 +432,7 @@ function updateCall(
                 sourceCallId:
                     call.id
 
-            };
-
-
-            const savedTask =
-                addTask(
-                    company.id,
-                    newTask
-                );
-
-
-            if (!savedTask) {
-
-                console.error(
-                    "Could not create call follow-up task."
-                );
-
-                return;
-
-            }
+            });
 
         }
 
@@ -491,9 +446,9 @@ function updateCall(
     else {
 
         /*
-           Remove ONLY active tasks.
+           Remove ONLY active linked tasks.
 
-           Completed tasks remain historical.
+           Completed historical tasks remain.
         */
 
         company.tasks =
@@ -501,8 +456,7 @@ function updateCall(
                 task => {
 
                     if (
-                        task.source !==
-                        "call"
+                        task.source !== "call"
                     ) {
 
                         return true;
@@ -524,8 +478,7 @@ function updateCall(
 
                     const status =
                         String(
-                            task.status ||
-                            ""
+                            task.status || ""
                         )
                         .trim()
                         .toLowerCase();
@@ -543,7 +496,7 @@ function updateCall(
 
 
     /* =====================================
-       SAVE COMPANY
+       SAVE ONCE
     ===================================== */
 
     const saved =
@@ -571,12 +524,10 @@ function updateCall(
 
 
 /* =========================================
-   BUILD TASK NOTES
+   TASK NOTES
 ========================================= */
 
-function buildEditCallTaskNotes(
-    call
-) {
+function buildEditCallTaskNotes(call) {
 
     return [
 
@@ -596,31 +547,17 @@ function buildEditCallTaskNotes(
 
 
 /* =========================================
-   ESCAPE FORM VALUES
+   ESCAPE
 ========================================= */
 
-function escapeEditCallField(
-    value
-) {
+function escapeEditCallField(value) {
 
     return String(
         value ?? ""
     )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    );
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
-}
+                                }
